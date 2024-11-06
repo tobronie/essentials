@@ -2,7 +2,6 @@ import 'package:essentials/screens/administrasi/ki_akte_screen.dart';
 import 'package:essentials/screens/administrasi/ki_kk_screen.dart';
 import 'package:essentials/screens/administrasi/ki_ktp_screen.dart';
 import 'package:essentials/screens/administrasi/ki_nikah_screen.dart';
-import 'package:essentials/screens/administrasi/ps_bansos_screen.dart';
 import 'package:essentials/screens/administrasi/pt_tanah_screen.dart';
 import 'package:essentials/screens/administrasi/sk_domisili_screen.dart';
 import 'package:essentials/screens/administrasi/sk_kematian_screen.dart';
@@ -56,8 +55,6 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
                 _suratKeterangan(),
                 const SizedBox(height: 12),
                 _kartuIdentitas(),
-                const SizedBox(height: 12),
-                _layananSosial(),
                 const SizedBox(height: 12),
                 _sertifikatTanah(),
                 const SizedBox(height: 12),
@@ -525,68 +522,7 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
       ],
     );
   }
-
-  Widget _layananSosial() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pelayanan Sosial',
-          style: GoogleFonts.montserrat(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF616161),
-          ),
-        ),
-        const SizedBox(height: 14),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BansosScreen()),
-            );
-          },
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/images/icon_a3.png',
-                width: 52,
-                height: 52,
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bantuan Sosial',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Pengajuan untuk menerima bantuan',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-      ],
-    );
-  }
-
+  
   Widget _sertifikatTanah() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +547,7 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                'assets/images/icon_a4.png',
+                'assets/images/icon_a3.png',
                 width: 52,
                 height: 52,
               ),
@@ -672,7 +608,7 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                'assets/images/icon_a5.png',
+                'assets/images/icon_a4.png',
                 width: 52,
                 height: 52,
               ),

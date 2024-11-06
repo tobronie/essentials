@@ -1,5 +1,4 @@
 import 'package:essentials/screens/pejabat/pejabat_akte_screen.dart';
-import 'package:essentials/screens/pejabat/pejabat_bansos_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_domisili_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_kematian_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_kk_screen.dart';
@@ -773,75 +772,6 @@ class _ListVerifikasiPejabatScreenState
                       children: [
                         Text(
                           'Pengantar Pernikahan',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            height: 1.1,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          height: 2,
-                          width: 60,
-                          color: Color(0xff00AA13),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'nama pemohon',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        // PS-Bansos
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Pejabat_BansosScreen()),
-            );
-          },
-          child: Container(
-            width: double.infinity,
-            height: 84,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 3,
-                  spreadRadius: 1,
-                  offset: Offset(0.0, 0.0),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Bantuan Sosial',
                           style: GoogleFonts.montserrat(
                             fontSize: 16,
                             height: 1.1,
