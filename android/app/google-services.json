@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "962699176702",
+    "project_id": "essentials-05",
+    "storage_bucket": "essentials-05.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962699176702:android:c8ee2f1dbbb1c53cb613af",
+        "android_client_info": {
+          "package_name": "com.example.essentials"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEw0AlPVJ76Lu7QnRzFtdv0vDAsywMlIg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
