@@ -194,13 +194,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
-                        // controller: _emailController,
+                        // controller: _noHPController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Email ',
+                                  text: 'No Handphone ',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     letterSpacing: 0.1,

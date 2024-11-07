@@ -14,12 +14,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   // final LoginService _LoginService = LoginService();
-  // final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _noHPController = TextEditingController();
 
   // @override
   // void dispose() {
   //   super.dispose();
-  //   _emailController.dispose();
+  //   _noHPController.dispose();
   // }
 
   @override
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Email ',
+                                  text: 'No Handphone ',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     letterSpacing: 0.1,
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Email tidak boleh kosong';
+                            return 'No Hanphone tidak boleh kosong';
                           }
                           return null;
                         },

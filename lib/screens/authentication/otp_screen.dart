@@ -131,7 +131,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 8),
                 Text.rich(
                   TextSpan(
-                    text: 'Masukkan kode OTP yang kami kirim ke email: ',
+                    text: 'Masukkan kode OTP yang kami kirim ke no handphone: ',
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       height: 1.2,
@@ -139,7 +139,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                     children: [
                       TextSpan(
-                        text: 'tobroni05@gmail.com',
+                        text: '088235744617',
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.2,

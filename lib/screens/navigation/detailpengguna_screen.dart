@@ -516,7 +516,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
             Row(
               children: [
                 Text(
-                  'No HandPhone',
+                  'Email ',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -575,7 +575,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Email',
+              'No HandPhone',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -596,7 +596,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "tobroni05@gmail.com",
+                "088235744617",
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
