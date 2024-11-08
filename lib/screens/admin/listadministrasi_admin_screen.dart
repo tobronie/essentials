@@ -25,7 +25,7 @@ class ListVerifikasiAdministrasiAdminScreen extends StatefulWidget {
 
 class _ListVerifikasiAdministrasiAdminScreenState
     extends State<ListVerifikasiAdministrasiAdminScreen> {
-  String _selectedText = 'Riwayat';
+  String _selectedText = 'Dalam Proses';
 
   @override
   Widget build(BuildContext context) {
@@ -124,35 +124,6 @@ class _ListVerifikasiAdministrasiAdminScreenState
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Riwayat';
-                });
-              },
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Text(
-                    'Riwayat',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Riwayat'
-                          ? Color(0xFF0D0140)
-                          : Colors.black,
-                    ),
-                  ),
-                  if (_selectedText == 'Riwayat')
-                    Container(
-                      height: 2,
-                      width: 'Riwayat'.length * 8.5,
-                      color: Color(0xFF0D0140),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: () {
-                setState(() {
                   _selectedText = 'Dalam Proses';
                 });
               },
@@ -173,6 +144,35 @@ class _ListVerifikasiAdministrasiAdminScreenState
                     Container(
                       height: 2,
                       width: 'Dalam Proses'.length * 8.5,
+                      color: Color(0xFF0D0140),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedText = 'Riwayat';
+                });
+              },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Text(
+                    'Riwayat',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedText == 'Riwayat'
+                          ? Color(0xFF0D0140)
+                          : Colors.black,
+                    ),
+                  ),
+                  if (_selectedText == 'Riwayat')
+                    Container(
+                      height: 2,
+                      width: 'Riwayat'.length * 8.5,
                       color: Color(0xFF0D0140),
                     ),
                 ],

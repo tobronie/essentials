@@ -13,7 +13,7 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  String _selectedText = 'Riwayat';
+  String _selectedText = 'Dalam Proses';
   String _selectedOption = 'Semua';
 
   @override
@@ -110,35 +110,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Riwayat';
-                });
-              },
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Text(
-                    'Riwayat',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Riwayat'
-                          ? Color(0xff00AA13)
-                          : Colors.black,
-                    ),
-                  ),
-                  if (_selectedText == 'Riwayat')
-                    Container(
-                      height: 2,
-                      width: 'Riwayat'.length * 8.5,
-                      color: Color(0xff00AA13),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: () {
-                setState(() {
                   _selectedText = 'Dalam Proses';
                 });
               },
@@ -159,6 +130,35 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     Container(
                       height: 2,
                       width: 'Dalam Proses'.length * 8.5,
+                      color: Color(0xff00AA13),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedText = 'Riwayat';
+                });
+              },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Text(
+                    'Riwayat',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedText == 'Riwayat'
+                          ? Color(0xff00AA13)
+                          : Colors.black,
+                    ),
+                  ),
+                  if (_selectedText == 'Riwayat')
+                    Container(
+                      height: 2,
+                      width: 'Riwayat'.length * 8.5,
                       color: Color(0xff00AA13),
                     ),
                 ],
