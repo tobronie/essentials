@@ -13,15 +13,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // final LoginService _LoginService = LoginService();
-  // final TextEditingController _noHPController = TextEditingController();
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _noHPController.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,13 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 62),
                 Form(
-                  // key: _formKey,
                   child: Column(
                     children: [
                       TextFormField(
-                        // controller: _nikController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(

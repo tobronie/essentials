@@ -1,7 +1,8 @@
-import 'package:essentials/screens/authentication/login_screen.dart';
+import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/help/privacy_screen.dart';
 import 'package:essentials/screens/help/service_screen.dart';
+import 'package:essentials/services/register_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,28 +17,17 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // final RegisterService _RegisterService = RegisterService();
-  // final TextEditingController _nameController = TextEditingController();
-  // final TextEditingController _nikController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
+  final RegisterService _registerService = RegisterService();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nikController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _noHpController = TextEditingController();
 
-  // void _togglePasswordVisibility() {
-  //   setState(() {
-  //     _obscureText1 = !_obscureText1;
-  //   });
-  // }
-
-  // void _toggleRepeatPasswordVisibility() {
-  //   setState(() {
-  //     _obscureText2 = !_obscureText2;
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _emailController.dispose();
-  // }
+  @override
+  void dispose() {
+    super.dispose();
+    _noHpController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        controller: _nameController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
@@ -143,16 +134,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Nama tidak boleh kosong';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
-                        // controller: _nikController,
+                        controller: _nikController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           label: RichText(
@@ -183,16 +168,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'NIK tidak boleh kosong';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
-                        // controller: _noHPController,
+                        controller: _noHpController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           label: RichText(
@@ -223,16 +202,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'No Handphone tidak boleh kosong';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
-                        // controller: _noHPController,
+                        controller: _emailController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
@@ -262,12 +235,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Email tidak boleh kosong';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 52),
                       SizedBox(
@@ -281,6 +248,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           onPressed: () {
+                            if (_nameController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Nama tidak boleh kosong'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (_nikController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('NIK tidak boleh kosong'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (_noHpController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('No Handphone tidak boleh kosong'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (_emailController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Email tidak boleh kosong'),
+                                ),
+                              );
+                              return;
+                            }
                             showModalBottomSheet(
                               context: context,
                               useRootNavigator: true,
@@ -403,15 +406,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      LoginScreen()),
+                                                      OtpScreen()),
                                             );
                                           },
-                                          // contoh:
-                                          // onPressed: () {
-                                          //     if (_formKey.currentState!.validate()) {
-                                          //       // TODO: Handle form submission
-                                          //     }
-                                          //   },
                                           child: Text(
                                             'Saya setuju',
                                             style: GoogleFonts.montserrat(
