@@ -109,13 +109,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 62),
+                const SizedBox(height: 48),
                 Form(
-                  // key: _formKey,
                   child: Column(
                     children: [
                       TextFormField(
-                        // controller: _namaController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
@@ -195,12 +193,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 18),
                       TextFormField(
                         // controller: _noHPController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(
                                   text: 'No Handphone ',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    letterSpacing: 0.1,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '*',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'No Handphone tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      TextFormField(
+                        // controller: _noHPController,
+                        decoration: InputDecoration(
+                          label: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Email ',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     letterSpacing: 0.1,

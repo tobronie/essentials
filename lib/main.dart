@@ -1,5 +1,6 @@
 import 'package:essentials/firebase_options.dart';
 import 'package:essentials/screens/authentication/login_screen.dart';
+import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
@@ -9,15 +10,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials/screens/spalsh_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   var auth = FirebaseAuth.instance;
 
   @override
@@ -31,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
+        '/otp': (context) => const OtpScreen(),
         '/register': (context) => const RegisterScreen(),
         '/navigation': (context) => const CustomNavigationBar(selectedIndex: 0),
       },

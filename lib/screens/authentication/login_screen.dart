@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 62),
+                const SizedBox(height: 48),
                 Form(
                   // key: _formKey,
                   child: Column(
