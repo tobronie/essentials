@@ -10,7 +10,7 @@ class PenghasilanOrtuModel {
   final String pendapatan_ibu;
   final String foto_pendukung_ibu;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 

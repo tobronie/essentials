@@ -1,4 +1,5 @@
 import 'package:essentials/screens/navigation/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
@@ -18,7 +19,8 @@ class _OtpScreenState extends State<OtpScreen> {
   int _minutes = 1;
   bool _isTimerFinished = false;
 
-  final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
+  final List<TextEditingController> _controllers =
+      List.generate(4, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
 
   @override
@@ -129,26 +131,60 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text.rich(
-                  TextSpan(
-                    text: 'Masukkan kode OTP yang kami kirim ke no handphone: ',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      height: 1.2,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    children: [
+                StreamBuilder<User?>(
+                  stream: FirebaseAuth.instance.userChanges(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text.rich(
+                        TextSpan(
+                          text: 'No handphone belum terdeteksi. ',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            height: 1.2,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFFFF0004),
+                          ),
+                          children: [
+                            TextSpan(
+                              text:
+                                  'Kembali dan masukkan ulang no handphone anda.',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                height: 1.2,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    String phoneNumber =
+                        snapshot.data!.phoneNumber ?? 'No phone number';
+
+                    return Text.rich(
                       TextSpan(
-                        text: '088235744617',
+                        text:
+                            'Masukkan kode OTP yang kami kirim ke no handphone: ',
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.2,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF5E28FF),
+                          fontWeight: FontWeight.w400,
                         ),
+                        children: [
+                          TextSpan(
+                            text: phoneNumber,
+                            style: GoogleFonts.montserrat(
+                              fontSize: 14,
+                              height: 1.2,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF5E28FF),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 76),
                 Form(
@@ -171,7 +207,8 @@ class _OtpScreenState extends State<OtpScreen> {
                               height: 14,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00AA13)),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF00AA13)),
                                 value: null,
                               ),
                             ),
@@ -182,7 +219,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(4, (index) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 3.0),
                             child: SizedBox(
                               width: 42,
                               height: 56,
@@ -194,7 +232,8 @@ class _OtpScreenState extends State<OtpScreen> {
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: const Color(0xFFD9D9D9),
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 10),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none,

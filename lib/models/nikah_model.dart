@@ -10,7 +10,7 @@ class NikahModel {
   final String foto_kk_wanita;
   final String foto_formulir_wanita;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 

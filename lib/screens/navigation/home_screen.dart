@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/administrasi/listadministrasi_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/informasi/listinformasi_screen.dart';
 import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
+import 'package:essentials/services/information_desa_services.dart';
+import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -246,111 +249,134 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 156,
-          child: ListView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            children: [
-              //data
-              Padding(
-                padding: const EdgeInsets.only(left: 2, right: 12, top: 2),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => InformasiDetailScreen()),
+        StreamBuilder<QuerySnapshot>(
+          stream: DbInformation.getData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return SizedBox(
+                height: 156,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.docs.length > 5
+                      ? 5
+                      : snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot information = snapshot.data!.docs[index];
+
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(left: 2, right: 12, top: 2),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => InformasiDetailScreen()),
+                          );
+                        },
+                        child: Container(
+                          width: 274,
+                          height: 152,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 3,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.asset(
+                                  'assets/images/test.jpg',
+                                  width: 274,
+                                  height: 152,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                top: 0,
+                                child: Container(
+                                  width: 152,
+                                  height: 152,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.95),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(18),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          information['kategori'],
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          information['judul'],
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 12,
+                                            height: 1.2,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Align(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: Container(
+                                            height: 2,
+                                            width: 42,
+                                            color: const Color(0xff00AA13),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          information['tgl_upload'],
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     );
                   },
-                  child: Container(
-                    width: 274,
-                    height: 152,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 3,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.asset(
-                            'assets/images/test.jpg',
-                            width: 274,
-                            height: 152,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          child: Container(
-                            width: 152,
-                            height: 152,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(18),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Infrastruktur',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Perbaikan Jl. Kalikening barat diperbaiki pada hari sabtu',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                    ),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Align(
-                                    alignment: AlignmentDirectional.centerStart,
-                                    child: Container(
-                                      height: 2,
-                                      width: 42,
-                                      color: Color(0xff00AA13),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Senin, 01 Juli 2024',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
-              ),
-            ],
-          ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text("Error: ${snapshot.error}"),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
         const SizedBox(height: 14),
         AnimatedSmoothIndicator(
@@ -381,161 +407,116 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Column(
-          children: [
-            // Item 1 vertikal
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => InformasiTetapScreen()),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 244,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 3,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                        ),
-                        child: Image.asset(
-                          'assets/images/informasi_1.jpeg',
-                          width: double.infinity,
-                          height: 140,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Pendaftaran Calon Among Desa Kedungmulyo 2024',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
+        StreamBuilder<QuerySnapshot>(
+          stream: DbInformation_Desa.getData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return SizedBox(
+                height: 156,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.docs.length > 2
+                      ? 2
+                      : snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot information_desa = snapshot.data!.docs[index];
+
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        InformasiTetapScreen()),
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 244,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 3,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Desa Kedungmulyo kembali membuka kesempatan bagi pemuda-pemudi untuk menjadi Among Desa tahun 2024. Sebagai sosok yang berperan penting dalam menjaga kelancaran berbagai acara adat dan kegiatan desa, Among Desa memiliki tanggung jawab besar dalam melestarikan budaya dan tradisi lokal. Pendaftaran ini terbuka bagi warga asli Desa Kedungmulyo yang berusia minimal 18 tahun dan bersedia mengabdikan diri selama satu tahun.',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 12,
-                                height: 1.2,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15),
+                                    ),
+                                    child: Image.asset(
+                                      'assets/images/informasi_1.jpeg',
+                                      width: double.infinity,
+                                      height: 140,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 18, vertical: 18),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          information_desa['judul'],
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          information_desa['isi'],
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 12,
+                                            height: 1.2,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 3,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.justify,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                  },
                 ),
-              ),
-            ),
-            // Item 2 vertikal
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => InformasiTetapScreen()),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 244,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 3,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                        ),
-                        child: Image.asset(
-                          'assets/images/informasi_2.jpeg',
-                          width: double.infinity,
-                          height: 140,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Bakti Sosial Warga Kedungmulyo',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Pembagian sembako yang dilaksanakan pada tanggal 01-Juli-2024 diwaktu sore hari di balaidesa dengan acara yang sangat mengesankan',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 12,
-                                height: 1.2,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.justify,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text("Error: ${snapshot.error}"),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ],
     );

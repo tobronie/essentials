@@ -6,7 +6,7 @@ class KTPModel {
   final String nama_anak;
   final String surat;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 

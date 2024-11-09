@@ -7,7 +7,7 @@ class KematianModel {
   final String foto_bukti;
   final String surat;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 

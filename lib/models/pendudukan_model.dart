@@ -7,7 +7,7 @@ class PendudukanModel {
   final String daerah_tujuan;
   final String surat;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 

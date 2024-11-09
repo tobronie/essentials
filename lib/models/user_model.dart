@@ -3,12 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserModel {
   final String name;
   final String nik;
-  final int kk;
+  final String kk;
   final String pekerjaan;
   final String dusun;
   final String rt;
   final String rw;
-  final int no_hp;
+  final String no_hp;
   final String email;
 
   UserModel({

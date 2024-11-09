@@ -1,8 +1,10 @@
+import 'package:essentials/models/user_model.dart';
 import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/help/privacy_screen.dart';
 import 'package:essentials/screens/help/service_screen.dart';
 import 'package:essentials/services/register_services.dart';
+import 'package:essentials/services/user_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +28,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     super.dispose();
-    _noHpController.dispose();
+    _noHpController.addListener(() {
+      if (_noHpController.text.isEmpty ||
+          !_noHpController.text.startsWith('+62')) {
+        _noHpController.text = '+62';
+        _noHpController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _noHpController.text.length));
+      }
+    });
   }
 
   @override
@@ -40,21 +49,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Navigator.of(context).pop();
           },
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.help),
-        //     onPressed: () {
-        //       // implementasi halaman bantuan
-        //       ScaffoldMessenger.of(context).showSnackBar(
-        //         const SnackBar(
-        //           content: Text(
-        //               'Mohon maaf, fitur ini belum tersedia. Silahkan login menggunakan email dan password.'),
-        //           backgroundColor: Colors.black,
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ],
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -202,6 +196,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
+                        onTap: () {
+                          if (_noHpController.text.isEmpty) {
+                            _noHpController.text = '+62';
+                            _noHpController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _noHpController.text.length));
+                          }
+                        },
+                        onChanged: (value) {
+                          if (!value.startsWith('+62')) {
+                            _noHpController.text = '+62';
+                            _noHpController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _noHpController.text.length));
+                          }
+                        },
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(18),
+                        ],
                       ),
                       const SizedBox(height: 18),
                       TextFormField(
@@ -250,8 +263,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             if (_nameController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Nama tidak boleh kosong'),
+                                SnackBar(
+                                  content: Text(
+                                    'Nama tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               );
                               return;
@@ -259,18 +279,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                             if (_nikController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('NIK tidak boleh kosong'),
+                                SnackBar(
+                                  content: Text(
+                                    'NIK tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               );
                               return;
                             }
 
-                            if (_noHpController.text.isEmpty) {
+                            if (_noHpController.text.isEmpty ||
+                                _noHpController.text == '+62') {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('No Handphone tidak boleh kosong'),
+                                SnackBar(
+                                  content: Text(
+                                    'No Handphone tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               );
                               return;
@@ -278,8 +312,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                             if (_emailController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Email tidak boleh kosong'),
+                                SnackBar(
+                                  content: Text(
+                                    'Email tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               );
                               return;
@@ -402,6 +443,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             ),
                                           ),
                                           onPressed: () {
+                                            final userbaru = UserModel(
+                                              name: _nameController.text,
+                                              nik: _nikController.text,
+                                              kk: "",
+                                              pekerjaan: "",
+                                              dusun: "",
+                                              rt: "",
+                                              rw: "",
+                                              no_hp: _noHpController.text,
+                                              email: _emailController.text,
+                                            );
+                                            DbUser.addData(itemuser: userbaru);
+                                            _registerService.register(
+                                              _noHpController.text,
+                                              context,
+                                            );
+                                            _nameController.clear();
+                                            _noHpController.clear();
+
+                                            //
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(

@@ -2,6 +2,7 @@ import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -15,6 +16,19 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   // final LoginService _loginService = LoginService();
   final TextEditingController _noHpController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _noHpController.addListener(() {
+      if (_noHpController.text.isEmpty ||
+          !_noHpController.text.startsWith('+62')) {
+        _noHpController.text = '+62';
+        _noHpController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _noHpController.text.length));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,12 +124,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'No Hanphone tidak boleh kosong';
+                        onTap: () {
+                          if (_noHpController.text.isEmpty) {
+                            _noHpController.text = '+62';
+                            _noHpController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _noHpController.text.length));
                           }
-                          return null;
                         },
+                        onChanged: (value) {
+                          if (!value.startsWith('+62')) {
+                            _noHpController.text = '+62';
+                            _noHpController.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _noHpController.text.length));
+                          }
+                        },
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(18),
+                        ],
                       ),
                       const SizedBox(height: 52),
                       SizedBox(
@@ -129,11 +156,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           onPressed: () {
-                            if (_noHpController.text.isEmpty) {
+                            if (_noHpController.text.isEmpty ||
+                                _noHpController.text == '+62') {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('No Handphone tidak boleh kosong'),
+                                SnackBar(
+                                  content: Text(
+                                    'No Handphone tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               );
                               return;

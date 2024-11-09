@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class KKModel {
   final String foto_ktp;
   final String nama_wali;
-  final int jumlah;
+  final String jumlah;
   final String foto_pendukung;
   final String surat;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 
