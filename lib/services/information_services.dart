@@ -12,13 +12,34 @@ class DbInformation {
         .snapshots();
   }
 
-  static Future<void> addData(
-      {required InformationModel iteminformation}) async {
-    await information.add(iteminformation.toJson());
+  static Stream<QuerySnapshot> getDataByCategoryAndSearch(
+      String category, String searchQuery) {
+    Query query = FirebaseFirestore.instance.collection('information');
+
+    if (category != 'Semua') {
+      query = query.where('kategori', isEqualTo: category);
+    }
+
+    if (searchQuery.isNotEmpty) {
+      query = query
+          .where('judul', isGreaterThanOrEqualTo: searchQuery)
+          .where('judul', isLessThanOrEqualTo: searchQuery + '\uf8ff');
+    }
+
+    return query.snapshots();
   }
 
-  static Future<void> deleteData(
-      DocumentSnapshot<Object?> iteminformation) async {
-    await information.doc(iteminformation.id).delete();
+  static Future<void> addData(
+      {required InformationModel iteminformation}) async {
+    try {
+      await information.add({
+        'judul': iteminformation.judul,
+        'kategori': iteminformation.kategori,
+        'tgl_upload': iteminformation.tgl_upload,
+        'image': iteminformation.image,
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 }

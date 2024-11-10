@@ -2,6 +2,7 @@ import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/tambahinformasi_admin_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
+import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -320,12 +321,17 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => InformasiDetailScreen()),
-            );
-          },
+          // onTap: () {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => InformasiDetailScreen(
+          //         information:
+          //             information[index].data() as Map<String, dynamic>,
+          //       ),
+          //     ),
+          //   );
+          // },
           child: Container(
             width: double.infinity,
             height: 92,

@@ -6,14 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class InformasiScreen extends StatefulWidget {
-  const InformasiScreen({super.key});
-
   @override
   _InformasiScreenState createState() => _InformasiScreenState();
 }
 
 class _InformasiScreenState extends State<InformasiScreen> {
   String _selectedOption = 'Semua';
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +77,16 @@ class _InformasiScreenState extends State<InformasiScreen> {
           SizedBox(width: 12),
           Expanded(
             child: TextField(
+              controller: _searchController,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
+              },
               decoration: InputDecoration(
                 hintText: "Pencarian Anda ...",
                 hintStyle: GoogleFonts.montserrat(
@@ -104,172 +110,47 @@ class _InformasiScreenState extends State<InformasiScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Semua';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Semua'
-                    ? Color(0xff00AA13).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Semua'
-                      ? Color(0xff00AA13)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Semua',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Semua'
-                      ? Color(0xff00AA13)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Infrastruktur';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Infrastruktur'
-                    ? Color(0xff00AA13).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Infrastruktur'
-                      ? Color(0xff00AA13)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Infrastruktur',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Infrastruktur'
-                      ? Color(0xff00AA13)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Kecelakaan';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Kecelakaan'
-                    ? Color(0xff00AA13).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Kecelakaan'
-                      ? Color(0xff00AA13)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Kecelakaan',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Kecelakaan'
-                      ? Color(0xff00AA13)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Kegiatan';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Kegiatan'
-                    ? Color(0xff00AA13).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Kegiatan'
-                      ? Color(0xff00AA13)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Kegiatan',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Kegiatan'
-                      ? Color(0xff00AA13)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Sosial';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Sosial'
-                    ? Color(0xff00AA13).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Sosial'
-                      ? Color(0xff00AA13)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Sosial',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Sosial'
-                      ? Color(0xff00AA13)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
+          _buildCategoryOption('Semua'),
+          _buildCategoryOption('Infrastruktur'),
+          _buildCategoryOption('Kecelakaan'),
+          _buildCategoryOption('Kegiatan'),
+          _buildCategoryOption('Sosial'),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryOption(String category) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedOption = category;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: _selectedOption == category
+              ? Color(0xff00AA13).withOpacity(0.25)
+              : Colors.white,
+          border: Border.all(
+            color: _selectedOption == category
+                ? Color(0xff00AA13)
+                : Color(0xffD9D9D9),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Text(
+          category,
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color:
+                _selectedOption == category ? Color(0xff00AA13) : Colors.black,
+          ),
+        ),
       ),
     );
   }
@@ -280,7 +161,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           StreamBuilder<QuerySnapshot>(
-            stream: DbInformation.getData(),
+            stream: DbInformation.getDataByCategoryAndSearch(
+                _selectedOption, _searchQuery),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final documents = snapshot.data!.docs;
@@ -299,8 +181,11 @@ class _InformasiScreenState extends State<InformasiScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      InformasiDetailScreen()),
+                                builder: (context) => InformasiDetailScreen(
+                                  information: information.data()
+                                      as Map<String, dynamic>,
+                                ),
+                              ),
                             );
                           },
                           child: Container(
@@ -350,7 +235,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
                                         borderRadius: BorderRadius.circular(10),
                                         image: DecorationImage(
                                           image: NetworkImage(
-                                              information['image'] ?? ''),
+                                            information['image'] ?? '',
+                                          ),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -366,7 +252,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 2),
                         SizedBox(
                           height: 1,
                           child: Container(

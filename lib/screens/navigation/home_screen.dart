@@ -282,8 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        InformasiDetailScreen()),
+                                  builder: (context) => InformasiDetailScreen(
+                                    information: information.data()
+                                        as Map<String, dynamic>,
+                                  ),
+                                ),
                               );
                             },
                             child: Container(

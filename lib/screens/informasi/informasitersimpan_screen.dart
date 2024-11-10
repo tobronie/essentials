@@ -1,4 +1,5 @@
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
+import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -244,12 +245,17 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InformasiDetailScreen()),
-              );
-          },
+          // onTap: () {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => InformasiDetailScreen(
+          //         information:
+          //             information[index].data() as Map<String, dynamic>,
+          //       ),
+          //     ),
+          //   );
+          // },
           child: Container(
             width: double.infinity,
             height: 92,
@@ -317,4 +323,3 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
     );
   }
 }
-
