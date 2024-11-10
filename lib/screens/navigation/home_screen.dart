@@ -21,26 +21,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController scrollController = ScrollController();
   int activeIndex = 0;
-  late ScrollController _scrollController;
+  final double itemWidth = 274.0;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      setState(() {
-        activeIndex = (_scrollController.offset / (274 + 8)).round();
-        if (activeIndex < 0) activeIndex = 0;
-        if (activeIndex >= 5) activeIndex = 4;
-      });
-    });
+    scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    scrollController.removeListener(_onScroll);
+    scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    double currentScrollPosition = scrollController.position.pixels;
+    int newIndex = (currentScrollPosition / itemWidth).round();
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex > 5) newIndex = 5;
+    if (newIndex != activeIndex) {
+      setState(() {
+        activeIndex = newIndex;
+      });
+    }
   }
 
   @override
@@ -253,119 +260,143 @@ class _HomeScreenState extends State<HomeScreen> {
           stream: DbInformation.getData(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return SizedBox(
-                height: 156,
-                child: ListView.builder(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: snapshot.data!.docs.length > 5
-                      ? 5
-                      : snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot information = snapshot.data!.docs[index];
+              final documents = snapshot.data!.docs;
+              final maxCount = documents.length > 5 ? 5 : documents.length;
 
-                    return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 2, right: 12, top: 2),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => InformasiDetailScreen()),
-                          );
-                        },
-                        child: Container(
-                          width: 274,
-                          height: 152,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 3,
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 156,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: maxCount,
+                      controller: scrollController,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot information = documents[index];
+                        return Padding(
+                          padding:
+                              const EdgeInsets.only(left: 2, right: 12, top: 2),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        InformasiDetailScreen()),
+                              );
+                            },
+                            child: Container(
+                              width: 274,
+                              height: 152,
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(
-                                  'assets/images/test.jpg',
-                                  width: 274,
-                                  height: 152,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                left: 0,
-                                top: 0,
-                                child: Container(
-                                  width: 152,
-                                  height: 152,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.95),
-                                    borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 3,
+                                    spreadRadius: 0,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(18),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          information['kategori'],
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          information['judul'],
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            height: 1.2,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.justify,
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Align(
-                                          alignment:
-                                              AlignmentDirectional.centerStart,
-                                          child: Container(
-                                            height: 2,
-                                            width: 42,
-                                            color: const Color(0xff00AA13),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          information['tgl_upload'],
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
+                                ],
+                              ),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.network(
+                                      information['image'] ?? '',
+                                      width: 274,
+                                      height: 152,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(Icons.error);
+                                      },
                                     ),
                                   ),
-                                ),
+                                  Positioned(
+                                    left: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: 152,
+                                      height: 152,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.95),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(18),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              information['kategori'] ?? '',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              information['judul'] ?? '',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 12,
+                                                height: 1.2,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                              ),
+                                              textAlign: TextAlign.justify,
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Align(
+                                              alignment: AlignmentDirectional
+                                                  .centerStart,
+                                              child: Container(
+                                                height: 2,
+                                                width: 42,
+                                                color: const Color(0xff00AA13),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              information['tgl_upload'] ?? '',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: AnimatedSmoothIndicator(
+                      activeIndex: activeIndex,
+                      count: maxCount,
+                      effect: ExpandingDotsEffect(
+                        dotWidth: 5,
+                        dotHeight: 5,
+                        activeDotColor: const Color(0xFF00AA13),
+                        dotColor: Colors.grey,
+                        spacing: 5,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                ],
               );
             } else if (snapshot.hasError) {
               return Center(
@@ -377,18 +408,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
           },
-        ),
-        const SizedBox(height: 14),
-        AnimatedSmoothIndicator(
-          activeIndex: activeIndex,
-          count: 5,
-          effect: ExpandingDotsEffect(
-            dotWidth: 5,
-            dotHeight: 5,
-            activeDotColor: const Color(0xFF00AA13),
-            dotColor: Colors.grey,
-            spacing: 5,
-          ),
         ),
       ],
     );
@@ -414,14 +433,15 @@ class _HomeScreenState extends State<HomeScreen> {
               return SizedBox(
                 height: 156,
                 child: ListView.builder(
-                  controller: _scrollController,
+                  controller: ScrollController(),
                   scrollDirection: Axis.horizontal,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.docs.length > 2
                       ? 2
                       : snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
-                    DocumentSnapshot information_desa = snapshot.data!.docs[index];
+                    DocumentSnapshot information_desa =
+                        snapshot.data!.docs[index];
 
                     return Column(
                       children: [
@@ -457,11 +477,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       topLeft: Radius.circular(15),
                                       topRight: Radius.circular(15),
                                     ),
-                                    child: Image.asset(
-                                      'assets/images/informasi_1.jpeg',
+                                    child: Image.network(
+                                      information_desa['image'] ?? '',
                                       width: double.infinity,
                                       height: 140,
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(Icons.error);
+                                      },
                                     ),
                                   ),
                                   Padding(
@@ -472,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          information_desa['judul'],
+                                          information_desa['judul'] ?? '',
                                           style: GoogleFonts.montserrat(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
@@ -483,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                          information_desa['isi'],
+                                          information_desa['isi'] ?? '',
                                           style: GoogleFonts.montserrat(
                                             fontSize: 12,
                                             height: 1.2,

@@ -5,7 +5,7 @@ CollectionReference information_desa = FirebaseFirestore.instance.collection('in
 
 class DbInformation_Desa {
   static Stream<QuerySnapshot> getData() {
-    return information_desa.orderBy('judul', descending: true).snapshots();
+    return FirebaseFirestore.instance.collection('information_desa').snapshots();
   }
 
   static Future<void> addData({required InformationDesaModel iteminformation_desa}) async {

@@ -219,7 +219,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                   fontStyle: FontStyle.italic,
                 ),
                 decoration: InputDecoration(
-                  hintText: "maksimal 40 karakter ...",
+                  hintText: "maksimal 50 karakter ...",
                   hintStyle: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -228,7 +228,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
                 ),
                 inputFormatters: [
-                  LengthLimitingTextInputFormatter(40),
+                  LengthLimitingTextInputFormatter(50),
                 ],
               ),
             ),
