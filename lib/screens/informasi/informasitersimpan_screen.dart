@@ -251,7 +251,7 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
           //     MaterialPageRoute(
           //       builder: (context) => InformasiDetailScreen(
           //         information:
-          //             information[index].data() as Map<String, dynamic>,
+          //             information.data() as Map<String, dynamic>,
           //       ),
           //     ),
           //   );
