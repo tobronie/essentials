@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class InformasiTetapScreen extends StatefulWidget {
-  const InformasiTetapScreen({super.key});
+  final Map<String, dynamic> informationDesa;
+
+  const InformasiTetapScreen({required this.informationDesa, Key? key}) : super(key: key);
 
   @override
   _InformasiTetapScreenState createState() => _InformasiTetapScreenState();
@@ -44,7 +46,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
               height: 240,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/informasi_1.jpeg'),
+                  image: NetworkImage(widget.informationDesa['image'] ?? ''),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -56,7 +58,8 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                 margin: const EdgeInsets.only(top: 216),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(25)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,13 +67,13 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                     Container(
                       height: 3,
                       width: 40,
-                      color: Color(0xff00AA13),
+                      color: const Color(0xff00AA13),
                     ),
                     const SizedBox(height: 32),
                     Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: Text(
-                        'Pendaftaran Calon Among Desa Kedungmulyo 2024',
+                        widget.informationDesa['judul'] ?? '',
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           height: 1.2,
@@ -79,50 +82,33 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                         textAlign: TextAlign.justify,
                       ),
                     ),
+                    const SizedBox(height: 6),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: Container(
+                        height: 2,
+                        width: 118,
+                        color: const Color(0xffD9D9D9),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: Text(
+                        widget.informationDesa['update'] ?? '',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          height: 1.2,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: Text(
-                        'Desa Kedungmulyo kembali membuka kesempatan bagi pemuda-pemudi untuk menjadi Among Desa tahun 2024. Sebagai sosok yang berperan penting dalam menjaga kelancaran berbagai acara adat dan kegiatan desa, Among Desa memiliki tanggung jawab besar dalam melestarikan budaya dan tradisi lokal. Pendaftaran ini terbuka bagi warga asli Desa Kedungmulyo yang berusia minimal 18 tahun dan bersedia mengabdikan diri selama satu tahun.',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        'Proses pendaftaran berlangsung dari 1 hingga 30 November 2024, di mana peserta harus melengkapi berkas berupa fotokopi KTP, surat keterangan sehat, dan surat pernyataan kesediaan menjadi Among Desa. Seleksi administratif akan dilakukan setelah pendaftaran ditutup, diikuti oleh wawancara dengan tokoh masyarakat desa untuk menilai kesesuaian calon dengan peran tersebut.',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        'Calon yang terpilih sebagai Among Desa diharapkan tidak hanya mampu menjaga tradisi, tetapi juga memiliki keterampilan komunikasi yang baik serta inisiatif dalam menghadapi berbagai tantangan di lapangan. Peran ini menuntut sikap yang proaktif dan kemampuan untuk bekerjasama dengan berbagai pihak dalam desa.',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        'Pengumuman calon terpilih akan dilakukan pada 20 Desember 2024. Diharapkan, peserta yang terpilih nantinya dapat melanjutkan tradisi desa serta berkontribusi dalam menjaga harmoni masyarakat Kedungmulyo melalui peran aktif mereka sebagai Among Desa.',
+                        widget.informationDesa['isi'] ?? '',
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.2,
