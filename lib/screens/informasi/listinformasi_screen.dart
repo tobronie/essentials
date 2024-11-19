@@ -14,6 +14,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
   String _selectedOption = 'Semua';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  bool _isSearchActive = false;
+  FocusNode _searchFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +80,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
           Expanded(
             child: TextField(
               controller: _searchController,
+              focusNode: _searchFocusNode,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -85,6 +88,16 @@ class _InformasiScreenState extends State<InformasiScreen> {
               onChanged: (query) {
                 setState(() {
                   _searchQuery = query;
+                  _isSearchActive = query.isNotEmpty;
+                  if (_isSearchActive) {
+                    _selectedOption = 'Semua';
+                  }
+                });
+              },
+              onTap: () {
+                setState(() {
+                  _isSearchActive = true;
+                  _selectedOption = 'Semua';
                 });
               },
               decoration: InputDecoration(
@@ -111,10 +124,12 @@ class _InformasiScreenState extends State<InformasiScreen> {
         scrollDirection: Axis.horizontal,
         children: [
           _buildCategoryOption('Semua'),
-          _buildCategoryOption('Infrastruktur'),
-          _buildCategoryOption('Kecelakaan'),
-          _buildCategoryOption('Kegiatan'),
-          _buildCategoryOption('Sosial'),
+          if (!_isSearchActive) ...[
+            _buildCategoryOption('Infrastruktur'),
+            _buildCategoryOption('Kecelakaan'),
+            _buildCategoryOption('Kegiatan'),
+            _buildCategoryOption('Sosial'),
+          ],
         ],
       ),
     );
@@ -125,6 +140,9 @@ class _InformasiScreenState extends State<InformasiScreen> {
       onTap: () {
         setState(() {
           _selectedOption = category;
+          _searchQuery = '';
+          _isSearchActive = false;
+          _searchController.clear();
         });
       },
       child: Container(
@@ -240,11 +258,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                    ),
-                                    const Icon(
-                                      PhosphorIconsRegular.bookmarkSimple,
-                                      size: 32,
-                                      color: Color(0xff00AA13),
                                     ),
                                   ],
                                 ),

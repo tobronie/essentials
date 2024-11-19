@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/tambahinformasi_admin_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
@@ -17,6 +18,10 @@ class ListInformasiAdminScreen extends StatefulWidget {
 
 class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
   String _selectedOption = 'Semua';
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearchActive = false;
+  FocusNode _searchFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +92,27 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                 SizedBox(width: 12),
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
+                    onChanged: (query) {
+                      setState(() {
+                        _searchQuery = query;
+                        _isSearchActive = query.isNotEmpty;
+                        if (_isSearchActive) {
+                          _selectedOption = 'Semua';
+                        }
+                      });
+                    },
+                    onTap: () {
+                      setState(() {
+                        _isSearchActive = true;
+                        _selectedOption = 'Semua';
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: "Pencarian Anda ...",
                       hintStyle: GoogleFonts.montserrat(
@@ -102,6 +124,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                     ),
                   ),
                 ),
+                SizedBox(width: 4),
               ],
             ),
           ),
@@ -146,259 +169,191 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Semua';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Semua'
-                    ? Color(0xFF0D0140).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Semua'
-                      ? Color(0xFF0D0140)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Semua',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Semua'
-                      ? Color(0xFF0D0140)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Infrastruktur';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Infrastruktur'
-                    ? Color(0xFF0D0140).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Infrastruktur'
-                      ? Color(0xFF0D0140)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Infrastruktur',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Infrastruktur'
-                      ? Color(0xFF0D0140)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Kecelakaan';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Kecelakaan'
-                    ? Color(0xFF0D0140).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Kecelakaan'
-                      ? Color(0xFF0D0140)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Kecelakaan',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Kecelakaan'
-                      ? Color(0xFF0D0140)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Kegiatan';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Kegiatan'
-                    ? Color(0xFF0D0140).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Kegiatan'
-                      ? Color(0xFF0D0140)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Kegiatan',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Kegiatan'
-                      ? Color(0xFF0D0140)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedOption = 'Sosial';
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: _selectedOption == 'Sosial'
-                    ? Color(0xFF0D0140).withOpacity(0.25)
-                    : Colors.white,
-                border: Border.all(
-                  color: _selectedOption == 'Sosial'
-                      ? Color(0xFF0D0140)
-                      : Color(0xffD9D9D9),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                'Sosial',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _selectedOption == 'Sosial'
-                      ? Color(0xFF0D0140)
-                      : Colors.black,
-                ),
-              ),
-            ),
-          ),
+          _buildCategoryOption('Semua'),
+          if (!_isSearchActive) ...[
+            _buildCategoryOption('Infrastruktur'),
+            _buildCategoryOption('Kecelakaan'),
+            _buildCategoryOption('Kegiatan'),
+            _buildCategoryOption('Sosial'),
+          ],
         ],
       ),
     );
   }
 
+  Widget _buildCategoryOption(String category) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedOption = category;
+          _searchQuery = '';
+          _isSearchActive = false;
+          _searchController.clear();
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: _selectedOption == category
+              ? Color(0xFF0D0140).withOpacity(0.25)
+              : Colors.white,
+          border: Border.all(
+            color: _selectedOption == category
+                ? Color(0xFF0D0140)
+                : Color(0xffD9D9D9),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Text(
+          category,
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color:
+                _selectedOption == category ? Color(0xFF0D0140) : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _data() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          // onTap: () {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => InformasiDetailScreen(
-          //         information:
-          //             information.data() as Map<String, dynamic>,
-          //       ),
-          //     ),
-          //   );
-          // },
-          child: Container(
-            width: double.infinity,
-            height: 92,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          StreamBuilder<QuerySnapshot>(
+            stream: DbInformation.getDataByCategoryAndSearch(
+                _selectedOption, _searchQuery),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final documents = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: documents.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot information = documents[index];
+
+                    return Column(
                       children: [
-                        Text(
-                          'Kerusakan Got di JL. Kalikening barat samping warung',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            height: 1.1,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => InformasiDetailScreen(
+                                  information: information.data()
+                                      as Map<String, dynamic>,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 92,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          information['judul'] ?? '',
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 16,
+                                            height: 1.1,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          information['tgl_upload'] ?? '',
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 76,
+                                      height: 76,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            information['image'] ?? '',
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Color(0xffD9D9D9).withOpacity(0.85),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            PhosphorIconsRegular.trash,
+                                            size: 32,
+                                            color: Color(0xFFFF0004),
+                                          ),
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Senin, 01 Juli 2024',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                        SizedBox(height: 2),
+                        SizedBox(
+                          height: 1,
+                          child: Container(
+                            color: Color(0xffD9D9D9),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 76,
-                      height: 76,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/template.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        PhosphorIconsRegular.trash,
-                        size: 36,
-                        color: Color(0xFFFF0004),
-                      ),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    );
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error: ${snapshot.error}"),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
           ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

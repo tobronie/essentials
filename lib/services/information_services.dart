@@ -37,6 +37,7 @@ class DbInformation {
         'kategori': iteminformation.kategori,
         'tgl_upload': iteminformation.tgl_upload,
         'image': iteminformation.image,
+        'isi': iteminformation.isi,
       });
     } catch (e) {
       rethrow;

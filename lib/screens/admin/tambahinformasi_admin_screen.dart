@@ -14,6 +14,11 @@ class TambahInformasiScreen extends StatefulWidget {
 }
 
 class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
+  final TextEditingController _imageController = TextEditingController();
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _kategoriController = TextEditingController();
+  final TextEditingController _tglUploadController = TextEditingController();
+  final TextEditingController _isiController = TextEditingController();
   String? selectedKategori;
   File? selectedImage;
 
