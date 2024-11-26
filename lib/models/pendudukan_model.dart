@@ -3,9 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class PendudukanModel {
   final String foto_ktp;
   final String foto_kk;
+  final String foto_nikah_ayah;
+  final String foto_nikah_ibu;
   final String daerah_asal;
   final String daerah_tujuan;
-  final String surat;
+  final String tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -14,9 +16,11 @@ class PendudukanModel {
   PendudukanModel({
     required this.foto_ktp,
     required this.foto_kk,
+    required this.foto_nikah_ayah,
+    required this.foto_nikah_ibu,
     required this.daerah_asal,
     required this.daerah_tujuan,
-    required this.surat,
+    required this.tgl_upload,
     required this.nama,
     required this.no_hp,
     required this.email,
@@ -27,9 +31,11 @@ class PendudukanModel {
     return {
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
+      'foto_nikah_ayah': foto_nikah_ayah,
+      'foto_nikah_ibu': foto_nikah_ibu,
       'daerah_asal': daerah_asal,
       'daerah_tujuan': daerah_tujuan,
-      'surat': surat,
+      'tgl_upload': tgl_upload,
       'nama': nama,
       'no_hp': no_hp,
       'email': email,
@@ -41,9 +47,11 @@ class PendudukanModel {
     return PendudukanModel(
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
+      foto_nikah_ayah: json['foto_nikah_ayah'],
+      foto_nikah_ibu: json['foto_nikah_ibu'],
       daerah_asal: json['daerah_asal'],
       daerah_tujuan: json['daerah_tujuan'],
-      surat: json['surat'],
+      tgl_upload: json['tgl_upload'],
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -55,9 +63,11 @@ class PendudukanModel {
     return PendudukanModel(
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
+      foto_nikah_ayah: snapshot.get('foto_nikah_ayah'),
+      foto_nikah_ibu: snapshot.get('foto_nikah_ibu'),
       daerah_asal: snapshot.get('daerah_asal'),
       daerah_tujuan: snapshot.get('daerah_tujuan'),
-      surat: snapshot.get('surat'),
+      tgl_upload: snapshot.get('tgl_upload'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

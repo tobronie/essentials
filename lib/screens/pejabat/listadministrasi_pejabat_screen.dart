@@ -223,7 +223,7 @@ class _ListVerifikasiPejabatScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Surat Keterangan Tidak Mampu',
+                          'Surat Keterangan Domisili',
                           style: GoogleFonts.montserrat(
                             fontSize: 16,
                             height: 1.1,

@@ -97,8 +97,6 @@ class _KTPScreenState extends State<KTPScreen> {
                 const SizedBox(height: 12),
                 _uploadKK(),
                 const SizedBox(height: 12),
-                _formulir(),
-                const SizedBox(height: 12),
                 _uploadSurat(),
                 const SizedBox(height: 32),
                 _uploadButton(),
@@ -114,26 +112,13 @@ class _KTPScreenState extends State<KTPScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Foto Akte Kelahiran',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '*',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
-          ],
+        Text(
+          'Foto Akte Kelahiran (Opsional)',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
         ),
         const SizedBox(height: 4),
         Container(
@@ -158,8 +143,8 @@ class _KTPScreenState extends State<KTPScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageAkte!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageAkte!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -273,8 +258,8 @@ class _KTPScreenState extends State<KTPScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKK!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -340,70 +325,6 @@ class _KTPScreenState extends State<KTPScreen> {
     );
   }
 
-  Column _formulir() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Nama Yang Diajukan',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "Nama sesuai Akte ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Column _uploadSurat() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,8 +373,8 @@ class _KTPScreenState extends State<KTPScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageSurat!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageSurat!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),

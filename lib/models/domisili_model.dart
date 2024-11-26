@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DomisiliModel {
   final String foto_ktp;
   final String foto_kk;
-  final String pas_foto;
-  final String surat;
+  final String tgl_upload;
   final String nama;
   final int no_hp;
   final String email;
@@ -13,8 +12,7 @@ class DomisiliModel {
   DomisiliModel({
     required this.foto_ktp,
     required this.foto_kk,
-    required this.pas_foto,
-    required this.surat,
+    required this.tgl_upload,
     required this.nama,
     required this.no_hp,
     required this.email,
@@ -25,8 +23,7 @@ class DomisiliModel {
     return {
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
-      'pas_foto': pas_foto,
-      'surat': surat,
+      'tgl_upload': tgl_upload,
       'nama': nama,
       'no_hp': no_hp,
       'email': email,
@@ -38,8 +35,7 @@ class DomisiliModel {
     return DomisiliModel(
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
-      pas_foto: json['pas_foto'],
-      surat: json['surat'],
+      tgl_upload: json['tgl_upload'],
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -51,8 +47,7 @@ class DomisiliModel {
     return DomisiliModel(
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
-      pas_foto: snapshot.get('pas_foto'),
-      surat: snapshot.get('surat'),
+      tgl_upload: snapshot.get('tgl_upload'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

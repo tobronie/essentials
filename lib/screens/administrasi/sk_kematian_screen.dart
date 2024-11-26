@@ -14,12 +14,12 @@ class KematianScreen extends StatefulWidget {
 }
 
 class _KematianScreenState extends State<KematianScreen> {
-  File? selectedImageKTP;
+  File? selectedImageKTPAlmarhum;
   File? selectedImageKK;
   File? selectedImageBukti;
-  File? selectedImageRS;
+  File? selectedImageKTPSaksi;
 
-  Future getImageKTP({bool fromCamera = false}) async {
+  Future getImageKTPAlmarhum({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -27,7 +27,7 @@ class _KematianScreenState extends State<KematianScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageKTP = File(imagePicked.path);
+      selectedImageKTPAlmarhum = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -58,7 +58,7 @@ class _KematianScreenState extends State<KematianScreen> {
     }
   }
 
-  Future getImageRS({bool fromCamera = false}) async {
+  Future getImageKTPSaksi({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -66,7 +66,7 @@ class _KematianScreenState extends State<KematianScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageRS = File(imagePicked.path);
+      selectedImageKTPSaksi = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -108,13 +108,13 @@ class _KematianScreenState extends State<KematianScreen> {
               children: [
                 _formulir(),
                 const SizedBox(height: 12),
-                _uploadKTP(),
+                _uploadKTPAlmarhum(),
                 const SizedBox(height: 12),
                 _uploadKK(),
                 const SizedBox(height: 12),
                 _uploadBuktiKematian(),
                 const SizedBox(height: 12),
-                _uploadKematianRS(),
+                _uploadKTPSaksi(),
                 const SizedBox(height: 32),
                 _uploadButton(),
               ],
@@ -189,7 +189,7 @@ class _KematianScreenState extends State<KematianScreen> {
     );
   }
 
-  Column _uploadKTP() {
+  Column _uploadKTPAlmarhum() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -231,21 +231,21 @@ class _KematianScreenState extends State<KematianScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageKTP != null
+                    selectedImageKTPAlmarhum != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
                               child:
-                                  Image.file(selectedImageKTP!, fit: BoxFit.cover),
+                                  Image.file(selectedImageKTPAlmarhum!, fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageKTP == null)
+                    if (selectedImageKTPAlmarhum == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageKTP();
+                          await getImageKTPAlmarhum();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -268,7 +268,7 @@ class _KematianScreenState extends State<KematianScreen> {
                   ],
                 ),
               ),
-              if (selectedImageKTP != null)
+              if (selectedImageKTPAlmarhum != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -277,7 +277,7 @@ class _KematianScreenState extends State<KematianScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageKTP = null;
+                          selectedImageKTPAlmarhum = null;
                         });
                       },
                       child: Container(
@@ -419,14 +419,14 @@ class _KematianScreenState extends State<KematianScreen> {
     );
   }
 
-  Column _uploadBuktiKematian() {
+  Column _uploadKTPSaksi() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Foto Bukti Kematian',
+              'Foto KTP Saksi',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -443,6 +443,108 @@ class _KematianScreenState extends State<KematianScreen> {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 4),
+        Container(
+          height: 78,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Color(0xFFD9D9D9),
+              width: 2,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    selectedImageKTPSaksi != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              height: 74,
+                              width: MediaQuery.of(context).size.width,
+                              child:
+                                  Image.file(selectedImageKTPSaksi!, fit: BoxFit.cover),
+                            ),
+                          )
+                        : Container(),
+                    if (selectedImageKTPSaksi == null)
+                      TextButton(
+                        onPressed: () async {
+                          await getImageKTPSaksi();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              PhosphorIconsRegular.fileArrowUp,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Unggah foto disini',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (selectedImageKTPSaksi != null)
+                Positioned(
+                  bottom: 6,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedImageKTPSaksi = null;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: const Icon(
+                            PhosphorIconsRegular.trash,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column _uploadBuktiKematian() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Surat Kematian (opsional)',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
         ),
         const SizedBox(height: 4),
         Container(
@@ -508,108 +610,6 @@ class _KematianScreenState extends State<KematianScreen> {
                       onTap: () {
                         setState(() {
                           selectedImageBukti = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column _uploadKematianRS() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Surat Kematian (opsional)',
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 78,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xFFD9D9D9),
-              width: 2,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectedImageRS != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 74,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageRS!, fit: BoxFit.cover),
-                            ),
-                          )
-                        : Container(),
-                    if (selectedImageRS == null)
-                      TextButton(
-                        onPressed: () async {
-                          await getImageRS();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              PhosphorIconsRegular.fileArrowUp,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Unggah foto disini',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (selectedImageRS != null)
-                Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageRS = null;
                         });
                       },
                       child: Container(

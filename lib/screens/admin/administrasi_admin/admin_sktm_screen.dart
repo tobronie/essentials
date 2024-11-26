@@ -81,8 +81,6 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
                 _nominalPendapatan(),
                 const SizedBox(height: 12),
                 _rincianBiaya(),
-                const SizedBox(height: 12),
-                _imageSurat(),
                 const SizedBox(height: 24),
                 const Divider(
                   color: Color(0xffD9D9D9),
@@ -326,7 +324,7 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nominal Pendapatan perBulan',
+              'Nominal Pendapatan Wali perBulan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -400,78 +398,6 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.visible,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Column _imageSurat() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Surat Pemohon',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
@@ -602,6 +528,45 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
               ),
               child: Text(
                 "tobronie05@gmail.com",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tanggal Pengajuan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "11/11/2020",
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

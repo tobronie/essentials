@@ -3,7 +3,6 @@ import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
@@ -15,26 +14,27 @@ class AkteScreen extends StatefulWidget {
 }
 
 class _AkteScreenState extends State<AkteScreen> {
+  File? selectedImageSuratKelahiran;
   File? selectedImageKTPAyah;
   File? selectedImageKTPIbu;
   File? selectedImageNikahAyah;
   File? selectedImageNikahIbu;
-  File? selectedImageSurat;
-  DateTime? selectedDate;
+  File? selectedImageKTPSaksiSatu;
+  File? selectedImageKTPSaksiDua;
+  File? selectedImageAkteSaudara;
+  File? selectedImageIjasahBersangkutan;
+  File? selectedImageKK;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ??
-          DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+  Future getImageSuratKelahiran({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
     );
 
-    if (pickedDate != null) {
-      setState(() {
-        selectedDate = pickedDate; 
-      });
+    if (imagePicked != null) {
+      selectedImageSuratKelahiran = File(imagePicked.path);
+      setState(() {});
     }
   }
 
@@ -60,6 +60,19 @@ class _AkteScreenState extends State<AkteScreen> {
 
     if (imagePicked != null) {
       selectedImageKTPIbu = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageKK({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageKK = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -90,7 +103,7 @@ class _AkteScreenState extends State<AkteScreen> {
     }
   }
 
-  Future getImageSurat({bool fromCamera = false}) async {
+  Future getImageKTPSaksiSatu({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -98,7 +111,46 @@ class _AkteScreenState extends State<AkteScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageSurat = File(imagePicked.path);
+      selectedImageKTPSaksiSatu = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageKTPSaksiDua({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageKTPSaksiDua = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageAkteSaudara({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageAkteSaudara = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageIjasahBersangkutan({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageIjasahBersangkutan = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -138,13 +190,17 @@ class _AkteScreenState extends State<AkteScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _formulir(),
+                _uploadSuratKelahiran(),
                 const SizedBox(height: 12),
-                _uploadSurat(),
+                _uploadKK(),
                 const SizedBox(height: 12),
                 _formulirAyah(),
                 const SizedBox(height: 12),
                 _formulirIbu(),
+                const SizedBox(height: 12),
+                _formulirSaksi(),
+                const SizedBox(height: 12),
+                _formulirPendukung(),
                 const SizedBox(height: 32),
                 _uploadButton(),
               ],
@@ -155,206 +211,7 @@ class _AkteScreenState extends State<AkteScreen> {
     );
   }
 
-  Column _formulir() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Biodata Anak:',
-              style: GoogleFonts.montserrat(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF616161),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Nama Lengkap Anak',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "akan dicantumkan untuk Akte ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Tempat Lahir',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "akan dicantumkan untuk Akte ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Tanggal Lahir',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            GestureDetector(
-              onTap: () => _selectDate(context),
-              child: Container(
-                height: 42,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: const Color(0xffD9D9D9),
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: AbsorbPointer(
-                  child: TextField(
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: selectedDate == null
-                          ? "Pilih tanggal lahir anak ..."
-                          : DateFormat('dd/MM/yyyy').format(selectedDate!),
-                      hintStyle: GoogleFonts.montserrat(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Column _uploadSurat() {
+  Column _uploadSuratKelahiran() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -396,21 +253,21 @@ class _AkteScreenState extends State<AkteScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageSurat != null
+                    selectedImageSuratKelahiran != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child: Image.file(selectedImageSurat!,
+                              child: Image.file(selectedImageSuratKelahiran!,
                                   fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageSurat == null)
+                    if (selectedImageSuratKelahiran == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageSurat();
+                          await getImageSuratKelahiran();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -433,7 +290,7 @@ class _AkteScreenState extends State<AkteScreen> {
                   ],
                 ),
               ),
-              if (selectedImageSurat != null)
+              if (selectedImageSuratKelahiran != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -442,7 +299,7 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageSurat = null;
+                          selectedImageSuratKelahiran = null;
                         });
                       },
                       child: Container(
@@ -475,6 +332,121 @@ class _AkteScreenState extends State<AkteScreen> {
             color: Colors.black,
           ),
         ),
+      ],
+    );
+  }
+
+  Column _uploadKK() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Foto Kartu Keluarga',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '*',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Container(
+          height: 78,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Color(0xFFD9D9D9),
+              width: 2,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    selectedImageKK != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              height: 74,
+                              width: MediaQuery.of(context).size.width,
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
+                            ),
+                          )
+                        : Container(),
+                    if (selectedImageKK == null)
+                      TextButton(
+                        onPressed: () async {
+                          await getImageKK();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              PhosphorIconsRegular.fileArrowUp,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Unggah foto disini',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (selectedImageKK != null)
+                Positioned(
+                  bottom: 6,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedImageKK = null;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: const Icon(
+                            PhosphorIconsRegular.trash,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
         const SizedBox(height: 6),
         const Divider(
           color: Color(0xffD9D9D9),
@@ -501,63 +473,6 @@ class _AkteScreenState extends State<AkteScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Nama Ayah',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "Nama sesuai KTP ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -638,33 +553,33 @@ class _AkteScreenState extends State<AkteScreen> {
                   ),
                   if (selectedImageKTPAyah != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageKTPAyah = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPAyah = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
                 ],
               ),
             ),
@@ -751,33 +666,33 @@ class _AkteScreenState extends State<AkteScreen> {
                   ),
                   if (selectedImageNikahAyah != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageNikahAyah = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageNikahAyah = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
                 ],
               ),
             ),
@@ -809,63 +724,6 @@ class _AkteScreenState extends State<AkteScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Nama Ibu',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "Nama sesuai KTP ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -946,33 +804,33 @@ class _AkteScreenState extends State<AkteScreen> {
                   ),
                   if (selectedImageKTPIbu != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageKTPIbu = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
                 ],
               ),
             ),
@@ -1059,34 +917,530 @@ class _AkteScreenState extends State<AkteScreen> {
                   ),
                   if (selectedImageNikahIbu != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageNikahIbu = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageNikahIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        const Divider(
+          color: Color(0xffD9D9D9),
+        ),
+      ],
+    );
+  }
+
+  Column _formulirSaksi() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Saksi Kelahiran:',
+              style: GoogleFonts.montserrat(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF616161),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto KTP Saksi 1',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
                 ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKTPIbu != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKTPIbu!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKTPIbu == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKTPIbu();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKTPIbu != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto KTP Saksi 2',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKTPIbu != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKTPIbu!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKTPIbu == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKTPIbu();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKTPIbu != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        const Divider(
+          color: Color(0xffD9D9D9),
+        ),
+      ],
+    );
+  }
+
+  Column _formulirPendukung() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Dokumen Pendukung:',
+              style: GoogleFonts.montserrat(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF616161),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto Akte Kelahiran Saudara (Opsional)',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKTPIbu != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKTPIbu!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKTPIbu == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKTPIbu();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKTPIbu != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Jika yang bersangkutan mempunyai saudara, maka sertakan seluruh akte kelahiran saudaranya',
+              style: GoogleFonts.montserrat(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                height: 1.2,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto Ijasah Bersangkutan (Opsional)',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKTPIbu != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKTPIbu!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKTPIbu == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKTPIbu();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKTPIbu != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPIbu = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Jika yang bersangkutan sudah berpendidikan, maka sertakan ijasah terakhir',
+              style: GoogleFonts.montserrat(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                height: 1.2,
+                color: Colors.black,
               ),
             ),
           ],

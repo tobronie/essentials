@@ -72,15 +72,15 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
               children: [
                 _dataPengajuan(),
                 const SizedBox(height: 8),
-                _imageKTP(),
+                _imageKK(),
                 const SizedBox(height: 12),
-                _namaWali(),
+                _imageNikahAyah(),
                 const SizedBox(height: 12),
-                _jumlahKeluarga(),
+                _imageNikahIbu(),
                 const SizedBox(height: 12),
-                _imagePendukung(),
+                _imageIjasahKeluarga(),
                 const SizedBox(height: 12),
-                _imageSurat(),
+                _imageAkteKeluarga(),
                 const SizedBox(height: 24),
                 const Divider(
                   color: Color(0xffD9D9D9),
@@ -93,10 +93,6 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 ),
                 const SizedBox(height: 24),
                 _verifikasiKepalaDesa(),
-                const SizedBox(height: 4),
-                _verifikasiRT(),
-                const SizedBox(height: 4),
-                _verifikasiRW(),
                 const SizedBox(height: 12),
                 _uploadDocument(),
                 const SizedBox(height: 32),
@@ -130,7 +126,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageKTP() {
+  Column _imageKK() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,7 +134,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Foto KTP Pemohon',
+              'Foto KK Asli/Lama',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -202,7 +198,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _namaWali() {
+  Column _imageNikahAyah() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -210,99 +206,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nama Wali Keluarga',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                "Fulan",
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Column _jumlahKeluarga() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Jumlah Keluarga',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                "5",
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Column _imagePendukung() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Foto Dokumen Pendukung',
+              'Foto Buku Nikah Ayah',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -366,7 +270,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageSurat() {
+  Column _imageNikahIbu() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -374,7 +278,151 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Surat Permohonan',
+              'Foto Buku Nikah Ibu',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          PhosphorIconsRegular.file,
+                          color: Colors.black.withOpacity(0.7),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "nama_file_foto.jpg",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Icon(
+                      PhosphorIconsRegular.eyeSlash,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column _imageIjasahKeluarga() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto Ijasah Seluruh Keluarga',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          PhosphorIconsRegular.file,
+                          color: Colors.black.withOpacity(0.7),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "nama_file_foto.jpg",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Icon(
+                      PhosphorIconsRegular.eyeSlash,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column _imageAkteKeluarga() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto Akte Seluruh Keluarga',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -572,6 +620,45 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tanggal Pengajuan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "11/11/2020",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -582,79 +669,17 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
         TextSpan(
           children: [
             TextSpan(
-              text: 'Telah disetujui',
+              text: 'Menunggu disetujui',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
+                color: Color(0xFFFF9D00),
               ),
             ),
             TextSpan(text: ' '),
             TextSpan(
               text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRT() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Menunggu disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF9D00),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'RT 01 Bpk. Fulan, S.H',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRW() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Menunggu disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF9D00),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'RW 03 Bpk. Fulan, S.Si',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,

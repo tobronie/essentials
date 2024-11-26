@@ -6,7 +6,7 @@ class SKTMModel {
   final String nama_wali;
   final String nominal;
   final String rincian;
-  final String surat;
+  final String tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -18,7 +18,7 @@ class SKTMModel {
     required this.nama_wali,
     required this.nominal,
     required this.rincian,
-    required this.surat,
+    required this.tgl_upload,
     required this.nama,
     required this.no_hp,
     required this.email,
@@ -32,7 +32,7 @@ class SKTMModel {
       'nama_wali': nama_wali,
       'nominal': nominal,
       'rincian': rincian,
-      'surat': surat,
+      'tgl_upload': tgl_upload,
       'nama': nama,
       'no_hp': no_hp,
       'email': email,
@@ -47,7 +47,7 @@ class SKTMModel {
       nama_wali: json['nama_wali'],
       nominal: json['nominal'],
       rincian: json['rincian'],
-      surat: json['surat'],
+      tgl_upload: json['tgl_upload'],
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -62,7 +62,7 @@ class SKTMModel {
       nama_wali: snapshot.get('nama_wali'),
       nominal: snapshot.get('nominal'),
       rincian: snapshot.get('rincian'),
-      surat: snapshot.get('surat'),
+      tgl_upload: snapshot.get('tgl_upload'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

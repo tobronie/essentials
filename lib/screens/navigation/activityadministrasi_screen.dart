@@ -47,10 +47,6 @@ class _ActivityAdministrasiScreenState
                 _data(),
                 const SizedBox(height: 52),
                 _verifikasiKepalaDesa(),
-                const SizedBox(height: 4),
-                _verifikasiRT(),
-                const SizedBox(height: 4),
-                _verifikasiRW(),
                 const SizedBox(height: 16),
                 _document(),
               ],
@@ -216,68 +212,6 @@ class _ActivityAdministrasiScreenState
             TextSpan(text: ' '),
             TextSpan(
               text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRT() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Menunggu disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF9D00),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'RT 01 Bpk. Fulan, S.H',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRW() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Menunggu disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF9D00),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'RW 03 Bpk. Fulan, S.Si',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,

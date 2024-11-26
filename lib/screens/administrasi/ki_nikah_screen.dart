@@ -19,8 +19,14 @@ class _NikahScreenState extends State<NikahScreen> {
   File? selectedImageKTPWanita;
   File? selectedImageKKPria;
   File? selectedImageKKWanita;
-  File? selectedImageSuratPria;
-  File? selectedImageSuratWanita;
+  File? selectedImageFormulirPria;
+  File? selectedImageFormulirWanita;
+  File? selectedImageAktePria;
+  File? selectedImageAkteWanita;
+  File? selectedImageNikahAyahPria;
+  File? selectedImageNikahAyahWanita;
+  File? selectedImageNikahIbuPria;
+  File? selectedImageNikahIbuWanita;
 
   Future getImageKTPPria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -74,7 +80,7 @@ class _NikahScreenState extends State<NikahScreen> {
     }
   }
 
-  Future getImageSuratPria({bool fromCamera = false}) async {
+  Future getImageAkteWanita({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -82,12 +88,12 @@ class _NikahScreenState extends State<NikahScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageSuratPria = File(imagePicked.path);
+      selectedImageAkteWanita = File(imagePicked.path);
       setState(() {});
     }
   }
 
-  Future getImageSuratWanita({bool fromCamera = false}) async {
+  Future getImageAktePria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -95,7 +101,85 @@ class _NikahScreenState extends State<NikahScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageSuratWanita = File(imagePicked.path);
+      selectedImageAktePria = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageNikahAyahWanita({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageNikahAyahWanita = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageNikahAyahPria({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageNikahAyahPria = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageNikahIbuWanita({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageNikahIbuWanita = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageNikahIbuPria({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageNikahIbuPria = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageFormulirPria({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageFormulirPria = File(imagePicked.path);
+      setState(() {});
+    }
+  }
+
+  Future getImageFormulirWanita({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? imagePicked = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (imagePicked != null) {
+      selectedImageFormulirWanita = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -166,63 +250,6 @@ class _NikahScreenState extends State<NikahScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Nama Calon Pria',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "Nama sesuai KTP ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -342,7 +369,346 @@ class _NikahScreenState extends State<NikahScreen> {
             Row(
               children: [
                 Text(
+                  'Foto Akte Kelahiran ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
                   'Foto Kartu Keluarga ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto Buku Nikah Ayah ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto Buku Nikah Ibu ',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -490,21 +856,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageSuratPria != null
+                        selectedImageFormulirPria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageSuratPria!,
+                                  child: Image.file(selectedImageFormulirPria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageSuratPria == null)
+                        if (selectedImageFormulirPria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageSuratPria();
+                              await getImageFormulirPria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -527,7 +893,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageSuratPria != null)
+                  if (selectedImageFormulirPria != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -536,7 +902,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageSuratPria = null;
+                              selectedImageFormulirPria = null;
                             });
                           },
                           child: Container(
@@ -625,63 +991,6 @@ class _NikahScreenState extends State<NikahScreen> {
             Row(
               children: [
                 Text(
-                  'Nama Calon Wanita',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  hintText: "Nama sesuai KTP ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
                   'Foto KTP',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
@@ -717,21 +1026,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPWanita != null
+                        selectedImageKTPPria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPWanita!,
+                                  child: Image.file(selectedImageKTPPria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPWanita == null)
+                        if (selectedImageKTPPria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPWanita();
+                              await getImageKTPPria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -754,35 +1063,35 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPWanita != null)
+                  if (selectedImageKTPPria != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageKTPWanita = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKTPPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
                 ],
               ),
             ),
@@ -795,7 +1104,7 @@ class _NikahScreenState extends State<NikahScreen> {
             Row(
               children: [
                 Text(
-                  'Foto Kartu Keluarga',
+                  'Foto Akte Kelahiran ',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -830,21 +1139,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKWanita != null
+                        selectedImageKKPria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKWanita!,
+                                  child: Image.file(selectedImageKKPria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKWanita == null)
+                        if (selectedImageKKPria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKWanita();
+                              await getImageKKPria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -867,35 +1176,374 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKWanita != null)
+                  if (selectedImageKKPria != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageKKWanita = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto Kartu Keluarga ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
                 ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto Buku Nikah Ayah ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Foto Buku Nikah Ibu ',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 78,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xFFD9D9D9),
+                  width: 2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        selectedImageKKPria != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                  height: 74,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Image.file(selectedImageKKPria!,
+                                      fit: BoxFit.cover),
+                                ),
+                              )
+                            : Container(),
+                        if (selectedImageKKPria == null)
+                          TextButton(
+                            onPressed: () async {
+                              await getImageKKPria();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  PhosphorIconsRegular.fileArrowUp,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Unggah foto disini',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (selectedImageKKPria != null)
+                    Positioned(
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageKKPria = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -943,21 +1591,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageSuratWanita != null
+                        selectedImageFormulirWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageSuratWanita!,
+                                  child: Image.file(selectedImageFormulirWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageSuratWanita == null)
+                        if (selectedImageFormulirWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageSuratWanita();
+                              await getImageFormulirWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -980,7 +1628,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageSuratWanita != null)
+                  if (selectedImageFormulirWanita != null)
                     Positioned(
                   bottom: 6,
                   left: 0,
@@ -989,7 +1637,7 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageSuratWanita = null;
+                          selectedImageFormulirWanita = null;
                         });
                       },
                       child: Container(

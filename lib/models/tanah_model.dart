@@ -3,9 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TanahModel {
   final String foto_ktp;
   final String foto_kk;
-  final String foto_sertifikat;
-  final String foto_pbb;
-  final String surat;
+  final String foto_sppt_shm;
+  final String tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -14,9 +13,8 @@ class TanahModel {
   TanahModel({
     required this.foto_ktp,
     required this.foto_kk,
-    required this.foto_sertifikat,
-    required this.foto_pbb,
-    required this.surat,
+    required this.foto_sppt_shm,
+    required this.tgl_upload,
     required this.nama,
     required this.no_hp,
     required this.email,
@@ -27,9 +25,8 @@ class TanahModel {
     return {
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
-      'foto_sertifikat': foto_sertifikat,
-      'foto_pbb': foto_pbb,
-      'surat': surat,
+      'foto_sppt_shm': foto_sppt_shm,
+      'tgl_upload': tgl_upload,
       'nama': nama,
       'no_hp': no_hp,
       'email': email,
@@ -41,9 +38,8 @@ class TanahModel {
     return TanahModel(
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
-      foto_sertifikat: json['foto_sertifikat'],
-      foto_pbb: json['foto_pbb'],
-      surat: json['surat'],
+      foto_sppt_shm: json['foto_sppt_shm'],
+      tgl_upload: json['tgl_upload'],
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -55,9 +51,8 @@ class TanahModel {
     return TanahModel(
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
-      foto_sertifikat: snapshot.get('foto_sertifikat'),
-      foto_pbb: snapshot.get('foto_pbb'),
-      surat: snapshot.get('surat'),
+      foto_sppt_shm: snapshot.get('foto_sppt_shm'),
+      tgl_upload: snapshot.get('tgl_upload'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

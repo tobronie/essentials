@@ -9,6 +9,7 @@ class PenghasilanOrtuModel {
   final String pekerjaan_ibu;
   final String pendapatan_ibu;
   final String foto_pendukung_ibu;
+  final String tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -23,6 +24,7 @@ class PenghasilanOrtuModel {
     required this.pekerjaan_ibu,
     required this.pendapatan_ibu,
     required this.foto_pendukung_ibu,
+    required this.tgl_upload,
     required this.nama,
     required this.no_hp,
     required this.email,
@@ -39,6 +41,7 @@ class PenghasilanOrtuModel {
       'pekerjaan_ibu': pekerjaan_ibu,
       'pendapatan_ibu': pendapatan_ibu,
       'foto_pendukung_ibu': foto_pendukung_ibu,
+      'tgl_upload': tgl_upload,
       'nama': nama,
       'no_hp': no_hp,
       'email': email,
@@ -56,6 +59,7 @@ class PenghasilanOrtuModel {
       pekerjaan_ibu: json['pekerjaan_ibu'],
       pendapatan_ibu: json['pendapatan_ibu'],
       foto_pendukung_ibu: json['foto_pendukung_ibu'],
+      tgl_upload: json['tgl_upload'],
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -73,6 +77,7 @@ class PenghasilanOrtuModel {
       pekerjaan_ibu: snapshot.get('pekerjaan_ibu'),
       pendapatan_ibu: snapshot.get('pendapatan_ibu'),
       foto_pendukung_ibu: snapshot.get('foto_pendukung_ibu'),
+      tgl_upload: snapshot.get('tgl_upload'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

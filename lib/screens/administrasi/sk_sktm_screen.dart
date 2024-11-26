@@ -17,7 +17,6 @@ class SKTMScreen extends StatefulWidget {
 class _SKTMScreenState extends State<SKTMScreen> {
   File? selectedImageKTP;
   File? selectedImageKK;
-  File? selectedImageSurat;
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -41,19 +40,6 @@ class _SKTMScreenState extends State<SKTMScreen> {
 
     if (imagePicked != null) {
       selectedImageKK = File(imagePicked.path);
-      setState(() {});
-    }
-  }
-
-  Future getImageSurat({bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? imagePicked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (imagePicked != null) {
-      selectedImageSurat = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -98,8 +84,6 @@ class _SKTMScreenState extends State<SKTMScreen> {
                 _uploadKK(),
                 const SizedBox(height: 12),
                 _formulir(),
-                const SizedBox(height: 12),
-                _uploadSurat(),
                 const SizedBox(height: 32),
                 _uploadButton(),
               ],
@@ -407,7 +391,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
             Row(
               children: [
                 Text(
-                  'Nominal Pendapatan perBulan',
+                  'Nominal Pendapatan Wali perBulan',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -514,152 +498,6 @@ class _SKTMScreenState extends State<SKTMScreen> {
               ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-
-  Column _uploadSurat() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Surat Permohonan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '*',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 78,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xFFD9D9D9),
-              width: 2,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectedImageSurat != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 74,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageSurat!, fit: BoxFit.cover),
-                            ),
-                          )
-                        : Container(),
-                    if (selectedImageSurat == null)
-                      TextButton(
-                        onPressed: () async {
-                          await getImageSurat();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              PhosphorIconsRegular.fileArrowUp,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Unggah foto disini',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (selectedImageSurat != null)
-                Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageSurat = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
-        RichText(
-          text: TextSpan(
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              height: 1.2,
-              color: Colors.black,
-            ),
-            children: [
-              const TextSpan(
-                text: 'Unduh ',
-              ),
-              TextSpan(
-                text: 'surat permohonan SKTM',
-                style: const TextStyle(
-                  color: Color(0xFF5E28FF),
-                  decoration: TextDecoration.underline,
-                ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Screen()),
-                    // );
-                  },
-              ),
-              const TextSpan(text: ', isi, kemudian foto dan unggah kembali'),
-            ],
-          ),
         ),
       ],
     );

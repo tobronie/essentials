@@ -16,9 +16,7 @@ class TanahScreen extends StatefulWidget {
 class _TanahScreenState extends State<TanahScreen> {
   File? selectedImageKTP;
   File? selectedImageKK;
-  File? selectedImageSertifikat;
-  File? selectedImagePBB;
-  File? selectedImageRiwayat;
+  File? selectedImageSPPT_SHM;
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -46,7 +44,7 @@ class _TanahScreenState extends State<TanahScreen> {
     }
   }
 
-  Future getImageSertifikat({bool fromCamera = false}) async {
+  Future getImageSPPT_SHM({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -54,33 +52,7 @@ class _TanahScreenState extends State<TanahScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageSertifikat = File(imagePicked.path);
-      setState(() {});
-    }
-  }
-
-  Future getImagePBB({bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? imagePicked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (imagePicked != null) {
-      selectedImagePBB = File(imagePicked.path);
-      setState(() {});
-    }
-  }
-
-  Future getImageRiwayat({bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? imagePicked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (imagePicked != null) {
-      selectedImageRiwayat = File(imagePicked.path);
+      selectedImageSPPT_SHM = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -124,11 +96,7 @@ class _TanahScreenState extends State<TanahScreen> {
                 const SizedBox(height: 12),
                 _uploadKK(),
                 const SizedBox(height: 12),
-                _uploadSertifikat(),
-                const SizedBox(height: 12),
-                _uploadPBB(),
-                const SizedBox(height: 12),
-                _uploadRiwayat(),
+                _uploadSPPT_SHM(),
                 const SizedBox(height: 32),
                 _uploadButton(),
               ],
@@ -369,14 +337,14 @@ class _TanahScreenState extends State<TanahScreen> {
     );
   }
 
-  Column _uploadSertifikat() {
+  Column _uploadSPPT_SHM() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Foto Sertifikat Tanah',
+              'Foto SPPT atau SHM',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -411,21 +379,21 @@ class _TanahScreenState extends State<TanahScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageSertifikat != null
+                    selectedImageSPPT_SHM != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
                               child:
-                                  Image.file(selectedImageSertifikat!, fit: BoxFit.cover),
+                                  Image.file(selectedImageSPPT_SHM!, fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageSertifikat == null)
+                    if (selectedImageSPPT_SHM == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageSertifikat();
+                          await getImageSPPT_SHM();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -448,7 +416,7 @@ class _TanahScreenState extends State<TanahScreen> {
                   ],
                 ),
               ),
-              if (selectedImageSertifikat != null)
+              if (selectedImageSPPT_SHM != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -457,7 +425,7 @@ class _TanahScreenState extends State<TanahScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageSertifikat = null;
+                          selectedImageSPPT_SHM = null;
                         });
                       },
                       child: Container(
@@ -482,244 +450,7 @@ class _TanahScreenState extends State<TanahScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Sertifikat tanah atau bukti kepemilikan tanah',
-          style: GoogleFonts.montserrat(
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            height: 1.2,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column _uploadPBB() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Foto Pajak Bumi dan Bangunan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '*',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 78,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xFFD9D9D9),
-              width: 2,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectedImagePBB != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 74,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImagePBB!, fit: BoxFit.cover),
-                            ),
-                          )
-                        : Container(),
-                    if (selectedImagePBB == null)
-                      TextButton(
-                        onPressed: () async {
-                          await getImagePBB();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              PhosphorIconsRegular.fileArrowUp,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Unggah foto disini',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (selectedImagePBB != null)
-                Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImagePBB = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Bukti pembayaran PBB terbaru yang sudah dibayar',
-          style: GoogleFonts.montserrat(
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-            height: 1.2,
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column _uploadRiwayat() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Foto Riwayat Tanah (opsional)',
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 78,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xFFD9D9D9),
-              width: 2,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectedImageRiwayat != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 74,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageRiwayat!, fit: BoxFit.cover),
-                            ),
-                          )
-                        : Container(),
-                    if (selectedImageRiwayat == null)
-                      TextButton(
-                        onPressed: () async {
-                          await getImageRiwayat();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              PhosphorIconsRegular.fileArrowUp,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Unggah foto disini',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (selectedImageRiwayat != null)
-                Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageRiwayat = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Surat keterangan riwayat kepemilikan dan penggunaan tanah sebelumnya',
+          'Sertakan salah satunya saja, dari SPPT (Bukti pembayaran pajak terakhir) atau SHM (Bukti kepemilikan terhadap bidang tanah)',
           style: GoogleFonts.montserrat(
             fontSize: 12,
             fontWeight: FontWeight.w400,

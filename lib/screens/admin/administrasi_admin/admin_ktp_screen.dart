@@ -76,8 +76,6 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
                 const SizedBox(height: 12),
                 _imageKK(),
                 const SizedBox(height: 12),
-                _namaAnak(),
-                const SizedBox(height: 12),
                 _imageSurat(),
                 const SizedBox(height: 24),
                 const Divider(
@@ -91,10 +89,6 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
                 ),
                 const SizedBox(height: 24),
                 _verifikasiKepalaDesa(),
-                const SizedBox(height: 4),
-                _verifikasiRT(),
-                const SizedBox(height: 4),
-                _verifikasiRW(),
                 const SizedBox(height: 12),
                 _uploadDocument(),
                 const SizedBox(height: 32),
@@ -264,52 +258,6 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Column _namaAnak() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nama Anak',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                "Fulan",
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
               ),
             ),
           ],
@@ -524,73 +472,50 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tanggal Pengajuan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "11/11/2020",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
 
   Container _verifikasiKepalaDesa() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Telah disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRT() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Menunggu disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF9D00),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'RT 01 Bpk. Fulan, S.H',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
-  Container _verifikasiRW() {
     return Container(
       child: Text.rich(
         TextSpan(
@@ -606,7 +531,7 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
             ),
             TextSpan(text: ' '),
             TextSpan(
-              text: 'RW 03 Bpk. Fulan, S.Si',
+              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
