@@ -6,6 +6,7 @@ import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ListInformasiAdminScreen extends StatefulWidget {
@@ -278,7 +279,14 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          information['tgl_upload'] ?? '',
+                                          information['tgl_upload'] != null
+                                              ? DateFormat('dd MMM yyyy')
+                                                  .format(
+                                                  (information['tgl_upload']
+                                                          as Timestamp)
+                                                      .toDate(),
+                                                )
+                                              : 'Tanggal tidak tersedia',
                                           style: GoogleFonts.montserrat(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w500,
@@ -320,7 +328,9 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                             size: 32,
                                             color: Color(0xFFFF0004),
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            _deleteInformation(information.id);
+                                          },
                                         ),
                                       ),
                                     )
@@ -355,5 +365,79 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
         ],
       ),
     );
+  }
+
+  void _deleteInformation(String documentId) async {
+    bool? confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Konfirmasi Penghapusan',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin menghapus informasi ini?',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ), 
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Batal',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Hapus',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await DbInformation.deleteInformation(documentId);
+      setState(() {});
+    }
   }
 }

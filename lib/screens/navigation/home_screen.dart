@@ -9,6 +9,7 @@ import 'package:essentials/services/information_desa_services.dart';
 import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
@@ -364,7 +365,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              information['tgl_upload'] ?? '',
+                                              information['tgl_upload'] != null
+                                                  ? DateFormat('dd MMM yyyy')
+                                                      .format(
+                                                      (information['tgl_upload']
+                                                              as Timestamp)
+                                                          .toDate(),
+                                                    )
+                                                  : 'Tanggal tidak tersedia',
                                               style: GoogleFonts.montserrat(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w400,
@@ -448,11 +456,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                  builder: (context) => InformasiTetapScreen(
-                                    informationDesa: informationDesa.data()
-                                        as Map<String, dynamic>,
-                                  ),
-                                ),
+                              builder: (context) => InformasiTetapScreen(
+                                informationDesa: informationDesa.data()
+                                    as Map<String, dynamic>,
+                              ),
+                            ),
                           );
                         },
                         child: Container(

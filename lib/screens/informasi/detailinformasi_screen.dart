@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class InformasiDetailScreen extends StatefulWidget {
@@ -125,11 +127,17 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          information['tgl_upload'] ?? '',
+                          information['tgl_upload'] != null
+                              ? DateFormat('dd MMM yyyy').format(
+                                  (information['tgl_upload'] as Timestamp)
+                                      .toDate(),
+                                )
+                              : 'Tanggal tidak tersedia',
                           style: GoogleFonts.montserrat(
                             fontSize: 12,
                             height: 1.2,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ],

@@ -26,6 +26,8 @@ class DbInformation {
           .where('judul', isLessThanOrEqualTo: searchQuery + '\uf8ff');
     }
 
+    // query = query.orderBy('tgl_upload', descending: true);
+
     return query.snapshots();
   }
 
@@ -35,12 +37,20 @@ class DbInformation {
       await information.add({
         'judul': iteminformation.judul,
         'kategori': iteminformation.kategori,
-        'tgl_upload': iteminformation.tgl_upload,
+        'tgl_upload': Timestamp.now(),
         'image': iteminformation.image,
         'isi': iteminformation.isi,
       });
     } catch (e) {
       rethrow;
+    }
+  }
+
+  static Future<void> deleteInformation(String documentId) async {
+    try {
+      await information.doc(documentId).delete();
+    } catch (e) {
+      print("Error deleting information: $e");
     }
   }
 }

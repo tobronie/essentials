@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:essentials/models/information_model.dart';
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
+import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,24 +17,91 @@ class TambahInformasiScreen extends StatefulWidget {
 }
 
 class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
-  final TextEditingController _imageController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
   final TextEditingController _judulController = TextEditingController();
-  final TextEditingController _kategoriController = TextEditingController();
-  final TextEditingController _tglUploadController = TextEditingController();
   final TextEditingController _isiController = TextEditingController();
-  String? selectedKategori;
-  File? selectedImage;
+  String selectedKategori = "Belum Memilih";
+  // File? selectedImage;
 
-  Future getImage({bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
+  // Future getImage({bool fromCamera = false}) async {
+  //   final ImagePicker picker = ImagePicker();
 
-    final XFile? imagePicked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+  //   final XFile? imagePicked = await picker.pickImage(
+  //     source: ImageSource.gallery,
+  //   );
 
-    if (imagePicked != null) {
-      selectedImage = File(imagePicked.path);
-      setState(() {});
+  //   if (imagePicked != null) {
+  //     selectedImage = File(imagePicked.path);
+  //     setState(() {});
+  //   }
+  // }
+
+  Future<void> tambahInformasi() async {
+    if (_judulController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Judul tidak boleh kosong',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (selectedKategori == "Belum Memilih") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Kategori tidak boleh kosong',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (_isiController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Isi tidak boleh kosong',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    try {
+      InformationModel newInformation = InformationModel(
+        image: _imageUrlController.text, //percobaan
+        judul: _judulController.text,
+        kategori: selectedKategori,
+        isi: _isiController.text,
+        tgl_upload: Timestamp.now(),
+      );
+
+      await DbInformation.addData(iteminformation: newInformation);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ListInformasiAdminScreen()),
+      );
+    } catch (e) {
+      print("Gagal menambahkan informasi: $e");
     }
   }
 
@@ -70,7 +140,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _uploadImage(),
+                // _uploadImage(),
                 const SizedBox(height: 12),
                 _informasi(),
                 const SizedBox(height: 32),
@@ -83,103 +153,161 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
     );
   }
 
-  Column _uploadImage() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 216,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xFFD9D9D9),
-              width: 2,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    selectedImage != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: SizedBox(
-                              height: 212,
-                              width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImage!, fit: BoxFit.cover),
-                            ),
-                          )
-                        : Container(),
-                    if (selectedImage == null)
-                      TextButton(
-                        onPressed: () async {
-                          await getImage();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              PhosphorIconsRegular.fileArrowUp,
-                              color: Colors.black,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Unggah foto disini',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (selectedImage != null)
-                Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImage = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  // Column _uploadImage() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Container(
+  //         height: 216,
+  //         decoration: BoxDecoration(
+  //           color: Colors.white,
+  //           borderRadius: BorderRadius.circular(10),
+  //           border: Border.all(
+  //             color: Color(0xFFD9D9D9),
+  //             width: 2,
+  //           ),
+  //         ),
+  //         child: Stack(
+  //           children: [
+  //             Center(
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   selectedImage != null
+  //                       ? ClipRRect(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                           child: SizedBox(
+  //                             height: 212,
+  //                             width: MediaQuery.of(context).size.width,
+  //                             child:
+  //                                 Image.file(selectedImage!, fit: BoxFit.cover),
+  //                           ),
+  //                         )
+  //                       : Container(),
+  //                   if (selectedImage == null)
+  //                     TextButton(
+  //                       onPressed: () async {
+  //                         await getImage();
+  //                       },
+  //                       child: Row(
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         children: [
+  //                           const Icon(
+  //                             PhosphorIconsRegular.fileArrowUp,
+  //                             color: Colors.black,
+  //                           ),
+  //                           const SizedBox(width: 10),
+  //                           Text(
+  //                             'Unggah foto disini',
+  //                             style: GoogleFonts.dmSans(
+  //                               fontSize: 14,
+  //                               color: Colors.black,
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                 ],
+  //               ),
+  //             ),
+  //             if (selectedImage != null)
+  //               Positioned(
+  //                 bottom: 6,
+  //                 left: 0,
+  //                 right: 0,
+  //                 child: Center(
+  //                   child: GestureDetector(
+  //                     onTap: () {
+  //                       setState(() {
+  //                         selectedImage = null;
+  //                       });
+  //                     },
+  //                     child: Container(
+  //                       width: 40,
+  //                       height: 40,
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.red,
+  //                         shape: BoxShape.circle,
+  //                       ),
+  //                       child: Center(
+  //                         child: const Icon(
+  //                           PhosphorIconsRegular.trash,
+  //                           color: Colors.white,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Column _informasi() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        //percobaan
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Image Informasi',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                controller: _imageUrlController,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                decoration: InputDecoration(
+                  hintText: "masukkan link gambar ...",
+                  hintStyle: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                ),
+              ),
+            ),
+          ],
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -218,6 +346,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _judulController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -280,9 +409,8 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: selectedKategori ?? 'Belum memilih',
                     items: <String>[
-                      'Belum memilih',
+                      'Belum Memilih',
                       'Infrastruktur',
                       'Kecelakaan',
                       'Kegiatan',
@@ -302,7 +430,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        selectedKategori = newValue;
+                        selectedKategori = newValue!;
                       });
                     },
                     isExpanded: true,
@@ -352,6 +480,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextFormField(
+                controller: _isiController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -386,10 +515,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ListInformasiAdminScreen()),
-          );
+          tambahInformasi();
         },
         child: Text(
           'Unggah Informasi',

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class InformationModel {
   final String image;
   final String judul;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String kategori;
   final String isi;
 
@@ -29,7 +29,7 @@ class InformationModel {
     return InformationModel(
       image: json['image'],
       judul: json['judul'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       kategori: json['kategori'],
       isi: json['isi'],
     );
@@ -39,7 +39,7 @@ class InformationModel {
     return InformationModel(
       image: snapshot.get('image'),
       judul: snapshot.get('judul'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       kategori: snapshot.get('kategori'),
       isi: snapshot.get('isi'),
     );
