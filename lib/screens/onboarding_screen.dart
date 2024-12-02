@@ -16,7 +16,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  int activeIndex = 0; // Menyimpan index aktif dari carousel
+  int activeIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +59,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     height: MediaQuery.of(context).size.height * 0.42,
                     onPageChanged: (index, reason) {
                       setState(() {
-                        activeIndex =
-                            index; // Mengubah index aktif saat carousel berpindah
+                        activeIndex = index;
                       });
                     },
                   ),
@@ -141,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'Pelaporan desa',
+                            'Pengaduan desa',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.montserrat(
                               fontSize: 22,
@@ -150,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Aplikasi yang siap menjadi tempat pelaporan dari segala permasalahan desa Kedungmulyo.',
+                            'Aplikasi yang siap menjadi tempat pengaduan dari segala permasalahan desa Kedungmulyo.',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.montserrat(
                               fontSize: 14,

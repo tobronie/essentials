@@ -25,7 +25,7 @@ class _DataVerifikasiLaporanScreenState
           },
         ),
         title: Text(
-          'Verifikasi Data Pelaporan',
+          'Verifikasi Data Pengaduan',
           style: GoogleFonts.montserrat(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -43,6 +43,10 @@ class _DataVerifikasiLaporanScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _namaPelapor(),
+                const SizedBox(height: 12),
+                _tglUpload(),
+                const SizedBox(height: 12),
                 _image(),
                 const SizedBox(height: 12),
                 _data(),
@@ -53,6 +57,96 @@ class _DataVerifikasiLaporanScreenState
           ),
         ),
       ),
+    );
+  }
+
+  Column _namaPelapor(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Nama Pengadu',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "Imam Tobroni Luqman Sandy Imam Tobroni",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column _tglUpload() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tanggal Pengaduan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "01/09/2024 11:00",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -136,46 +230,7 @@ class _DataVerifikasiLaporanScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nama Pelapor',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                "Imam Tobroni Luqman Sandy Imam Tobroni",
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Judul Pelaporan',
+              'Judul Pengaduan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -286,7 +341,7 @@ class _DataVerifikasiLaporanScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Isi Pelaporan',
+              'Isi Pengaduan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -341,7 +396,7 @@ class _DataVerifikasiLaporanScreenState
           );
         },
         child: Text(
-          'Verifikasi Laporan',
+          'Verifikasi Pengaduan',
           style: GoogleFonts.montserrat(
             fontSize: 16,
             fontWeight: FontWeight.w700,

@@ -1,12 +1,12 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/models/information_model.dart';
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
 import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class TambahInformasiScreen extends StatefulWidget {
@@ -74,6 +74,22 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
         SnackBar(
           content: Text(
             'Isi tidak boleh kosong',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (_imageUrlController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Image tidak boleh kosong',
             style: GoogleFonts.montserrat(
               fontSize: 12,
               height: 1.2,

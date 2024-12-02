@@ -23,7 +23,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           },
         ),
         title: Text(
-          'Pelaporan Anda',
+          'Pengaduan Anda',
           style: GoogleFonts.montserrat(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -41,6 +41,8 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _tglUpload(),
+                const SizedBox(height: 12),
                 _image(),
                 const SizedBox(height: 12),
                 _data(),
@@ -51,6 +53,50 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Column _tglUpload() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tanggal Pengaduan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                "01/09/2024 11:00",
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -134,7 +180,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Judul Pelaporan',
+              'Judul Pengaduan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -245,7 +291,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Isi Pelaporan',
+              'Isi Pengaduan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,

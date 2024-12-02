@@ -32,7 +32,7 @@ class _ListVerifikasiLaporanAdminScreenState
           },
         ),
         title: Text(
-          'Verifikasi Laporan',
+          'Verifikasi Pengaduan',
           style: GoogleFonts.montserrat(
             fontSize: 18,
             fontWeight: FontWeight.w700,

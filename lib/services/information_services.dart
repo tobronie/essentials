@@ -20,13 +20,15 @@ class DbInformation {
       query = query.where('kategori', isEqualTo: category);
     }
 
+    if (searchQuery.isEmpty && category == 'Semua') {
+      query = query.orderBy('tgl_upload', descending: true);
+    }
+
     if (searchQuery.isNotEmpty) {
       query = query
           .where('judul', isGreaterThanOrEqualTo: searchQuery)
           .where('judul', isLessThanOrEqualTo: searchQuery + '\uf8ff');
     }
-
-    // query = query.orderBy('tgl_upload', descending: true);
 
     return query.snapshots();
   }
