@@ -232,27 +232,55 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black,
                                           ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
-                                          information['tgl_upload'] != null
-                                              ? DateFormat('dd MMM yyyy')
-                                                  .format(
-                                                  (information['tgl_upload']
-                                                          as Timestamp)
-                                                      .toDate(),
-                                                )
-                                              : 'Tanggal tidak tersedia',
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              information['tgl_upload'] != null
+                                                  ? DateFormat('dd MMM yyyy')
+                                                      .format(
+                                                      (information['tgl_upload']
+                                                              as Timestamp)
+                                                          .toDate(),
+                                                    )
+                                                  : 'Tanggal tidak tersedia',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 6,
+                                                        horizontal: 6),
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xff00AA13).withOpacity(0.25),
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: Icon(
+                                                  PhosphorIcons.bookmarkSimple(),
+                                                  color: Color(0xff00AA13),
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 12),
                                 Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -269,21 +297,6 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffD9D9D9).withOpacity(0.8),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: Icon(
-                                          PhosphorIconsRegular.bookmarkSimple,
-                                          size: 32,
-                                          color: Color(0xff00AA13),
-                                        ),
-                                      ),
-                                    )
                                   ],
                                 ),
                               ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:essentials/screens/admin/editinformasi_admin_screen.dart';
 import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/tambahinformasi_admin_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
@@ -276,27 +277,102 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black,
                                           ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
-                                          information['tgl_upload'] != null
-                                              ? DateFormat('dd MMM yyyy')
-                                                  .format(
-                                                  (information['tgl_upload']
-                                                          as Timestamp)
-                                                      .toDate(),
-                                                )
-                                              : 'Tanggal tidak tersedia',
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              information['tgl_upload'] != null
+                                                  ? DateFormat('dd MMM yyyy')
+                                                      .format(
+                                                      (information['tgl_upload']
+                                                              as Timestamp)
+                                                          .toDate(),
+                                                    )
+                                                  : 'Tanggal tidak tersedia',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditInformasiScreen(
+                                                          editInformation:
+                                                              information.data()
+                                                                  as Map<String,
+                                                                      dynamic>,
+                                                          documentId:
+                                                              information.id, EditInformation: {},
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 6,
+                                                        horizontal: 6),
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFF9D00).withOpacity(0.75),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                    ),
+                                                    alignment: Alignment.center,
+                                                    child: Icon(
+                                                      PhosphorIcons
+                                                          .pencilSimpleLine(),
+                                                      color: Colors.white,
+                                                      size: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    _deleteInformation(
+                                                        information.id);
+                                                  },
+                                                  child: Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 6,
+                                                        horizontal: 6),
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFF0000).withOpacity(0.75),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                    ),
+                                                    alignment: Alignment.center,
+                                                    child: Icon(
+                                                      PhosphorIcons.trash(),
+                                                      color: Colors.white,
+                                                      size: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 12),
                                 Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -313,27 +389,6 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Color(0xffD9D9D9).withOpacity(0.85),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            PhosphorIconsRegular.trash,
-                                            size: 32,
-                                            color: Color(0xFFFF0004),
-                                          ),
-                                          onPressed: () {
-                                            _deleteInformation(information.id);
-                                          },
-                                        ),
-                                      ),
-                                    )
                                   ],
                                 ),
                               ],
@@ -388,7 +443,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
               fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
-          ), 
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {

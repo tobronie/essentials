@@ -230,6 +230,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
                                             fontWeight: FontWeight.w500,
                                             color: Colors.black,
                                           ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
@@ -251,6 +253,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 12),
                                 Stack(
                                   alignment: Alignment.center,
                                   children: [

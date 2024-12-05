@@ -469,13 +469,13 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 decoration: InputDecoration(
                   hintText: "masukkan link gambar ...",
                   hintStyle: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -527,13 +527,13 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 decoration: InputDecoration(
                   hintText: "maksimal 40 karakter ...",
                   hintStyle: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -654,13 +654,13 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 decoration: InputDecoration(
                   hintText: "maksimal 40 karakter ...",
                   hintStyle: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -714,7 +714,6 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 maxLines: null,
                 decoration: InputDecoration(
@@ -722,6 +721,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                   hintStyle: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic,
                   ),
                   border: InputBorder.none,
                 ),

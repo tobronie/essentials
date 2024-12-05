@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InformasiDetailScreen extends StatefulWidget {
   final Map<String, dynamic> information;
@@ -34,7 +35,11 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                 PhosphorIconsRegular.arrowBendUpRight,
                 color: Colors.black,
               ),
-              onPressed: () {},
+              onPressed: () {
+                final String shareContent =
+                    '${information['image']}\n${information['judul']}\n\nInformasi Selengkapnya di Aplikasi "Essentials" Masyarakat Ds. Kedungmulyo, Kec. Bangilan, Kab. Tuban';
+                Share.share(shareContent);
+              },
             ),
           ),
           Padding(

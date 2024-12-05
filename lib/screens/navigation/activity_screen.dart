@@ -335,7 +335,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     if (data['tgl_upload'] is Timestamp) {
                       DateTime date =
                           (data['tgl_upload'] as Timestamp).toDate();
-                      formattedDate = DateFormat('dd MMMM yyyy').format(date);
+                      formattedDate = DateFormat('dd MMM yyyy').format(date);
                     } else {
                       formattedDate = data['tgl_upload'] ?? '';
                     }

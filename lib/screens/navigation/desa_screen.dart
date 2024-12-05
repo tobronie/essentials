@@ -23,18 +23,6 @@ class _DesaKedungmulyoScreenState extends State<DesaKedungmulyoScreen> {
             Navigator.of(context).pop();
           },
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: IconButton(
-              icon: const Icon(
-                PhosphorIconsRegular.arrowBendUpRight,
-                color: Colors.black,
-              ),
-              onPressed: () {},
-            ),
-          ),
-        ],
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),

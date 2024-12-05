@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
+import 'package:essentials/screens/authentication/login_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/informasi/informasitersimpan_screen.dart';
 import 'package:essentials/screens/navigation/desa_screen.dart';
 import 'package:essentials/screens/navigation/detailpengguna_screen.dart';
-import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 import 'package:essentials/theme/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
@@ -504,12 +505,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OnboardingScreen(),
-              ),
-            );
+            _logout();
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
@@ -546,5 +542,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ],
     );
+  }
+
+  void _logout() async {
+    bool? confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Konfirmasi Keluar',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin keluar dari akun ini?',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Batal',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xff00AA13),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Iya',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      try {
+        await FirebaseAuth.instance.signOut();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+          (route) => false,
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal keluar: $e',
+              style: GoogleFonts.montserrat(
+                fontSize: 12,
+                height: 1.2,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        );
+      }
+    }
   }
 }
