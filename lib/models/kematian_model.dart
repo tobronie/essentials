@@ -6,7 +6,7 @@ class KematianModel {
   final String foto_ktp_saksi;
   final String foto_kk;
   final String foto_bukti;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -47,7 +47,7 @@ class KematianModel {
       foto_ktp_saksi: json['foto_ktp_saksi'],
       foto_kk: json['foto_kk'],
       foto_bukti: json['foto_bukti'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -62,7 +62,7 @@ class KematianModel {
       foto_ktp_saksi: snapshot.get('foto_ktp_saksi'),
       foto_kk: snapshot.get('foto_kk'),
       foto_bukti: snapshot.get('foto_bukti'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

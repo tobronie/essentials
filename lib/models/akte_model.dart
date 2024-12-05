@@ -11,9 +11,9 @@ class AkteModel {
   final String foto_ktp_saksi_dua;
   final String foto_akte_saudara;
   final String foto_ijasah_bersangkutan;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
-  final int no_hp;
+  final String no_hp;
   final String email;
   final String surat_konfirmasi;
 
@@ -67,7 +67,7 @@ class AkteModel {
       foto_ktp_saksi_satu: json['foto_ktp_saksi_satu'],
       foto_ktp_saksi_dua: json['foto_ktp_saksi_dua'],
       foto_kk: json['foto_kk'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -87,7 +87,7 @@ class AkteModel {
       foto_ktp_saksi_satu: snapshot.get('foto_ktp_saksi_satu'),
       foto_ktp_saksi_dua: snapshot.get('foto_ktp_saksi_dua'),
       foto_kk: snapshot.get('foto_kk'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

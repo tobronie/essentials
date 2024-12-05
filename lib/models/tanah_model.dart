@@ -4,7 +4,7 @@ class TanahModel {
   final String foto_ktp;
   final String foto_kk;
   final String foto_sppt_shm;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -39,7 +39,7 @@ class TanahModel {
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       foto_sppt_shm: json['foto_sppt_shm'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -52,7 +52,7 @@ class TanahModel {
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       foto_sppt_shm: snapshot.get('foto_sppt_shm'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

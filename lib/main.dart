@@ -1,6 +1,5 @@
 import 'package:essentials/firebase_options.dart';
 import 'package:essentials/screens/authentication/login_screen.dart';
-import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
@@ -37,7 +36,6 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
-        '/otp': (context) => const OtpScreen(),
         '/register': (context) => const RegisterScreen(),
         '/navigation': (context) => const CustomNavigationBar(selectedIndex: 0),
       },

@@ -1,10 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/navigation/activityadministrasi_screen.dart';
 import 'package:essentials/screens/navigation/activitypelaporan_screen.dart';
+import 'package:essentials/services/akte_services.dart';
+import 'package:essentials/services/domisili_services.dart';
+import 'package:essentials/services/kematian_services.dart';
+import 'package:essentials/services/kk_services.dart';
+import 'package:essentials/services/ktp_services.dart';
+import 'package:essentials/services/nikah_services.dart';
 import 'package:essentials/services/pelaporan_services.dart';
+import 'package:essentials/services/pendudukan_services.dart';
+import 'package:essentials/services/penghasilan_ortu_services.dart';
+import 'package:essentials/services/sktm_services.dart';
+import 'package:essentials/services/tanah_services.dart';
+import 'package:essentials/services/usaha_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -56,8 +68,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 const SizedBox(height: 18),
                 _option(context),
                 const SizedBox(height: 18),
-                _dataPengaduan(),
-                _dataAdministrasi(),
+                _dataCollection('pelaporan'),
+                _dataCollection('domisili'),
+                _dataCollection('usaha'),
+                _dataCollection('sktm'),
+                _dataCollection('kematian'),
+                _dataCollection('penghasilan_ortu'),
+                _dataCollection('ktp'),
+                _dataCollection('kk'),
+                _dataCollection('akte'),
+                _dataCollection('nikah'),
+                _dataCollection('tanah'),
+                _dataCollection('kependudukan'),
               ],
             ),
           ),
@@ -248,67 +270,187 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _dataPengaduan() {
+  Widget _dataCollection(String collectionType) {
+    String collectionTitle = '';
+
+    Stream<QuerySnapshot> getStream() {
+      switch (collectionType) {
+        case 'pelaporan':
+          return DbPelaporan.getDataBySearch(_selectedOption, _searchQuery);
+        case 'domisili':
+          collectionTitle = 'Surat Keterangan Domisili';
+          return DbDomisili.getDataBySearch(_selectedOption, _searchQuery);
+        case 'usaha':
+          collectionTitle = 'Surat Keterangan Usaha';
+          return DbUsaha.getDataBySearch(_selectedOption, _searchQuery);
+        case 'sktm':
+          collectionTitle = 'Surat Keterangan Tidak Mampu';
+          return DbSKTM.getDataBySearch(_selectedOption, _searchQuery);
+        case 'kematian':
+          collectionTitle = 'Surat Keterangan Kematian';
+          return DbKematian.getDataBySearch(_selectedOption, _searchQuery);
+        case 'penghasilan_ortu':
+          collectionTitle = 'Surat Penghasilan Orang Tua';
+          return DbPenghasilanOrtu.getDataBySearch(_selectedOption, _searchQuery);
+        case 'ktp':
+          collectionTitle = 'Kartu Tanda Penduduk';
+          return DbKTP.getDataBySearch(_selectedOption, _searchQuery);
+        case 'kk':
+          collectionTitle = 'Kartu Keluarga';
+          return DbKK.getDataBySearch(_selectedOption, _searchQuery);
+        case 'akte':
+          collectionTitle = 'Akte Kelahiran';
+          return DbAkte.getDataBySearch(_selectedOption, _searchQuery);
+        case 'nikah':
+          collectionTitle = 'Pernikahan';
+          return DbNikah.getDataBySearch(_selectedOption, _searchQuery);
+        case 'tanah':
+          collectionTitle = 'Pengantar Harga Tanah';
+          return DbTanah.getDataBySearch(_selectedOption, _searchQuery);
+        case 'kependudukan':
+          collectionTitle = 'Surat Pindah atau Datang';
+          return DbPendudukan.getDataBySearch(_selectedOption, _searchQuery);
+        default:
+          throw Exception('Unknown collection type');
+      }
+    }
+
     return StreamBuilder<QuerySnapshot>(
-      stream: DbPelaporan.getDataBySearch(_selectedOption, _searchQuery),
+      stream: getStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final documents = snapshot.data!.docs;
 
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (context, index) {
-              final pelaporan = documents[index].data() as Map<String, dynamic>;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: documents.length,
+                  itemBuilder: (context, index) {
+                    final data =
+                        documents[index].data() as Map<String, dynamic>;
+                    String formattedDate = '';
+                    if (data['tgl_upload'] is Timestamp) {
+                      DateTime date =
+                          (data['tgl_upload'] as Timestamp).toDate();
+                      formattedDate = DateFormat('dd MMMM yyyy').format(date);
+                    } else {
+                      formattedDate = data['tgl_upload'] ?? '';
+                    }
 
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ActivityPelaporanScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 114,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 3,
-                        spreadRadius: 1,
-                        offset: Offset(0.0, 0.0),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 98,
-                        height: 98,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            pelaporan['image'] ?? '',
-                            fit: BoxFit.cover,
+                    if (collectionType == 'pelaporan') {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ActivityPelaporanScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          width: double.infinity,
+                          height: 114,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 3,
+                                spreadRadius: 1,
+                                offset: Offset(0.0, 0.0),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 98,
+                                height: 98,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                    data['image'] ?? '',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        data['judul'] ?? '',
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        height: 2,
+                                        width: 60,
+                                        color: const Color(0xff00AA13),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        formattedDate,
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                      );
+                    } else {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ActivityAdministrasiScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          width: double.infinity,
+                          height: 84,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 3,
+                                spreadRadius: 1,
+                                offset: Offset(0.0, 0.0),
+                              ),
+                            ],
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                pelaporan['judul'] ?? '',
+                                collectionTitle,
                                 style: GoogleFonts.montserrat(
                                   fontSize: 16,
                                   height: 1.1,
@@ -316,30 +458,29 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                   color: Colors.black,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 8),
                               Container(
                                 height: 2,
                                 width: 60,
-                                color: Color(0xff00AA13),
+                                color: const Color(0xff00AA13),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                pelaporan['tgl_upload'] ?? '',
+                                formattedDate,
                                 style: GoogleFonts.montserrat(
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.black,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      );
+                    }
+                  },
                 ),
-              );
-            },
+              ],
+            ),
           );
         } else if (snapshot.hasError) {
           return Center(
@@ -351,79 +492,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
           );
         }
       },
-    );
-  }
-
-  Widget _dataAdministrasi() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ActivityAdministrasiScreen()),
-            );
-          },
-          child: Container(
-            width: double.infinity,
-            height: 84,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 3,
-                  spreadRadius: 1,
-                  offset: Offset(0.0, 0.0),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Surat Keterangan Tidak Mampu',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            height: 1.1,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          height: 2,
-                          width: 60,
-                          color: Color(0xff00AA13),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Senin, 01 Juli 2024',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-      ],
     );
   }
 }

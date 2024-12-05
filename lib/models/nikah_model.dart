@@ -13,7 +13,7 @@ class NikahModel {
   final String foto_ktp_wanita;
   final String foto_kk_wanita;
   final String foto_formulir_wanita;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -75,7 +75,7 @@ class NikahModel {
       foto_akte_wanita: json['foto_akte_wanita'],
       foto_kk_wanita: json['foto_kk_wanita'],
       foto_formulir_wanita: json['foto_formulir_wanita'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -97,7 +97,7 @@ class NikahModel {
       foto_akte_wanita: snapshot.get('foto_akte_wanita'),
       foto_kk_wanita: snapshot.get('foto_kk_wanita'),
       foto_formulir_wanita: snapshot.get('foto_formulir_wanita'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

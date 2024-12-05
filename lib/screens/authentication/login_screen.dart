@@ -1,6 +1,6 @@
-import 'package:essentials/screens/authentication/otp_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
+import 'package:essentials/services/login_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,20 +14,22 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // final LoginService _loginService = LoginService();
-  final TextEditingController _noHpController = TextEditingController();
+  final LoginServices _loginServices = LoginServices();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   @override
   void dispose() {
     super.dispose();
-    _noHpController.addListener(() {
-      if (_noHpController.text.isEmpty ||
-          !_noHpController.text.startsWith('+62')) {
-        _noHpController.text = '+62';
-        _noHpController.selection = TextSelection.fromPosition(
-            TextPosition(offset: _noHpController.text.length));
-      }
-    });
+    _emailController.dispose();
+    _passwordController.dispose();
   }
 
   @override
@@ -93,14 +95,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: _noHpController,
-                        keyboardType: TextInputType.number,
+                        controller: _emailController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'No Handphone ',
+                                  text: 'Email ',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     letterSpacing: 0.1,
@@ -124,25 +125,49 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
                         ),
-                        onTap: () {
-                          if (_noHpController.text.isEmpty) {
-                            _noHpController.text = '+62';
-                            _noHpController.selection =
-                                TextSelection.fromPosition(TextPosition(
-                                    offset: _noHpController.text.length));
-                          }
-                        },
-                        onChanged: (value) {
-                          if (!value.startsWith('+62')) {
-                            _noHpController.text = '+62';
-                            _noHpController.selection =
-                                TextSelection.fromPosition(TextPosition(
-                                    offset: _noHpController.text.length));
-                          }
-                        },
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(18),
-                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscureText,
+                        decoration: InputDecoration(
+                          label: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Password ',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    letterSpacing: 0.1,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '*',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: _togglePasswordVisibility,
+                          ),
+                        ),
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       const SizedBox(height: 52),
                       SizedBox(
@@ -156,12 +181,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           onPressed: () {
-                            if (_noHpController.text.isEmpty ||
-                                _noHpController.text == '+62') {
+                            if (_emailController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'No Handphone tidak boleh kosong',
+                                    'Email tidak boleh kosong',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 12,
                                       height: 1.2,
@@ -171,16 +195,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                               return;
+                            } else if (_passwordController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Password tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              return;
+                            } else {
+                              _loginServices.login(
+                                _emailController.text,
+                                _passwordController.text,
+                                context,
+                              );
+                              _emailController.clear();
+                              _passwordController.clear();
                             }
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OtpScreen()),
-                            );
                           },
                           child: Text(
-                            'Kirim kode OTP',
+                            'Lanjut',
                             style: GoogleFonts.montserrat(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,

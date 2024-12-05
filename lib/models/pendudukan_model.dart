@@ -7,7 +7,7 @@ class PendudukanModel {
   final String foto_nikah_ibu;
   final String daerah_asal;
   final String daerah_tujuan;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -51,7 +51,7 @@ class PendudukanModel {
       foto_nikah_ibu: json['foto_nikah_ibu'],
       daerah_asal: json['daerah_asal'],
       daerah_tujuan: json['daerah_tujuan'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -67,7 +67,7 @@ class PendudukanModel {
       foto_nikah_ibu: snapshot.get('foto_nikah_ibu'),
       daerah_asal: snapshot.get('daerah_asal'),
       daerah_tujuan: snapshot.get('daerah_tujuan'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

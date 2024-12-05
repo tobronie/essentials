@@ -17,10 +17,10 @@ class DbUser {
     await user.doc(snapshot.id).update(itemuser.toJson());
   }
 
-  static Future<List<QueryDocumentSnapshot<Object?>>> getUserByphoneNumber(
-      String phoneNumber) {
+  static Future<List<QueryDocumentSnapshot<Object?>>> getUserByEmail(
+      String email) {
     return user
-        .where('no_hp', isEqualTo: phoneNumber)
+        .where('email', isEqualTo: email)
         .get()
         .then((value) => value.docs);
   }

@@ -4,7 +4,7 @@ class UsahaModel {
   final String foto_ktp;
   final String foto_kk;
   final String omset;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -39,7 +39,7 @@ class UsahaModel {
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       omset: json['omset'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -52,7 +52,7 @@ class UsahaModel {
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       omset: snapshot.get('omset'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

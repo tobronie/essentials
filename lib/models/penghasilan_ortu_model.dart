@@ -9,7 +9,7 @@ class PenghasilanOrtuModel {
   final String pekerjaan_ibu;
   final String pendapatan_ibu;
   final String foto_pendukung_ibu;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -59,7 +59,7 @@ class PenghasilanOrtuModel {
       pekerjaan_ibu: json['pekerjaan_ibu'],
       pendapatan_ibu: json['pendapatan_ibu'],
       foto_pendukung_ibu: json['foto_pendukung_ibu'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -77,7 +77,7 @@ class PenghasilanOrtuModel {
       pekerjaan_ibu: snapshot.get('pekerjaan_ibu'),
       pendapatan_ibu: snapshot.get('pendapatan_ibu'),
       foto_pendukung_ibu: snapshot.get('foto_pendukung_ibu'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

@@ -27,18 +27,7 @@ class DbPelaporan {
   }
 
   static Future<void> addData({required PelaporanModel itempelaporan}) async {
-    try {
-      await pelaporan.add({
-        'judul': itempelaporan.judul,
-        'waktu': itempelaporan.waktu,
-        'lokasi': itempelaporan.lokasi,
-        'tgl_upload': Timestamp.now(),
-        'image': itempelaporan.image,
-        'isi': itempelaporan.isi,
-      });
-    } catch (e) {
-      rethrow;
-    }
+    await pelaporan.add(itempelaporan.toJson());
   }
 
   static Future<void> deletePelaporan(String documentId) async {

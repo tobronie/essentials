@@ -6,7 +6,7 @@ class SKTMModel {
   final String nama_wali;
   final String nominal;
   final String rincian;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String nama;
   final String no_hp;
   final String email;
@@ -47,7 +47,7 @@ class SKTMModel {
       nama_wali: json['nama_wali'],
       nominal: json['nominal'],
       rincian: json['rincian'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       nama: json['nama'],
       no_hp: json['no_hp'],
       email: json['email'],
@@ -62,7 +62,7 @@ class SKTMModel {
       nama_wali: snapshot.get('nama_wali'),
       nominal: snapshot.get('nominal'),
       rincian: snapshot.get('rincian'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),

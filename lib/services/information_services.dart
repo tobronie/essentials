@@ -35,17 +35,7 @@ class DbInformation {
 
   static Future<void> addData(
       {required InformationModel iteminformation}) async {
-    try {
-      await information.add({
-        'judul': iteminformation.judul,
-        'kategori': iteminformation.kategori,
-        'tgl_upload': Timestamp.now(),
-        'image': iteminformation.image,
-        'isi': iteminformation.isi,
-      });
-    } catch (e) {
-      rethrow;
-    }
+    await information.add(iteminformation.toJson());
   }
 
   static Future<void> deleteInformation(String documentId) async {

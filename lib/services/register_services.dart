@@ -1,40 +1,34 @@
 import 'package:essentials/services/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RegisterService {
   final FirebaseAuthService _authService = FirebaseAuthService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> register(String phone, BuildContext context) async {
-    User? user = await _authService.signUpWithPhone(
-      phone: phone,
+  Future<void> register(
+      String email, String password, BuildContext context) async {
+    User? user = await _authService.signUpWithEmailAndPassword(
+      email: email,
+      password: password,
       context: context,
     );
 
     if (user != null) {
-      // Menyimpan data pengguna ke koleksi 'user' di Firestore
-      await _firestore.collection('user').doc(user.uid).set({
-        'uid': user.uid,
-        'no_hp': phone,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Pendaftaran Akun Berhasil'),
+          content: Text('Berhasil Membuat Akun'),
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushNamed(context, '/otp');
+      Navigator.pushNamed(context, '/navigation');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Pendaftaran Akun Gagal'),
+          content: Text('Gagal Membuat Akun'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 }
+

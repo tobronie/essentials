@@ -68,7 +68,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
       setState(() {
         selectedDateTime = pickedDateTime;
         _waktuController.text =
-            DateFormat('dd/MM/yyyy HH:mm').format(selectedDateTime!);
+            DateFormat('dd MMMM yyyy - HH:mm').format(selectedDateTime!);
       });
     }
   }

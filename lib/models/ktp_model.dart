@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class KTPModel {
   final String foto_akte;
   final String foto_kk;
-  final String tgl_upload;
+  final Timestamp tgl_upload;
   final String surat;
   final String nama;
   final String no_hp;
@@ -38,7 +38,7 @@ class KTPModel {
     return KTPModel(
       foto_akte: json['foto_akte'],
       foto_kk: json['foto_kk'],
-      tgl_upload: json['tgl_upload'],
+      tgl_upload: json['tgl_upload'] as Timestamp,
       surat: json['surat'],
       nama: json['nama'],
       no_hp: json['no_hp'],
@@ -51,7 +51,7 @@ class KTPModel {
     return KTPModel(
       foto_akte: snapshot.get('foto_akte'),
       foto_kk: snapshot.get('foto_kk'),
-      tgl_upload: snapshot.get('tgl_upload'),
+      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
       surat: snapshot.get('surat'),
       nama: snapshot.get('nama'),
       no_hp: snapshot.get('no_hp'),

@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class SaveInformation {
   String? id;
   String? image;
   String? judul;
-  String? tgl_upload;
+  Timestamp? tgl_upload;
   String? kategori;
   String? isi;
 

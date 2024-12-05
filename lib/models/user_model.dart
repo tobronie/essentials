@@ -10,6 +10,7 @@ class UserModel {
   final String rw;
   final String no_hp;
   final String email;
+  final String password;
 
   UserModel({
     required this.name,
@@ -21,6 +22,7 @@ class UserModel {
     required this.rw,
     required this.no_hp,
     required this.email,
+    required this.password,
   });
 
   Map<String, dynamic> toJson() {
@@ -34,6 +36,7 @@ class UserModel {
       'rw': rw,
       'no_hp': no_hp,
       'email': email,
+      'password': password,
     };
   }
 
@@ -48,6 +51,7 @@ class UserModel {
       rw: json['rw'],
       no_hp: json['no_hp'],
       email: json['email'],
+      password: json['password'],
     );
   }
 
@@ -62,6 +66,7 @@ class UserModel {
       rw: snapshot.get('rw'),
       no_hp: snapshot.get('no_hp'),
       email: snapshot.get('email'),
+      password: snapshot.get('password'),
     );
   }
 }
