@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InformasiTetapScreen extends StatefulWidget {
   final Map<String, dynamic> informationDesa;
@@ -33,7 +34,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
               ),
               onPressed: () {
                 final String shareContent =
-                    '${information['image']}\n${information['judul']}\n\nInformasi Selengkapnya di Aplikasi "Essentials" Masyarakat Ds. Kedungmulyo, Kec. Bangilan, Kab. Tuban';
+                    '${widget.informationDesa['image']}\n${widget.informationDesa['judul']}\n\nInformasi Selengkapnya di Aplikasi "Essentials" Masyarakat Ds. Kedungmulyo, Kec. Bangilan, Kab. Tuban';
                 Share.share(shareContent);
               },
             ),
