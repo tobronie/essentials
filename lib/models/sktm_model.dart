@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SKTMModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final String nama_wali;
@@ -13,6 +14,7 @@ class SKTMModel {
   final String surat_konfirmasi;
 
   SKTMModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.nama_wali,
@@ -27,6 +29,7 @@ class SKTMModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'nama_wali': nama_wali,
@@ -42,6 +45,7 @@ class SKTMModel {
 
   factory SKTMModel.fromJson(Map<String, dynamic> json) {
     return SKTMModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       nama_wali: json['nama_wali'],
@@ -57,6 +61,7 @@ class SKTMModel {
 
   factory SKTMModel.fromSnapshot(DocumentSnapshot snapshot) {
     return SKTMModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       nama_wali: snapshot.get('nama_wali'),

@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_KTPScreen extends StatefulWidget {
-  const Admin_KTPScreen({super.key});
+  const Admin_KTPScreen({super.key, required String id});
 
   @override
   _Admin_KTPScreenState createState() => _Admin_KTPScreenState();

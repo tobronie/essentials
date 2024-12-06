@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
 import 'package:essentials/screens/authentication/login_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
@@ -24,8 +25,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? selectedImage;
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
-
   Future getImage({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
@@ -192,13 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 14),
         GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailPenggunaScreen(),
-              ),
-            );
+          onTap: () async {
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),

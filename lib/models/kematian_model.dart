@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class KematianModel {
+  final String judul;
   final String nama_almarhum;
   final String foto_ktp_almarhum;
   final String foto_ktp_saksi;
@@ -13,6 +14,7 @@ class KematianModel {
   final String surat_konfirmasi;
 
   KematianModel({
+    required this.judul,
     required this.nama_almarhum,
     required this.foto_ktp_almarhum,
     required this.foto_ktp_saksi,
@@ -27,6 +29,7 @@ class KematianModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'nama_almarhum': nama_almarhum,
       'foto_ktp_almarhum': foto_ktp_almarhum,
       'foto_ktp_saksi': foto_ktp_saksi,
@@ -42,6 +45,7 @@ class KematianModel {
 
   factory KematianModel.fromJson(Map<String, dynamic> json) {
     return KematianModel(
+      judul: json['judul'],
       nama_almarhum: json['nama_almarhum'],
       foto_ktp_almarhum: json['foto_ktp_almarhum'],
       foto_ktp_saksi: json['foto_ktp_saksi'],
@@ -57,6 +61,7 @@ class KematianModel {
 
   factory KematianModel.fromSnapshot(DocumentSnapshot snapshot) {
     return KematianModel(
+      judul: snapshot.get('judul'),
       nama_almarhum: snapshot.get('nama_almarhum'),
       foto_ktp_almarhum: snapshot.get('foto_ktp_almarhum'),
       foto_ktp_saksi: snapshot.get('foto_ktp_saksi'),

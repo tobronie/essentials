@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UsahaModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final String omset;
@@ -11,6 +12,7 @@ class UsahaModel {
   final String surat_konfirmasi;
 
   UsahaModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.omset,
@@ -23,6 +25,7 @@ class UsahaModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'omset': omset,
@@ -36,6 +39,7 @@ class UsahaModel {
 
   factory UsahaModel.fromJson(Map<String, dynamic> json) {
     return UsahaModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       omset: json['omset'],
@@ -49,6 +53,7 @@ class UsahaModel {
 
   factory UsahaModel.fromSnapshot(DocumentSnapshot snapshot) {
     return UsahaModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       omset: snapshot.get('omset'),

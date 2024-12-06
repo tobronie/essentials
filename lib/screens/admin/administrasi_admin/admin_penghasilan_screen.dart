@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_PenghasilanScreen extends StatefulWidget {
-  const Admin_PenghasilanScreen({super.key});
+  const Admin_PenghasilanScreen({super.key, required String id});
 
   @override
   _Admin_PenghasilanScreenState createState() =>

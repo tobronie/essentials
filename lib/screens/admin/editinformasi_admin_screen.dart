@@ -46,7 +46,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
         'judul': _judulController.text,
         'kategori': selectedKategori,
         'isi': _isiController.text,
-        'tgl_update': FieldValue.serverTimestamp(),
+        'tgl_upload': FieldValue.serverTimestamp(),
       });
 
       _showSnackbar('Informasi berhasil diperbarui');

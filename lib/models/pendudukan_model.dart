@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PendudukanModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final String foto_nikah_ayah;
@@ -14,6 +15,7 @@ class PendudukanModel {
   final String surat_konfirmasi;
 
   PendudukanModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.foto_nikah_ayah,
@@ -29,6 +31,7 @@ class PendudukanModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'foto_nikah_ayah': foto_nikah_ayah,
@@ -45,6 +48,7 @@ class PendudukanModel {
 
   factory PendudukanModel.fromJson(Map<String, dynamic> json) {
     return PendudukanModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       foto_nikah_ayah: json['foto_nikah_ayah'],
@@ -61,6 +65,7 @@ class PendudukanModel {
 
   factory PendudukanModel.fromSnapshot(DocumentSnapshot snapshot) {
     return PendudukanModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       foto_nikah_ayah: snapshot.get('foto_nikah_ayah'),

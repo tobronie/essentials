@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AkteModel {
+  final String judul;
   final String surat_kelahiran;
   final String foto_ktp_ayah;
   final String foto_ktp_ibu;
@@ -18,6 +19,7 @@ class AkteModel {
   final String surat_konfirmasi;
 
   AkteModel({
+    required this.judul,
     required this.surat_kelahiran,
     required this.foto_ktp_ayah,
     required this.foto_ktp_ibu,
@@ -37,6 +39,7 @@ class AkteModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'surat_kelahiran': surat_kelahiran,
       'foto_ktp_ayah': foto_ktp_ayah,
       'foto_ktp_ibu': foto_ktp_ibu,
@@ -57,6 +60,7 @@ class AkteModel {
 
   factory AkteModel.fromJson(Map<String, dynamic> json) {
     return AkteModel(
+      judul: json['judul'],
       surat_kelahiran: json['surat_kelahiran'],
       foto_ktp_ayah: json['foto_ktp_ayah'],
       foto_ktp_ibu: json['foto_ktp_ibu'],
@@ -77,6 +81,7 @@ class AkteModel {
 
   factory AkteModel.fromSnapshot(DocumentSnapshot snapshot) {
     return AkteModel(
+      judul: snapshot.get('judul'),
       surat_kelahiran: snapshot.get('surat_kelahiran'),
       foto_ktp_ayah: snapshot.get('foto_ktp_ayah'),
       foto_ktp_ibu: snapshot.get('foto_ktp_ibu'),

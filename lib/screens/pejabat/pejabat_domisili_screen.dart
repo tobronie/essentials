@@ -5,7 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Pejabat_DomisiliScreen extends StatefulWidget {
-  const Pejabat_DomisiliScreen({super.key});
+  const Pejabat_DomisiliScreen({super.key, required String id});
 
   @override
   _Pejabat_DomisiliScreenState createState() => _Pejabat_DomisiliScreenState();

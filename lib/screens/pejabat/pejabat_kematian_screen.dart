@@ -5,7 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Pejabat_KematianScreen extends StatefulWidget {
-  const Pejabat_KematianScreen({super.key});
+  const Pejabat_KematianScreen({super.key, required String id});
 
   @override
   _Pejabat_KematianScreenState createState() => _Pejabat_KematianScreenState();

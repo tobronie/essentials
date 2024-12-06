@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PenghasilanOrtuModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final String pekerjaan_ayah;
@@ -16,6 +17,7 @@ class PenghasilanOrtuModel {
   final String surat_konfirmasi;
 
   PenghasilanOrtuModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.pekerjaan_ayah,
@@ -33,6 +35,7 @@ class PenghasilanOrtuModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'pekerjaan_ayah': pekerjaan_ayah,
@@ -51,6 +54,7 @@ class PenghasilanOrtuModel {
 
   factory PenghasilanOrtuModel.fromJson(Map<String, dynamic> json) {
     return PenghasilanOrtuModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       pekerjaan_ayah: json['pekerjaan_ayah'],
@@ -69,6 +73,7 @@ class PenghasilanOrtuModel {
 
   factory PenghasilanOrtuModel.fromSnapshot(DocumentSnapshot snapshot) {
     return PenghasilanOrtuModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       pekerjaan_ayah: snapshot.get('pekerjaan_ayah'),

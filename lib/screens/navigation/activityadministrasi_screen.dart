@@ -1,9 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:intl/intl.dart';
 
 class ActivityAdministrasiScreen extends StatefulWidget {
-  const ActivityAdministrasiScreen({super.key});
+  final String id;
+  final String collectionType;
+  const ActivityAdministrasiScreen({
+    Key? key,
+    required this.id,
+    required this.collectionType,
+  }) : super(key: key);
 
   @override
   _ActivityAdministrasiScreenState createState() =>
@@ -12,10 +20,44 @@ class ActivityAdministrasiScreen extends StatefulWidget {
 
 class _ActivityAdministrasiScreenState
     extends State<ActivityAdministrasiScreen> {
+  Map<String, dynamic>? data;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection(widget.collectionType)
+          .doc(widget.id)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          data = snapshot.data() as Map<String, dynamic>?;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF9F9F9),
+      backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -32,27 +74,32 @@ class _ActivityAdministrasiScreenState
           ),
         ),
         elevation: 0,
-        backgroundColor: Color(0xffF9F9F9),
+        backgroundColor: const Color(0xffF9F9F9),
       ),
       body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _text(),
-                const SizedBox(height: 18),
-                _data(),
-                const SizedBox(height: 52),
-                _verifikasiKepalaDesa(),
-                const SizedBox(height: 16),
-                _document(),
-              ],
-            ),
-          ),
-        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : data == null
+                ? const Center(child: Text('Data tidak ditemukan'))
+                : Container(
+                    color: const Color(0xffF9F9F9),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _text(),
+                          const SizedBox(height: 18),
+                          _data(),
+                          const SizedBox(height: 52),
+                          _verifikasiKepalaDesa(),
+                          const SizedBox(height: 16),
+                          _document(),
+                        ],
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -74,6 +121,12 @@ class _ActivityAdministrasiScreenState
   }
 
   Column _data() {
+    String formattedDate = '';
+    if (data != null && data!['tgl_upload'] != null) {
+      Timestamp timestamp = data!['tgl_upload'];
+      DateTime date = timestamp.toDate();
+      formattedDate = DateFormat('dd MMMM yyyy - HH:mm').format(date);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -102,11 +155,10 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "Imam Tobroni Luqman Sandy Imam Tobroni",
+                data?['nama'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -141,11 +193,10 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "Surat Keterangan Tidak Mampu (SKTM)",
+                data?['judul'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -180,11 +231,10 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "01/09/2024",
+                formattedDate,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
               ),

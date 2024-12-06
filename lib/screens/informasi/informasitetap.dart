@@ -25,13 +25,17 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.only(left: 0),
             child: IconButton(
               icon: const Icon(
                 PhosphorIconsRegular.arrowBendUpRight,
                 color: Colors.black,
               ),
-              onPressed: () {},
+              onPressed: () {
+                final String shareContent =
+                    '${information['image']}\n${information['judul']}\n\nInformasi Selengkapnya di Aplikasi "Essentials" Masyarakat Ds. Kedungmulyo, Kec. Bangilan, Kab. Tuban';
+                Share.share(shareContent);
+              },
             ),
           ),
         ],

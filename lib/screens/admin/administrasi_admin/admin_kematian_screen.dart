@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_KematianScreen extends StatefulWidget {
-  const Admin_KematianScreen({super.key});
+  const Admin_KematianScreen({super.key, required String id});
 
   @override
   _Admin_KematianScreenState createState() => _Admin_KematianScreenState();

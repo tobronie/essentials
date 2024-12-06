@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_UsahaScreen extends StatefulWidget {
-  const Admin_UsahaScreen({super.key});
+  const Admin_UsahaScreen({super.key, required String id});
 
   @override
   _Admin_UsahaScreenState createState() => _Admin_UsahaScreenState();

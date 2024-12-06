@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_NikahScreen extends StatefulWidget {
-  const Admin_NikahScreen({super.key});
+  const Admin_NikahScreen({super.key, required String id});
 
   @override
   _Admin_NikahScreenState createState() => _Admin_NikahScreenState();

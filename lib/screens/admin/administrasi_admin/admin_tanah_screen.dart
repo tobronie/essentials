@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_TanahScreen extends StatefulWidget {
-  const Admin_TanahScreen({super.key});
+  const Admin_TanahScreen({super.key, required String id});
 
   @override
   _Admin_TanahScreenState createState() => _Admin_TanahScreenState();

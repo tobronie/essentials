@@ -79,7 +79,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 _dataCollection('akte'),
                 _dataCollection('nikah'),
                 _dataCollection('tanah'),
-                _dataCollection('kependudukan'),
+                _dataCollection('pendudukan'),
               ],
             ),
           ),
@@ -271,44 +271,32 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   Widget _dataCollection(String collectionType) {
-    String collectionTitle = '';
-
     Stream<QuerySnapshot> getStream() {
       switch (collectionType) {
         case 'pelaporan':
           return DbPelaporan.getDataBySearch(_selectedOption, _searchQuery);
         case 'domisili':
-          collectionTitle = 'Surat Keterangan Domisili';
           return DbDomisili.getDataBySearch(_selectedOption, _searchQuery);
         case 'usaha':
-          collectionTitle = 'Surat Keterangan Usaha';
           return DbUsaha.getDataBySearch(_selectedOption, _searchQuery);
         case 'sktm':
-          collectionTitle = 'Surat Keterangan Tidak Mampu';
           return DbSKTM.getDataBySearch(_selectedOption, _searchQuery);
         case 'kematian':
-          collectionTitle = 'Surat Keterangan Kematian';
           return DbKematian.getDataBySearch(_selectedOption, _searchQuery);
         case 'penghasilan_ortu':
-          collectionTitle = 'Surat Penghasilan Orang Tua';
-          return DbPenghasilanOrtu.getDataBySearch(_selectedOption, _searchQuery);
+          return DbPenghasilanOrtu.getDataBySearch(
+              _selectedOption, _searchQuery);
         case 'ktp':
-          collectionTitle = 'Kartu Tanda Penduduk';
           return DbKTP.getDataBySearch(_selectedOption, _searchQuery);
         case 'kk':
-          collectionTitle = 'Kartu Keluarga';
           return DbKK.getDataBySearch(_selectedOption, _searchQuery);
         case 'akte':
-          collectionTitle = 'Akte Kelahiran';
           return DbAkte.getDataBySearch(_selectedOption, _searchQuery);
         case 'nikah':
-          collectionTitle = 'Pernikahan';
           return DbNikah.getDataBySearch(_selectedOption, _searchQuery);
         case 'tanah':
-          collectionTitle = 'Pengantar Harga Tanah';
           return DbTanah.getDataBySearch(_selectedOption, _searchQuery);
-        case 'kependudukan':
-          collectionTitle = 'Surat Pindah atau Datang';
+        case 'pendudukan':
           return DbPendudukan.getDataBySearch(_selectedOption, _searchQuery);
         default:
           throw Exception('Unknown collection type');
@@ -343,10 +331,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     if (collectionType == 'pelaporan') {
                       return GestureDetector(
                         onTap: () {
+                          final String documentId = documents[index].id;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ActivityPelaporanScreen(),
+                              builder: (context) =>
+                                  ActivityPelaporanScreen(id: documentId),
                             ),
                           );
                         },
@@ -421,11 +411,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     } else {
                       return GestureDetector(
                         onTap: () {
+                          final String documentId = documents[index].id;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  ActivityAdministrasiScreen(),
+                                  ActivityAdministrasiScreen(id: documentId, collectionType: collectionType),
                             ),
                           );
                         },
@@ -450,13 +441,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                collectionTitle,
+                                data['judul'] ?? '',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 16,
                                   height: 1.1,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 8),
                               Container(

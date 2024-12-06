@@ -5,7 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Pejabat_UsahaScreen extends StatefulWidget {
-  const Pejabat_UsahaScreen({super.key});
+  const Pejabat_UsahaScreen({super.key, required String id});
 
   @override
   _Pejabat_UsahaScreenState createState() => _Pejabat_UsahaScreenState();

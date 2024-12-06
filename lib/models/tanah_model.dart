@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TanahModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final String foto_sppt_shm;
@@ -11,6 +12,7 @@ class TanahModel {
   final String surat_konfirmasi;
 
   TanahModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.foto_sppt_shm,
@@ -23,6 +25,7 @@ class TanahModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'foto_sppt_shm': foto_sppt_shm,
@@ -36,6 +39,7 @@ class TanahModel {
 
   factory TanahModel.fromJson(Map<String, dynamic> json) {
     return TanahModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       foto_sppt_shm: json['foto_sppt_shm'],
@@ -49,6 +53,7 @@ class TanahModel {
 
   factory TanahModel.fromSnapshot(DocumentSnapshot snapshot) {
     return TanahModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       foto_sppt_shm: snapshot.get('foto_sppt_shm'),

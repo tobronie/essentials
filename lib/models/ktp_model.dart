@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class KTPModel {
+  final String judul;
   final String foto_akte;
   final String foto_kk;
   final Timestamp tgl_upload;
@@ -11,6 +12,7 @@ class KTPModel {
   final String surat_konfirmasi;
 
   KTPModel({
+    required this.judul,
     required this.foto_akte,
     required this.foto_kk,
     required this.tgl_upload,
@@ -23,6 +25,7 @@ class KTPModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_akte': foto_akte,
       'foto_kk': foto_kk,
       'tgl_upload': tgl_upload,
@@ -36,6 +39,7 @@ class KTPModel {
 
   factory KTPModel.fromJson(Map<String, dynamic> json) {
     return KTPModel(
+      judul: json['judul'],
       foto_akte: json['foto_akte'],
       foto_kk: json['foto_kk'],
       tgl_upload: json['tgl_upload'] as Timestamp,
@@ -49,6 +53,7 @@ class KTPModel {
 
   factory KTPModel.fromSnapshot(DocumentSnapshot snapshot) {
     return KTPModel(
+      judul: snapshot.get('judul'),
       foto_akte: snapshot.get('foto_akte'),
       foto_kk: snapshot.get('foto_kk'),
       tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),

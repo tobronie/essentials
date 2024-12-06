@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DomisiliModel {
+  final String judul;
   final String foto_ktp;
   final String foto_kk;
   final Timestamp tgl_upload;
@@ -10,6 +11,7 @@ class DomisiliModel {
   final String surat_konfirmasi;
 
   DomisiliModel({
+    required this.judul,
     required this.foto_ktp,
     required this.foto_kk,
     required this.tgl_upload,
@@ -21,6 +23,7 @@ class DomisiliModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'judul': judul,
       'foto_ktp': foto_ktp,
       'foto_kk': foto_kk,
       'tgl_upload': tgl_upload,
@@ -33,6 +36,7 @@ class DomisiliModel {
 
   factory DomisiliModel.fromJson(Map<String, dynamic> json) {
     return DomisiliModel(
+      judul: json['judul'],
       foto_ktp: json['foto_ktp'],
       foto_kk: json['foto_kk'],
       tgl_upload: json['tgl_upload'] as Timestamp,
@@ -45,6 +49,7 @@ class DomisiliModel {
 
   factory DomisiliModel.fromSnapshot(DocumentSnapshot snapshot) {
     return DomisiliModel(
+      judul: snapshot.get('judul'),
       foto_ktp: snapshot.get('foto_ktp'),
       foto_kk: snapshot.get('foto_kk'),
       tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
