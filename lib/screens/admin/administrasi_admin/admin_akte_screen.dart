@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Admin_AkteScreen extends StatefulWidget {
-  const Admin_AkteScreen({super.key, required String id});
+  final String id;
+  const Admin_AkteScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   _Admin_AkteScreenState createState() => _Admin_AkteScreenState();
@@ -15,6 +18,18 @@ class Admin_AkteScreen extends StatefulWidget {
 
 class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
   File? selectedDocument;
+  bool _isImageVisibleKelahiran = false;
+  bool _isImageVisibleKK = false;
+  bool _isImageVisibleKTPAyah = false;
+  bool _isImageVisibleNikahAyah = false;
+  bool _isImageVisibleKTPIbu = false;
+  bool _isImageVisibleNikahIbu = false;
+  bool _isImageVisibleKTPSaksi1 = false;
+  bool _isImageVisibleKTPSaksi2 = false;
+  bool _isImageVisibleAkteSaudara = false;
+  bool _isImageVisibleIjasah = false;
+  Map<String, dynamic>? data;
+  bool isLoading = true;
 
   Future<void> pickDocument() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -38,6 +53,32 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('akte')
+          .doc(widget.id)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          data = snapshot.data() as Map<String, dynamic>?;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -63,46 +104,51 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
         backgroundColor: Color(0xffF9F9F9),
       ),
       body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _dataPengajuan(),
-                const SizedBox(height: 8),
-                _imageSuartKelahiran(),
-                const SizedBox(height: 8),
-                _imageKK(),
-                const SizedBox(height: 24),
-                _biodataAyah(),
-                const SizedBox(height: 24),
-                _biodataIbu(),
-                const SizedBox(height: 24),
-                _dataSaksi(),
-                const SizedBox(height: 24),
-                _dataPendukung(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _dataAkun(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _verifikasiKepalaDesa(),
-                const SizedBox(height: 12),
-                _uploadDocument(),
-                const SizedBox(height: 32),
-                _konfirmasi(),
-              ],
-            ),
-          ),
-        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : data == null
+                ? const Center(child: Text('Data tidak ditemukan'))
+                : Container(
+                    color: const Color(0xffF9F9F9),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _dataPengajuan(),
+                          const SizedBox(height: 8),
+                          _imageSuartKelahiran(),
+                          const SizedBox(height: 8),
+                          _imageKK(),
+                          const SizedBox(height: 24),
+                          _biodataAyah(),
+                          const SizedBox(height: 24),
+                          _biodataIbu(),
+                          const SizedBox(height: 24),
+                          _dataSaksi(),
+                          const SizedBox(height: 24),
+                          _dataPendukung(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _dataAkun(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _verifikasiKepalaDesa(),
+                          const SizedBox(height: 12),
+                          _uploadDocument(),
+                          const SizedBox(height: 32),
+                          _konfirmasi(),
+                        ],
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -147,7 +193,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -160,36 +205,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['surat_kelahiran'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKelahiran
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKelahiran = !_isImageVisibleKelahiran;
+                      });
+                      _showDialogSuratKelahiran(context);
+                    },
                   ),
                 ],
               ),
@@ -219,7 +275,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -232,36 +287,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_kk'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKK
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKK = !_isImageVisibleKK;
+                      });
+                      _showDialogFotoKK(context);
+                    },
                   ),
                 ],
               ),
@@ -305,7 +371,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -318,36 +383,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_ktp_ayah'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKTPAyah
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKTPAyah = !_isImageVisibleKTPAyah;
+                      });
+                      _showDialogFotoKTPAyah(context);
+                    },
                   ),
                 ],
               ),
@@ -370,7 +446,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -383,36 +458,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_nikah_ayah'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleNikahAyah
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleNikahAyah = !_isImageVisibleNikahAyah;
+                      });
+                      _showDialogFotoNikahAyah(context);
+                    },
                   ),
                 ],
               ),
@@ -456,7 +542,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -469,36 +554,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_ktp_ibu'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKTPIbu
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKTPIbu = !_isImageVisibleKTPIbu;
+                      });
+                      _showDialogFotoKTPIbu(context);
+                    },
                   ),
                 ],
               ),
@@ -521,7 +617,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -534,36 +629,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_nikah_ibu'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleNikahIbu
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleNikahIbu = !_isImageVisibleNikahIbu;
+                      });
+                      _showDialogFotoNikahIbu(context);
+                    },
                   ),
                 ],
               ),
@@ -607,7 +713,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -620,36 +725,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_ktp_saksi_satu'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKTPSaksi1
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKTPSaksi1 = !_isImageVisibleKTPSaksi1;
+                      });
+                      _showDialogFotoKTPSaksiSatu(context);
+                    },
                   ),
                 ],
               ),
@@ -672,7 +788,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -685,36 +800,47 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_ktp_saksi_dua'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKTPSaksi2
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKTPSaksi2 = !_isImageVisibleKTPSaksi2;
+                      });
+                      _showDialogFotoKTPSaksiDua(context);
+                    },
                   ),
                 ],
               ),
@@ -758,7 +884,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -767,43 +892,68 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
+              child: data?['foto_akte_saudara'] != null &&
+                      data!['foto_akte_saudara'].isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                right: 2, left: 8, top: 8, bottom: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  PhosphorIcons.file(),
+                                  color: Colors.black.withOpacity(0.7),
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    data?['foto_akte_saudara'] ??
+                                        '',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
                           ),
                         ),
+                        IconButton(
+                          icon: Icon(
+                            _isImageVisibleAkteSaudara
+                                ? PhosphorIcons.eye()
+                                : PhosphorIcons.eyeSlash(),
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isImageVisibleAkteSaudara =
+                                  !_isImageVisibleAkteSaudara;
+                            });
+                            _showDialogFotoAkteSaudara(context);
+                          },
+                        ),
                       ],
+                    )
+                  : Center(
+                      child: Text(
+                        "Foto tidak tersedia",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red.withOpacity(0.8),
+                        ),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -823,7 +973,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -832,43 +981,66 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
+              child: data?['foto_ijasah_bersangkutan'] != null &&
+                      data!['foto_ijasah_bersangkutan'].isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                right: 2, left: 8, top: 8, bottom: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  PhosphorIcons.file(),
+                                  color: Colors.black.withOpacity(0.7),
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    data!['foto_ijasah_bersangkutan'],
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
                           ),
                         ),
+                        IconButton(
+                          icon: Icon(
+                            _isImageVisibleIjasah
+                                ? PhosphorIcons.eye()
+                                : PhosphorIcons.eyeSlash(),
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isImageVisibleIjasah = !_isImageVisibleIjasah;
+                            });
+                            _showDialogFotoIjasahBersangkutan(context);
+                          },
+                        ),
                       ],
+                    )
+                  : Center(
+                      child: Text(
+                        "Foto tidak tersedia",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red.withOpacity(0.8),
+                        ),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -877,6 +1049,12 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
   }
 
   Column _dataAkun() {
+    String FormatUpload = '';
+    if (data != null && data!['tgl_upload'] != null) {
+      Timestamp timestamp = data!['tgl_upload'];
+      DateTime date = timestamp.toDate();
+      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -907,7 +1085,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -919,15 +1096,14 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "Imam Tobroni Luqman Sandy Imam Tobroni",
+                data?['nama'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -958,11 +1134,10 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "085123456789",
+                data?['no_hp'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -985,7 +1160,6 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -997,15 +1171,13 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "tobronie05@gmail.com",
+                data?['email'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -1015,7 +1187,7 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Tanggal Pengajuan',
+              'Waktu Pengajuan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -1036,11 +1208,10 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "11/11/2020",
+                FormatUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -1051,6 +1222,256 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
         ),
       ],
     );
+  }
+
+  void _showDialogSuratKelahiran(BuildContext context) {
+    if (_isImageVisibleKelahiran) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['surat_kelahiran'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKelahiran = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKK(BuildContext context) {
+    if (_isImageVisibleKK) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_kk'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKK = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKTPAyah(BuildContext context) {
+    if (_isImageVisibleKTPAyah) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ktp_ayah'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKTPAyah = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoNikahAyah(BuildContext context) {
+    if (_isImageVisibleNikahAyah) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_nikah_ayah'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleNikahAyah = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKTPIbu(BuildContext context) {
+    if (_isImageVisibleKTPIbu) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ktp_ibu'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKTPIbu = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoNikahIbu(BuildContext context) {
+    if (_isImageVisibleNikahIbu) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_nikah_ibu'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleNikahIbu = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKTPSaksiSatu(BuildContext context) {
+    if (_isImageVisibleKTPSaksi1) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ktp_saksi_satu'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKTPSaksi1 = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKTPSaksiDua(BuildContext context) {
+    if (_isImageVisibleKTPSaksi2) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ktp_saksi_dua'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKTPSaksi2 = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoAkteSaudara(BuildContext context) {
+    if (_isImageVisibleAkteSaudara) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_akte_saudara'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleAkteSaudara = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoIjasahBersangkutan(BuildContext context) {
+    if (_isImageVisibleIjasah) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ijasah_bersangkutan'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleIjasah = false;
+        });
+      });
+    }
   }
 
   Container _verifikasiKepalaDesa() {
