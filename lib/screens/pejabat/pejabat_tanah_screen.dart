@@ -1,17 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Pejabat_TanahScreen extends StatefulWidget {
-  const Pejabat_TanahScreen({super.key, required String id});
+  final String id;
+  const Pejabat_TanahScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   _Pejabat_TanahScreenState createState() => _Pejabat_TanahScreenState();
 }
 
 class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
+  bool _isImageVisibleKTP = false;
+  bool _isImageVisibleKK = false;
+  bool _isImageVisibleSPPT = false;
+  Map<String, dynamic>? data;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('tanah')
+          .doc(widget.id)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          data = snapshot.data() as Map<String, dynamic>?;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,32 +75,37 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
         backgroundColor: Color(0xffF9F9F9),
       ),
       body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _dataPengajuan(),
-                const SizedBox(height: 8),
-                _imageKTP(),
-                const SizedBox(height: 12),
-                _imageKK(),
-                const SizedBox(height: 12),
-                _imageSPPT_SHM(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _dataAkun(),
-                const SizedBox(height: 42),
-                _konfirmasi(),
-              ],
-            ),
-          ),
-        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : data == null
+                ? const Center(child: Text('Data tidak ditemukan'))
+                : Container(
+                    color: const Color(0xffF9F9F9),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _dataPengajuan(),
+                          const SizedBox(height: 8),
+                          _imageKTP(),
+                          const SizedBox(height: 12),
+                          _imageKK(),
+                          const SizedBox(height: 12),
+                          _imageSPPT_SHM(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _dataAkun(),
+                          const SizedBox(height: 42),
+                          _konfirmasi(),
+                        ],
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -105,7 +150,6 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -118,36 +162,47 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_ktp'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKTP
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKTP = !_isImageVisibleKTP;
+                      });
+                      _showDialogFotoKTP(context);
+                    },
                   ),
                 ],
               ),
@@ -177,7 +232,6 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -190,36 +244,47 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_kk'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKK
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKK = !_isImageVisibleKK;
+                      });
+                      _showDialogFotoKK(context);
+                    },
                   ),
                 ],
               ),
@@ -249,7 +314,6 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -262,36 +326,47 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_sppt_shm'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleSPPT
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleSPPT = !_isImageVisibleSPPT;
+                      });
+                      _showDialogFotoSPPT(context);
+                    },
                   ),
                 ],
               ),
@@ -303,6 +378,12 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
   }
 
   Column _dataAkun() {
+    String FormatUpload = '';
+    if (data != null && data!['tgl_upload'] != null) {
+      Timestamp timestamp = data!['tgl_upload'];
+      DateTime date = timestamp.toDate();
+      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,7 +414,6 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -345,15 +425,14 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "Imam Tobroni Luqman Sandy Imam Tobroni",
+                data?['nama'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -384,11 +463,10 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "085123456789",
+                data?['no_hp'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -411,7 +489,6 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -423,15 +500,13 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "tobronie05@gmail.com",
+                data?['email'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -441,7 +516,7 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Tanggal Pengajuan',
+              'Waktu Pengajuan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -462,11 +537,10 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "11/11/2020",
+                FormatUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -477,6 +551,81 @@ class _Pejabat_TanahScreenState extends State<Pejabat_TanahScreen> {
         ),
       ],
     );
+  }
+
+  void _showDialogFotoKTP(BuildContext context) {
+    if (_isImageVisibleKTP) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_ktp'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKTP = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKK(BuildContext context) {
+    if (_isImageVisibleKK) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_kk'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKK = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoSPPT(BuildContext context) {
+    if (_isImageVisibleSPPT) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_sppt_shm'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleSPPT = false;
+        });
+      });
+    }
   }
 
   Row _konfirmasi() {

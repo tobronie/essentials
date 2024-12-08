@@ -96,44 +96,49 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
         backgroundColor: Color(0xffF9F9F9),
       ),
       body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _dataPengajuan(),
-                const SizedBox(height: 8),
-                _imageKTP(),
-                const SizedBox(height: 12),
-                _imageKK(),
-                const SizedBox(height: 12),
-                _namaWali(),
-                const SizedBox(height: 12),
-                _nominalPendapatan(),
-                const SizedBox(height: 12),
-                _rincianBiaya(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _dataAkun(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _verifikasiKepalaDesa(),
-                const SizedBox(height: 12),
-                _uploadDocument(),
-                const SizedBox(height: 32),
-                _konfirmasi(),
-              ],
-            ),
-          ),
-        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : data == null
+                ? const Center(child: Text('Data tidak ditemukan'))
+                : Container(
+                    color: const Color(0xffF9F9F9),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _dataPengajuan(),
+                          const SizedBox(height: 8),
+                          _imageKTP(),
+                          const SizedBox(height: 12),
+                          _imageKK(),
+                          const SizedBox(height: 12),
+                          _namaWali(),
+                          const SizedBox(height: 12),
+                          _nominalPendapatan(),
+                          const SizedBox(height: 12),
+                          _rincianBiaya(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _dataAkun(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _verifikasiKepalaDesa(),
+                          const SizedBox(height: 12),
+                          _uploadDocument(),
+                          const SizedBox(height: 32),
+                          _konfirmasi(),
+                        ],
+                      ),
+                    ),
+                  ),
       ),
     );
   }

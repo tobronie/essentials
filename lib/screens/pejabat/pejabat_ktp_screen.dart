@@ -1,17 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 
 class Pejabat_KTPScreen extends StatefulWidget {
-  const Pejabat_KTPScreen({super.key, required String id});
+  final String id;
+  const Pejabat_KTPScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   _Pejabat_KTPScreenState createState() => _Pejabat_KTPScreenState();
 }
 
 class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
+  bool _isImageVisibleAkte = false;
+  bool _isImageVisibleKK = false;
+  bool _isImageVisiblePersetujuan = false;
+  Map<String, dynamic>? data;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('ktp')
+          .doc(widget.id)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          data = snapshot.data() as Map<String, dynamic>?;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,32 +75,37 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
         backgroundColor: Color(0xffF9F9F9),
       ),
       body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _dataPengajuan(),
-                const SizedBox(height: 8),
-                _imageAkte(),
-                const SizedBox(height: 12),
-                _imageKK(),
-                const SizedBox(height: 12),
-                _imageSurat(),
-                const SizedBox(height: 24),
-                const Divider(
-                  color: Color(0xffD9D9D9),
-                ),
-                const SizedBox(height: 24),
-                _dataAkun(),
-                const SizedBox(height: 42),
-                _konfirmasi(),
-              ],
-            ),
-          ),
-        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : data == null
+                ? const Center(child: Text('Data tidak ditemukan'))
+                : Container(
+                    color: const Color(0xffF9F9F9),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _dataPengajuan(),
+                          const SizedBox(height: 8),
+                          _imageAkte(),
+                          const SizedBox(height: 12),
+                          _imageKK(),
+                          const SizedBox(height: 12),
+                          _imageSurat(),
+                          const SizedBox(height: 24),
+                          const Divider(
+                            color: Color(0xffD9D9D9),
+                          ),
+                          const SizedBox(height: 24),
+                          _dataAkun(),
+                          const SizedBox(height: 42),
+                          _konfirmasi(),
+                        ],
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -105,7 +150,6 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -118,36 +162,47 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_akte'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleAkte
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleAkte = !_isImageVisibleAkte;
+                      });
+                      _showDialogFotoAkte(context);
+                    },
                   ),
                 ],
               ),
@@ -177,7 +232,6 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -190,36 +244,47 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['foto_kk'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisibleKK
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisibleKK = !_isImageVisibleKK;
+                      });
+                      _showDialogFotoKK(context);
+                    },
                   ),
                 ],
               ),
@@ -249,7 +314,6 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -262,36 +326,48 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.file,
-                          color: Colors.black.withOpacity(0.7),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "nama_file_foto.jpg",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 2, left: 8, top: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.file(),
+                            color: Colors.black.withOpacity(0.7),
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              data?['surat'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Icon(
-                      PhosphorIconsRegular.eyeSlash,
+                  IconButton(
+                    icon: Icon(
+                      _isImageVisiblePersetujuan
+                          ? PhosphorIcons.eye()
+                          : PhosphorIcons.eyeSlash(),
                       color: Colors.black,
                       size: 24,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _isImageVisiblePersetujuan =
+                            !_isImageVisiblePersetujuan;
+                      });
+                      _showDialogFotoPersetujuan(context);
+                    },
                   ),
                 ],
               ),
@@ -303,6 +379,12 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
   }
 
   Column _dataAkun() {
+    String FormatUpload = '';
+    if (data != null && data!['tgl_upload'] != null) {
+      Timestamp timestamp = data!['tgl_upload'];
+      DateTime date = timestamp.toDate();
+      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,7 +415,6 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -345,15 +426,14 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "Imam Tobroni Luqman Sandy Imam Tobroni",
+                data?['nama'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -384,11 +464,10 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "085123456789",
+                data?['no_hp'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -411,7 +490,6 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
@@ -423,15 +501,13 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "tobronie05@gmail.com",
+                data?['email'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -441,7 +517,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Tanggal Pengajuan',
+              'Waktu Pengajuan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -462,11 +538,10 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                "11/11/2020",
+                FormatUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -476,6 +551,112 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showDialogFotoAkte(BuildContext context) {
+    if (_isImageVisibleAkte) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_akte'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleAkte = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoKK(BuildContext context) {
+    if (_isImageVisibleKK) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['foto_kk'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisibleKK = false;
+        });
+      });
+    }
+  }
+
+  void _showDialogFotoPersetujuan(BuildContext context) {
+    if (_isImageVisiblePersetujuan) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: InteractiveViewer(
+              minScale: 0.1,
+              maxScale: 5.0,
+              child: Image.network(
+                data?['surat'] ?? '',
+                fit: BoxFit.contain,
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        setState(() {
+          _isImageVisiblePersetujuan = false;
+        });
+      });
+    }
+  }
+
+  Container _verifikasiKepalaDesa() {
+    return Container(
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: 'Tidak disetujui',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                height: 1.1,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFFF0004),
+              ),
+            ),
+            TextSpan(text: ' '),
+            TextSpan(
+              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                height: 1.1,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+        textAlign: TextAlign.left,
+      ),
     );
   }
 
