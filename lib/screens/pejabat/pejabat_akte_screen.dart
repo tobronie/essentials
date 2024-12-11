@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -31,6 +32,12 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
     fetchData();
   }
 

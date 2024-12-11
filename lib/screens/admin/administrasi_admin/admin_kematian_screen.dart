@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -47,6 +48,12 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
     fetchData();
   }
 

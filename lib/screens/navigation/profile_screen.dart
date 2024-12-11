@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
-import 'package:essentials/screens/authentication/login_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/informasi/informasitersimpan_screen.dart';
 import 'package:essentials/screens/navigation/desa_screen.dart';
 import 'package:essentials/screens/navigation/detailpengguna_screen.dart';
+import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 import 'package:essentials/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,6 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
     muatPreferensiModeGelap();
   }
 
@@ -612,7 +618,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await FirebaseAuth.instance.signOut();
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+          MaterialPageRoute(builder: (context) => OnboardingScreen()),
           (route) => false,
         );
       } catch (e) {

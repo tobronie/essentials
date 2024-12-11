@@ -44,6 +44,15 @@ class FirebaseAuthService {
     return null;
   }
 
+  Future logout() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
+  Future<bool> isLoggedIn() async{
+    var user = FirebaseAuth.instance.currentUser;
+    return user != null;
+  }
+
   String? getCurrentUser() {
     try {
       User? user = _firebaseAuth.currentUser;

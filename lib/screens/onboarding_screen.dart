@@ -1,5 +1,3 @@
-import 'package:essentials/screens/authentication/login_screen.dart';
-import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/help/privacy_screen.dart';
 import 'package:essentials/screens/help/service_screen.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: GoogleFonts.montserrat(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              height: 1.2, // Mengatur jarak antar baris
+                              height: 1.2,
                             ),
                           ),
                         ],
@@ -199,7 +197,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Center(
                   child: AnimatedSmoothIndicator(
                     activeIndex: activeIndex,
-                    count: 4, // Jumlah item dalam carousel
+                    count: 4,
                     effect: ExpandingDotsEffect(
                       dotWidth: 5,
                       dotHeight: 5,
@@ -215,23 +213,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00AA13),
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12), // Jarak padding tombol
+                        vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
+                    Navigator.pushNamed(context, '/login');
                   },
                   child: Text(
                     'Masuk',
                     style: GoogleFonts.montserrat(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white, // Warna teks tombol Masuk
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -246,10 +241,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     side: BorderSide(color: const Color(0xFF00AA13), width: 2),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
-                    );
+                    Navigator.pushNamed(context, '/register');
                   },
                   child: Text(
                     'Belum punya akun? Daftar dulu',

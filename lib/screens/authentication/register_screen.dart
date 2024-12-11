@@ -304,6 +304,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               );
                               return;
+                            } else if (_passwordController.text.length < 8) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Password harus terdiri minimal 8 karakter',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              return;
                             }
                             showModalBottomSheet(
                               context: context,

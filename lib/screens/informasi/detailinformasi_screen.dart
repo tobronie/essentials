@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,17 @@ class InformasiDetailScreen extends StatefulWidget {
 }
 
 class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final information = widget.information;

@@ -23,6 +23,7 @@ import 'package:essentials/services/penghasilan_ortu_services.dart';
 import 'package:essentials/services/sktm_services.dart';
 import 'package:essentials/services/tanah_services.dart';
 import 'package:essentials/services/usaha_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -42,6 +43,17 @@ class _ListVerifikasiAdministrasiAdminScreenState
   String _searchQuery = '';
   bool _isSearchActive = false;
   FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

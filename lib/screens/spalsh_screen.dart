@@ -1,4 +1,3 @@
-import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,32 +6,11 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3)).then((value) {
-      // User? user = FirebaseAuth.instance.currentUser;
+    final String nextRoute =
+        ModalRoute.of(context)?.settings.arguments as String? ?? '/onboarding';
 
-      // if (user != null) {
-      //   Navigator.of(context).pushAndRemoveUntil(
-      //     MaterialPageRoute(
-      //       builder: (context) => const Navigation(),
-      //     ),
-      //     (route) => false,
-      //   );
-      // } else {
-      //   Navigator.of(context).pushAndRemoveUntil(
-      //     MaterialPageRoute(
-      //       builder: (context) => const OnboardingScreen(),
-      //     ),
-      //     (route) => false,
-      //   );
-      // }
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => const OnboardingScreen(),
-        ),
-        (route) => false,
-      );
-      
+    Future.delayed(const Duration(seconds: 3)).then((_) {
+      Navigator.pushReplacementNamed(context, nextRoute);
     });
 
     return Scaffold(

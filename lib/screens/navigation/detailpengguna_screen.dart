@@ -30,6 +30,12 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
     _getUserData();
   }
 

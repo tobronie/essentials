@@ -20,7 +20,7 @@ class LoginServices {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushNamed(context, '/navigation');
+      Navigator.pushNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

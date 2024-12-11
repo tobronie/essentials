@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,8 @@ class EditInformasiScreen extends StatefulWidget {
 
   const EditInformasiScreen({
     required this.editInformation,
-    required this.documentId, required Map<String, dynamic> EditInformation,
+    required this.documentId,
+    required Map<String, dynamic> EditInformation,
   });
 
   @override
@@ -81,6 +83,13 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
     _judulController.text = widget.editInformation['judul'] ?? '';
     _isiController.text = widget.editInformation['isi'] ?? '';
     selectedKategori = widget.editInformation['kategori'] ?? 'Belum Memilih';
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
   }
 
   @override

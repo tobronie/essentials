@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Email tidak boleh kosong',
+                                    'Email belum diisi',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 12,
                                       height: 1.2,
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Password tidak boleh kosong',
+                                    'Password belum diisi',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 12,
                                       height: 1.2,

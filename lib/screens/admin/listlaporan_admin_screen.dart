@@ -3,6 +3,7 @@ import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/verifikasilaporan_admin_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:essentials/services/pelaporan_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +24,17 @@ class _ListVerifikasiLaporanAdminScreenState
   String _searchQuery = '';
   bool _isSearchActive = false;
   FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

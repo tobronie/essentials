@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/models/pelaporan_model.dart';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:essentials/services/pelaporan_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -178,6 +179,12 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print("User ID: ${user.uid}");
+    } else {
+      print("No user is currently logged in.");
+    }
   }
 
   @override
