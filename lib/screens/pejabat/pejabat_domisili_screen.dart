@@ -481,6 +481,7 @@ class _Pejabat_DomisiliScreenState extends State<Pejabat_DomisiliScreen> {
         context: context,
         builder: (BuildContext context) {
           return Dialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
             backgroundColor: Colors.transparent,
             child: InteractiveViewer(
               minScale: 0.1,
@@ -506,6 +507,7 @@ class _Pejabat_DomisiliScreenState extends State<Pejabat_DomisiliScreen> {
         context: context,
         builder: (BuildContext context) {
           return Dialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
             backgroundColor: Colors.transparent,
             child: InteractiveViewer(
               minScale: 0.1,
