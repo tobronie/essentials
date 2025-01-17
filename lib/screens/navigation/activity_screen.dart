@@ -28,8 +28,7 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  String _selectedText = 'Dalam Proses';
-  String _selectedOption = 'Semua';
+  String _selectedOption = 'Dalam Proses';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isSearchActive = false;
@@ -77,8 +76,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 _search(),
                 const SizedBox(height: 18),
                 _process(context),
-                const SizedBox(height: 18),
-                _option(context),
                 const SizedBox(height: 18),
                 _dataCollection('pelaporan'),
                 _dataCollection('domisili'),
@@ -131,14 +128,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   _searchQuery = query;
                   _isSearchActive = query.isNotEmpty;
                   if (_isSearchActive) {
-                    _selectedOption = 'Semua';
+                    _selectedOption = 'Dalam Proses';
                   }
                 });
               },
               onTap: () {
                 setState(() {
                   _isSearchActive = true;
-                  _selectedOption = 'Semua';
+                  _selectedOption = 'Dalam Proses';
                 });
               },
               decoration: InputDecoration(
@@ -168,7 +165,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Dalam Proses';
+                  _selectedOption = 'Dalam Proses';
                 });
               },
               child: Stack(
@@ -179,12 +176,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Dalam Proses'
+                      color: _selectedOption == 'Dalam Proses'
                           ? Color(0xff00AA13)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedText == 'Dalam Proses')
+                  if (_selectedOption == 'Dalam Proses')
                     Container(
                       height: 2,
                       width: 'Dalam Proses'.length * 8.5,
@@ -197,7 +194,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Riwayat';
+                  _selectedOption = 'Riwayat';
                 });
               },
               child: Stack(
@@ -208,12 +205,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Riwayat'
+                      color: _selectedOption == 'Riwayat'
                           ? Color(0xff00AA13)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedText == 'Riwayat')
+                  if (_selectedOption == 'Riwayat')
                     Container(
                       height: 2,
                       width: 'Riwayat'.length * 8.5,
@@ -225,60 +222,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _option(BuildContext context) {
-    return Container(
-      height: 36,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _buildCategoryOption('Semua'),
-          if (!_isSearchActive) ...[
-            _buildCategoryOption('Administrasi'),
-            _buildCategoryOption('Pengaduan'),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryOption(String category) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedOption = category;
-          _searchQuery = '';
-          _isSearchActive = false;
-          _searchController.clear();
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: _selectedOption == category
-              ? Color(0xff00AA13).withOpacity(0.25)
-              : Colors.white,
-          border: Border.all(
-            color: _selectedOption == category
-                ? Color(0xff00AA13)
-                : Color(0xffD9D9D9),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Text(
-          category,
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color:
-                _selectedOption == category ? Color(0xff00AA13) : Colors.black,
-          ),
-        ),
-      ),
     );
   }
 

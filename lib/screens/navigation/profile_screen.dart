@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _profile(),
-                const SizedBox(height: 32),
+                const SizedBox(height: 22),
                 _settingAccount(),
               ],
             ),
@@ -193,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Color(0xFF616161),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
         GestureDetector(
           onTap: () async {
           },
