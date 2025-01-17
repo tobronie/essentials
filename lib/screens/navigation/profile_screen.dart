@@ -100,8 +100,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _profile(),
                 const SizedBox(height: 32),
                 _settingAccount(),
-                const SizedBox(height: 32),
-                _infotmationAccount(),
               ],
             ),
           ),
@@ -188,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pengaturan Akun',
+          'Info Akun',
           style: GoogleFonts.montserrat(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -317,63 +315,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const Divider(
           color: Color(0xffD9D9D9),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                PhosphorIconsRegular.moon,
-                size: 28,
-                color: Colors.black,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  'Mode Gelap',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              Transform.scale(
-                scale: 0.8,
-                child: Switch(
-                  value: modeGelap,
-                  onChanged: (value) {
-                    setState(() {
-                      modeGelap = value;
-                      pengubahModeGelap(value);
-                    });
-                  },
-                  activeColor: const Color(0xff00AA13),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-      ],
-    );
-  }
-
-  Widget _infotmationAccount() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Info Lainnya',
-          style: GoogleFonts.montserrat(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF616161),
-          ),
-        ),
-        const SizedBox(height: 14),
         GestureDetector(
           onTap: () {
             Navigator.push(

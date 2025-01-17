@@ -1,4 +1,4 @@
-// import 'dart:io';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/models/pelaporan_model.dart';
 import 'package:essentials/screens/navigation/activity_screen.dart';
@@ -6,8 +6,8 @@ import 'package:essentials/services/pelaporan_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
@@ -25,20 +25,20 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
   final TextEditingController _lokasiController = TextEditingController();
   final TextEditingController _isiController = TextEditingController();
   DateTime? selectedDateTime;
-  // File? selectedImage;
+  File? selectedImage;
 
-  // Future getImage({bool fromCamera = false}) async {
-  //   final ImagePicker picker = ImagePicker();
+  Future getImage({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
 
-  //   final XFile? imagePicked = await picker.pickImage(
-  //     source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-  //   );
+    final XFile? imagePicked = await picker.pickImage(
+      source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+    );
 
-  //   if (imagePicked != null) {
-  //     selectedImage = File(imagePicked.path);
-  //     setState(() {});
-  //   }
-  // }
+    if (imagePicked != null) {
+      selectedImage = File(imagePicked.path);
+      setState(() {});
+    }
+  }
 
   Future<void> _selectDateTime(BuildContext context) async {
     DateTime? pickedDateTime = await showDatePicker(
@@ -217,7 +217,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // _uploadImage(),
+                _uploadImage(),
                 const SizedBox(height: 12),
                 _formulir(),
                 const SizedBox(height: 32),
@@ -230,204 +230,204 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
     );
   }
 
-  // Column _uploadImage() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Container(
-  //         height: 152,
-  //         decoration: BoxDecoration(
-  //           color: Colors.white,
-  //           borderRadius: BorderRadius.circular(10),
-  //           border: Border.all(
-  //             color: Color(0xFFD9D9D9),
-  //             width: 2,
-  //           ),
-  //         ),
-  //         child: Stack(
-  //           children: [
-  //             Center(
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   selectedImage != null
-  //                       ? ClipRRect(
-  //                           borderRadius: BorderRadius.circular(10),
-  //                           child: SizedBox(
-  //                             height: 148,
-  //                             width: MediaQuery.of(context).size.width,
-  //                             child:
-  //                                 Image.file(selectedImage!, fit: BoxFit.cover),
-  //                           ),
-  //                         )
-  //                       : Container(),
-  //                   if (selectedImage == null)
-  //                     TextButton(
-  //                       onPressed: () {
-  //                         showModalBottomSheet(
-  //                           context: context,
-  //                           useRootNavigator: true,
-  //                           builder: (context) {
-  //                             return Container(
-  //                               decoration: BoxDecoration(
-  //                                 color: Colors.white,
-  //                                 borderRadius: const BorderRadius.only(
-  //                                   topLeft: Radius.circular(25),
-  //                                   topRight: Radius.circular(25),
-  //                                 ),
-  //                               ),
-  //                               padding: const EdgeInsets.symmetric(
-  //                                   horizontal: 24, vertical: 24),
-  //                               height: 418,
-  //                               width: double.infinity,
-  //                               child: Column(
-  //                                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                                 children: [
-  //                                   Image.asset(
-  //                                     'assets/images/photo_pelaporan.png',
-  //                                     width: double.infinity,
-  //                                     fit: BoxFit.fitWidth,
-  //                                   ),
-  //                                   const SizedBox(height: 18),
-  //                                   Column(
-  //                                     children: [
-  //                                       RichText(
-  //                                         textAlign: TextAlign.center,
-  //                                         text: TextSpan(
-  //                                           style: GoogleFonts.montserrat(
-  //                                             fontSize: 12,
-  //                                             fontWeight: FontWeight.w500,
-  //                                             height: 1.2,
-  //                                             color: Colors.black,
-  //                                           ),
-  //                                           children: [
-  //                                             TextSpan(
-  //                                               text:
-  //                                                   'Apakah Anda ingin memindai bukti pengaduan menggunakan kamera atau menambahkan foto secara manual',
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       ),
-  //                                     ],
-  //                                   ),
-  //                                   const SizedBox(height: 14),
-  //                                   SizedBox(
-  //                                     width: double.infinity,
-  //                                     child: ElevatedButton(
-  //                                       style: ElevatedButton.styleFrom(
-  //                                         backgroundColor:
-  //                                             const Color(0xFF00AA13),
-  //                                         padding: const EdgeInsets.symmetric(
-  //                                             vertical: 12),
-  //                                         shape: RoundedRectangleBorder(
-  //                                           borderRadius:
-  //                                               BorderRadius.circular(50),
-  //                                         ),
-  //                                       ),
-  //                                       onPressed: () async {
-  //                                         await getImage(fromCamera: true);
-  //                                         Navigator.pop(context);
-  //                                       },
-  //                                       child: Text(
-  //                                         'Pindai Bukti',
-  //                                         style: GoogleFonts.montserrat(
-  //                                           fontSize: 16,
-  //                                           fontWeight: FontWeight.w700,
-  //                                           color: Colors.white,
-  //                                         ),
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                   const SizedBox(height: 8),
-  //                                   SizedBox(
-  //                                     width: double.infinity,
-  //                                     child: ElevatedButton(
-  //                                       style: ElevatedButton.styleFrom(
-  //                                         backgroundColor:
-  //                                             const Color(0xFF00AA13),
-  //                                         padding: const EdgeInsets.symmetric(
-  //                                             vertical: 12),
-  //                                         shape: RoundedRectangleBorder(
-  //                                           borderRadius:
-  //                                               BorderRadius.circular(50),
-  //                                         ),
-  //                                       ),
-  //                                       onPressed: () async {
-  //                                         await getImage();
-  //                                         Navigator.pop(context);
-  //                                       },
-  //                                       child: Text(
-  //                                         'Tambah Manual',
-  //                                         style: GoogleFonts.montserrat(
-  //                                           fontSize: 16,
-  //                                           fontWeight: FontWeight.w700,
-  //                                           color: Colors.white,
-  //                                         ),
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                             );
-  //                           },
-  //                         );
-  //                       },
-  //                       child: Row(
-  //                         mainAxisAlignment: MainAxisAlignment.center,
-  //                         children: [
-  //                           const Icon(
-  //                             PhosphorIconsRegular.fileArrowUp,
-  //                             color: Colors.black,
-  //                           ),
-  //                           const SizedBox(width: 10),
-  //                           Text(
-  //                             'Unggah foto disini',
-  //                             style: GoogleFonts.dmSans(
-  //                               fontSize: 14,
-  //                               color: Colors.black,
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                 ],
-  //               ),
-  //             ),
-  //             if (selectedImage != null)
-  //               Positioned(
-  //                 bottom: 6,
-  //                 left: 0,
-  //                 right: 0,
-  //                 child: Center(
-  //                   child: GestureDetector(
-  //                     onTap: () {
-  //                       setState(() {
-  //                         selectedImage = null;
-  //                       });
-  //                     },
-  //                     child: Container(
-  //                       width: 40,
-  //                       height: 40,
-  //                       decoration: BoxDecoration(
-  //                         color: Colors.red,
-  //                         shape: BoxShape.circle,
-  //                       ),
-  //                       child: Center(
-  //                         child: const Icon(
-  //                           PhosphorIconsRegular.trash,
-  //                           color: Colors.white,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+  Column _uploadImage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 152,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Color(0xFFD9D9D9),
+              width: 2,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    selectedImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              height: 148,
+                              width: MediaQuery.of(context).size.width,
+                              child:
+                                  Image.file(selectedImage!, fit: BoxFit.cover),
+                            ),
+                          )
+                        : Container(),
+                    if (selectedImage == null)
+                      TextButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            useRootNavigator: true,
+                            builder: (context) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(25),
+                                    topRight: Radius.circular(25),
+                                  ),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 24),
+                                height: 418,
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/photo_pelaporan.png',
+                                      width: double.infinity,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                    const SizedBox(height: 18),
+                                    Column(
+                                      children: [
+                                        RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.montserrat(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              height: 1.2,
+                                              color: Colors.black,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'Apakah Anda ingin memindai bukti pengaduan menggunakan kamera atau menambahkan foto secara manual',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 14),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              const Color(0xFF00AA13),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          await getImage(fromCamera: true);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          'Pindai Bukti',
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              const Color(0xFF00AA13),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          await getImage();
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          'Tambah Manual',
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              PhosphorIconsRegular.fileArrowUp,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Unggah foto disini',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (selectedImage != null)
+                Positioned(
+                  bottom: 6,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedImage = null;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: const Icon(
+                            PhosphorIconsRegular.trash,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Column _formulir() {
     return Column(
