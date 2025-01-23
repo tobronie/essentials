@@ -27,7 +27,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
   Future<void> pickDocument() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf'],
+      allowedExtensions: ['pdf'], //bbb
     );
 
     if (result != null && result.files.single.path != null) {
