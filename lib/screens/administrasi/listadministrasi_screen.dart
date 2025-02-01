@@ -26,7 +26,7 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -41,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -79,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: GoogleFonts.montserrat(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -88,6 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontSize: 14,
                     height: 1.2,
                     fontWeight: FontWeight.w400,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -124,6 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -158,6 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -191,6 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -234,6 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: GoogleFonts.montserrat(
                           fontSize: 18,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 52),

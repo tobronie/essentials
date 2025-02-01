@@ -15,7 +15,7 @@ class _ProblemInformasiScreenState extends State<ProblemInformasiScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -44,6 +44,7 @@ class _ProblemInformasiScreenState extends State<ProblemInformasiScreen> {
                     fontSize: 14,
                     height: 1.2,
                     fontWeight: FontWeight.w400,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.justify,
                 ),
@@ -54,6 +55,7 @@ class _ProblemInformasiScreenState extends State<ProblemInformasiScreen> {
                     fontSize: 14,
                     height: 1.2,
                     fontWeight: FontWeight.w400,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.justify,
                 ),
@@ -64,6 +66,7 @@ class _ProblemInformasiScreenState extends State<ProblemInformasiScreen> {
                     fontSize: 14,
                     height: 1.2,
                     fontWeight: FontWeight.w400,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.justify,
                 ),

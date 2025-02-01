@@ -60,7 +60,7 @@ class _ListVerifikasiPejabatScreenState
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -131,6 +131,7 @@ class _ListVerifikasiPejabatScreenState
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
+                color: Colors.black,
               ),
               onChanged: (query) {
                 setState(() {
@@ -152,6 +153,7 @@ class _ListVerifikasiPejabatScreenState
                 hintStyle: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 11),
@@ -422,6 +424,7 @@ class _ListVerifikasiPejabatScreenState
                                 style: GoogleFonts.montserrat(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],

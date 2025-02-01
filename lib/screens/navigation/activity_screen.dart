@@ -143,6 +143,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 hintStyle: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 11),
@@ -337,6 +338,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         style: GoogleFonts.montserrat(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
+                                          color: Colors.black,
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -353,6 +355,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         style: GoogleFonts.montserrat(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ],
@@ -418,6 +421,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                 style: GoogleFonts.montserrat(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],

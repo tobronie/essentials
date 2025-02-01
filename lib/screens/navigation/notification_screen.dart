@@ -28,7 +28,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -91,6 +91,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                 hintStyle: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 11),

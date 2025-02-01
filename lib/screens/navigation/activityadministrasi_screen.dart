@@ -67,7 +67,7 @@ class _ActivityAdministrasiScreenState
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -121,6 +121,7 @@ class _ActivityAdministrasiScreenState
             fontSize: 14,
             height: 1.2,
             fontWeight: FontWeight.w600,
+            color: Colors.black,
           ),
         ),
       ],
@@ -166,6 +167,7 @@ class _ActivityAdministrasiScreenState
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -204,6 +206,7 @@ class _ActivityAdministrasiScreenState
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
@@ -242,6 +245,7 @@ class _ActivityAdministrasiScreenState
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
               ),

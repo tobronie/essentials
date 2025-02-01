@@ -31,7 +31,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -95,6 +95,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                           fontSize: 18,
                           height: 1.2,
                           fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.justify,
                       ),
@@ -117,6 +118,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                           fontSize: 14,
                           height: 1.2,
                           fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.justify,
                       ),
@@ -130,6 +132,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                           fontSize: 14,
                           height: 1.2,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.justify,
                       ),

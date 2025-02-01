@@ -193,7 +193,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -476,6 +476,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 decoration: InputDecoration(
                   hintText: "masukkan link gambar ...",
@@ -483,6 +484,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.italic,
+                    color: Colors.black,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -534,6 +536,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 decoration: InputDecoration(
                   hintText: "maksimal 40 karakter ...",
@@ -541,6 +544,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.italic,
+                    color: Colors.black,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -598,6 +602,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
+                      color: Colors.black,
                     ),
                     decoration: InputDecoration(
                       hintText: selectedDateTime == null
@@ -608,6 +613,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.italic,
+                        color: Colors.black,
                       ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -661,6 +667,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 decoration: InputDecoration(
                   hintText: "maksimal 40 karakter ...",
@@ -668,6 +675,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.italic,
+                    color: Colors.black,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 11),
@@ -721,6 +729,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 maxLines: null,
                 decoration: InputDecoration(
@@ -729,6 +738,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.italic,
+                    color: Colors.black,
                   ),
                   border: InputBorder.none,
                 ),

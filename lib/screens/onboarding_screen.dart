@@ -41,6 +41,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -79,6 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: GoogleFonts.montserrat(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -89,6 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               height: 1.2,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -111,6 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: GoogleFonts.montserrat(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -121,6 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               height: 1.2,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -143,6 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: GoogleFonts.montserrat(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -153,6 +159,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               height: 1.2,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -175,6 +182,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: GoogleFonts.montserrat(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -185,6 +193,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               height: 1.2,
+                              color: Colors.black,
                             ),
                           ),
                         ],

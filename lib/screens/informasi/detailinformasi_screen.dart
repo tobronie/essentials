@@ -34,7 +34,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -108,6 +108,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                           fontSize: 18,
                           height: 1.2,
                           fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.justify,
                       ),
@@ -131,6 +132,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                             fontSize: 14,
                             height: 1.2,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(width: 4),
@@ -140,6 +142,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                             fontSize: 14,
                             height: 1.2,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(width: 4),
@@ -168,6 +171,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                           fontSize: 14,
                           height: 1.2,
                           fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.justify,
                       ),

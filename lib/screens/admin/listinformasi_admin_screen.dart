@@ -43,7 +43,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -111,6 +111,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
+                      color: Colors.black,
                     ),
                     onChanged: (query) {
                       setState(() {
@@ -132,6 +133,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                       hintStyle: GoogleFonts.montserrat(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
+                        color: Colors.black,
                       ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 11),
@@ -337,7 +339,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                                         vertical: 6,
                                                         horizontal: 6),
                                                     decoration: BoxDecoration(
-                                                      color: Color(0xFF9D00).withOpacity(0.75),
+                                                      color: Color(0xFF9D00).withOpacity(0.7),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50),
@@ -363,7 +365,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                                         vertical: 6,
                                                         horizontal: 6),
                                                     decoration: BoxDecoration(
-                                                      color: Color(0xFF0000).withOpacity(0.75),
+                                                      color: Color(0xFF0000).withOpacity(0.7),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50),
