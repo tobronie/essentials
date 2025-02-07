@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final LoginServices _loginServices = LoginServices();
+  final LoginService _loginServices = LoginService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
@@ -213,15 +213,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                               return;
-                            } else {
-                              _loginServices.login(
-                                _emailController.text,
-                                _passwordController.text,
-                                context,
-                              );
-                              _emailController.clear();
-                              _passwordController.clear();
                             }
+                            _loginServices.login(
+                              _emailController.text,
+                              _passwordController.text,
+                              context,
+                            );
+                            _emailController.clear();
+                            _passwordController.clear();
                           },
                           child: Text(
                             'Lanjut',

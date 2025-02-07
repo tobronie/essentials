@@ -1,7 +1,5 @@
-import 'package:essentials/models/user_model.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/services/register_services.dart';
-import 'package:essentials/services/user_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,8 +14,9 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final RegisterService _registerService = RegisterService();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _nikController = TextEditingController();
+  final TextEditingController _noHpController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
@@ -30,9 +29,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    super.dispose();
+    _namaController.dispose();
+    _nikController.dispose();
+    _noHpController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,7 +43,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -97,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: _nameController,
+                        controller: _namaController,
                         decoration: InputDecoration(
                           label: RichText(
                             text: TextSpan(
@@ -139,6 +144,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               children: [
                                 TextSpan(
                                   text: 'NIK KTP ',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    letterSpacing: 0.1,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '*',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      TextFormField(
+                        controller: _noHpController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          label: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'No Handphone ',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 18,
                                     letterSpacing: 0.1,
@@ -254,7 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           onPressed: () {
-                            if (_nameController.text.isEmpty) {
+                            if (_namaController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -282,11 +322,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               );
                               return;
+                            } else if (_nikController.text.length != 16) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'NIK harus terdiri dari 16 karakter',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              return;
+                            } else if (_noHpController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'No Handphone tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              return;
                             } else if (_emailController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     'Email tidak boleh kosong',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      height: 1.2,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              return;
+                            } else if (!RegExp(
+                                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                .hasMatch(_emailController.text)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Format email tidak valid',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 12,
                                       height: 1.2,
@@ -325,110 +409,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                               return;
                             }
-                            showModalBottomSheet(
-                              context: context,
-                              useRootNavigator: true,
-                              builder: (context) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(25),
-                                      topRight: Radius.circular(25),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 24, vertical: 24),
-                                  height: 396,
-                                  width: double.infinity,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/verification_register.png',
-                                        width: double.infinity,
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                      const SizedBox(height: 18),
-                                      Text(
-                                        'Pastikan Anda memasukkan data dengan benar',
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                          height: 1.2,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            'Untuk kelancaran proses pendaftaran akun',
-                                            textAlign: TextAlign.left,
-                                            style: GoogleFonts.montserrat(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.2,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color(0xFF00AA13),
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            final userbaru = UserModel(
-                                              name: _nameController.text,
-                                              nik: _nikController.text,
-                                              kk: "",
-                                              pekerjaan: "",
-                                              dusun: "",
-                                              rt: "",
-                                              rw: "",
-                                              no_hp: "",
-                                              email: _emailController.text,
-                                              password:
-                                                  _passwordController.text,
-                                            );
-                                            DbUser.addData(itemuser: userbaru);
-                                            _registerService.register(
-                                              _emailController.text,
-                                              _passwordController.text,
-                                              context,
-                                            );
-                                            _nameController.clear();
-                                            _nikController.clear();
-                                            _emailController.clear();
-                                            _passwordController.clear();
-                                          },
-                                          child: Text(
-                                            'Saya setuju',
-                                            style: GoogleFonts.montserrat(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                            _registerService.register(
+                              _namaController.text,
+                              _nikController.text,
+                              _noHpController.text,
+                              _emailController.text,
+                              _passwordController.text,
+                              context,
                             );
+
+                            _namaController.clear();
+                            _nikController.clear();
+                            _noHpController.clear();
+                            _emailController.clear();
+                            _passwordController.clear();
                           },
                           child: Text(
                             'Lanjut',

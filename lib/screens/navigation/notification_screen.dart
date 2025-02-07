@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -52,54 +51,12 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _search(),
-                const SizedBox(height: 18),
+                const SizedBox(height: 8),
                 _data(),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _search() {
-    return Container(
-      height: 40,
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Color(0xffD9D9D9),
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Row(
-        children: [
-          Icon(PhosphorIconsRegular.magnifyingGlass, color: Color(0xff00AA13)),
-          SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-              decoration: InputDecoration(
-                hintText: "Pencarian Anda ...",
-                hintStyle: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 11),
-              ),
-            ),
-          ),
-          SizedBox(width: 4),
-        ],
       ),
     );
   }
