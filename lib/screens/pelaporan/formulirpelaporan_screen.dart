@@ -1,9 +1,5 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:essentials/models/pelaporan_model.dart';
-import 'package:essentials/screens/navigation/activity_screen.dart';
-import 'package:essentials/services/pelaporan_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:essentials/services/create_pelaporan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +15,7 @@ class PelaporanScreen extends StatefulWidget {
 }
 
 class _PelaporanScreenState extends State<PelaporanScreen> {
-  final TextEditingController _imageUrlController = TextEditingController();
+  final CreateLaporService _CreateLaporService = CreateLaporService();
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _waktuController = TextEditingController();
   final TextEditingController _lokasiController = TextEditingController();
@@ -53,12 +49,8 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
           initialTime: TimeOfDay.fromDateTime(date),
         );
         if (pickedTime != null) {
-          DateTime selected = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            pickedTime.hour,
-            pickedTime.minute);
+          DateTime selected = DateTime(date.year, date.month, date.day,
+              pickedTime.hour, pickedTime.minute);
           return selected;
         }
       }
@@ -74,117 +66,73 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _judulController.dispose();
+    _lokasiController.dispose();
+    _waktuController.dispose();
+    _isiController.dispose();
+    super.dispose();
+  }
+
   Future<void> tambahPelaporan() async {
-    if (_imageUrlController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Image tidak boleh kosong',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              height: 1.2,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      );
+    if (selectedImage == null) {
+      _showSnackbar('Foto tidak boleh kosong');
       return;
     }
 
     if (_judulController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Judul tidak boleh kosong',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              height: 1.2,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
+      _showSnackbar(
+        'Judul tidak boleh kosong',
       );
       return;
     }
 
     if (_waktuController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Waktu tidak boleh kosong',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              height: 1.2,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
+      _showSnackbar(
+        'Waktu tidak boleh kosong',
       );
       return;
     }
 
     if (_lokasiController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Lokasi tidak boleh kosong',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              height: 1.2,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
+      _showSnackbar(
+        'Lokasi tidak boleh kosong',
       );
       return;
     }
 
     if (_isiController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Isi tidak boleh kosong',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              height: 1.2,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
+      _showSnackbar(
+        'Isi tidak boleh kosong',
       );
       return;
     }
 
-    try {
-      PelaporanModel newPelaporan = PelaporanModel(
-        image: _imageUrlController.text, //percobaan
-        judul: _judulController.text,
-        waktu: Timestamp.fromDate(selectedDateTime ?? DateTime.now()),
-        lokasi: _lokasiController.text,
-        isi: _isiController.text,
-        tgl_upload: Timestamp.now(),
-      );
-
-      await DbPelaporan.addData(itempelaporan: newPelaporan);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ActivityScreen()),
-      );
-    } catch (e) {
-      print("Gagal Melaporkan Pengaduan: $e");
-    }
+    await _CreateLaporService.pelaporan(
+      _judulController.text,
+      _waktuController.text,
+      _lokasiController.text,
+      _isiController.text,
+      selectedImage!.path,
+      DateTime.now().toString(),
+      context,
+    );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -193,7 +141,10 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -278,7 +229,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
                                 ),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 24),
-                                height: 418,
+                                height: 448,
                                 width: double.infinity,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -433,67 +384,6 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //percobaan
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Image Pengaduan',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                controller: _imageUrlController,
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                decoration: InputDecoration(
-                  hintText: "masukkan link gambar ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.black,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

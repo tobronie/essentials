@@ -295,117 +295,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           onPressed: () {
                             if (_namaController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Nama tidak boleh kosong',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'Nama tidak boleh kosong',
                               );
                               return;
                             } else if (_nikController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'NIK tidak boleh kosong',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'NIK tidak boleh kosong',
                               );
                               return;
                             } else if (_nikController.text.length != 16) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'NIK harus terdiri dari 16 karakter',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'NIK harus terdiri dari 16 karakter',
                               );
                               return;
                             } else if (_noHpController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'No Handphone tidak boleh kosong',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'No Handphone tidak boleh kosong',
                               );
                               return;
                             } else if (_emailController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Email tidak boleh kosong',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'Email tidak boleh kosong',
                               );
                               return;
                             } else if (!RegExp(
                                     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
                                 .hasMatch(_emailController.text)) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Format email tidak valid',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'Format email tidak valid',
                               );
                               return;
                             } else if (_passwordController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Password tidak boleh kosong',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'Password tidak boleh kosong',
                               );
                               return;
                             } else if (_passwordController.text.length < 8) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Password harus terdiri minimal 8 karakter',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                              _showSnackbar(
+                                'Password harus terdiri minimal 8 karakter',
                               );
                               return;
                             }
@@ -467,6 +395,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),

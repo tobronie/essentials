@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Selamat Datang\nImam Tobroni",
+            "Selamat Datang\nWarga Kedungmulyo",
             style: GoogleFonts.montserrat(
               fontSize: 18,
               fontWeight: FontWeight.w700,

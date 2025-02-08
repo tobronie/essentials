@@ -1,57 +1,54 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PelaporanModel {
-  // final String nama;
-  final String image;
-  final String judul;
-  final Timestamp waktu;
-  final String lokasi;
-  final String isi;
-  final Timestamp tgl_upload;
+  final String foto_lapor;
+  final String judul_lapor;
+  final Timestamp waktu_lapor;
+  final String lokasi_lapor;
+  final String isi_lapor;
+  final Timestamp tgl_upload_lapor;
 
   PelaporanModel({
-    // required this.nama,
-    required this.image,
-    required this.judul,
-    required this.waktu,
-    required this.lokasi,
-    required this.isi,
-    required this.tgl_upload,
+    required this.foto_lapor,
+    required this.judul_lapor,
+    required this.waktu_lapor,
+    required this.lokasi_lapor,
+    required this.isi_lapor,
+    required this.tgl_upload_lapor,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      // 'nama': nama,
-      'image': image,
-      'judul': judul,
-      'waktu': waktu,
-      'lokasi': lokasi,
-      'isi': isi,
-      'tgl_upload': tgl_upload,
+      'foto_lapor': foto_lapor,
+      'judul_lapor': judul_lapor,
+      'waktu_lapor': waktu_lapor,
+      'lokasi_lapor': lokasi_lapor,
+      'isi_lapor': isi_lapor,
+      'tgl_upload_lapor': tgl_upload_lapor,
     };
   }
 
   factory PelaporanModel.fromJson(Map<String, dynamic> json) {
     return PelaporanModel(
       // nama: json['nama'],
-      image: json['image'],
-      judul: json['judul'],
-      waktu: json['waktu'] as Timestamp,
-      lokasi: json['lokasi'],
-      isi: json['isi'],
-      tgl_upload: json['tgl_upload'] as Timestamp,
+      foto_lapor: json['foto_lapor'],
+      judul_lapor: json['judul_lapor'],
+      waktu_lapor: json['waktu_lapor'] as Timestamp,
+      lokasi_lapor: json['lokasi_lapor'],
+      isi_lapor: json['isi_lapor'],
+      tgl_upload_lapor: json['tgl_upload_lapor'] as Timestamp,
     );
   }
 
   factory PelaporanModel.fromSnapshot(DocumentSnapshot snapshot) {
     return PelaporanModel(
       // nama: snapshot.get('nama'),
-      image: snapshot.get('image'),
-      judul: snapshot.get('judul'),
-      waktu: snapshot.get('waktu') ?? Timestamp,
-      lokasi: snapshot.get('lokasi'),
-      isi: snapshot.get('isi'),
-      tgl_upload: snapshot.get('tgl_upload') ?? Timestamp.now(),
+      foto_lapor: snapshot.get('foto_lapor'),
+      judul_lapor: snapshot.get('judul_lapor'),
+      waktu_lapor: snapshot.get('waktu_lapor') ?? Timestamp,
+      lokasi_lapor: snapshot.get('lokasi_lapor'),
+      isi_lapor: snapshot.get('isi_lapor'),
+      tgl_upload_lapor: snapshot.get('tgl_upload_lapor') ?? Timestamp.now(),
     );
   }
 }
