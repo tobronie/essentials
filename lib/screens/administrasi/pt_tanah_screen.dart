@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_tanah_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,8 @@ class TanahScreen extends StatefulWidget {
 }
 
 class _TanahScreenState extends State<TanahScreen> {
+  final CreateTanahService _CreateTanahService = CreateTanahService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   File? selectedImageSPPT_SHM;
@@ -60,6 +62,48 @@ class _TanahScreenState extends State<TanahScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Pengantar Harga Tanah";
+  }
+
+  Future<void> tambahTanah() async {
+    if (selectedImageKTP == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+    
+    if (selectedImageSPPT_SHM == null) {
+      _showSnackbar('Foto SPPT atau SHM tidak boleh kosong');
+      return;
+    }
+
+    await _CreateTanahService.tanah(
+      _judulController.text,
+      selectedImageKTP!.path,
+      selectedImageKK!.path,
+      selectedImageSPPT_SHM!.path,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -68,7 +112,10 @@ class _TanahScreenState extends State<TanahScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -155,8 +202,8 @@ class _TanahScreenState extends State<TanahScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKTP!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKTP!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -270,8 +317,8 @@ class _TanahScreenState extends State<TanahScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKK!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -385,8 +432,8 @@ class _TanahScreenState extends State<TanahScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageSPPT_SHM!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageSPPT_SHM!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -474,10 +521,7 @@ class _TanahScreenState extends State<TanahScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahTanah();
         },
         child: Text(
           'Unggah Formulir',

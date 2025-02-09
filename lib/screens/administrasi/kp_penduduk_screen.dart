@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_pendudukan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,10 +14,15 @@ class PendudukScreen extends StatefulWidget {
 }
 
 class _PendudukScreenState extends State<PendudukScreen> {
+  final CreatePendudukanService _CreatePendudukanService =
+      CreatePendudukanService();
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _daerahAsalController = TextEditingController();
+  final TextEditingController _daerahTujuanController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
-  File? selectedImageNikahAyah;
-  File? selectedImageNikahIbu;
+  File? selectedImageNikahPria;
+  File? selectedImageNikahWanita;
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -45,7 +50,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
     }
   }
 
-  Future getImageNikahAyah({bool fromCamera = false}) async {
+  Future getImageNikahPria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -53,12 +58,12 @@ class _PendudukScreenState extends State<PendudukScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageNikahAyah = File(imagePicked.path);
+      selectedImageNikahPria = File(imagePicked.path);
       setState(() {});
     }
   }
 
-  Future getImageNikahIbu({bool fromCamera = false}) async {
+  Future getImageNikahWanita({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -66,7 +71,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageNikahIbu = File(imagePicked.path);
+      selectedImageNikahWanita = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -74,6 +79,59 @@ class _PendudukScreenState extends State<PendudukScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Kependudukan";
+  }
+
+  Future<void> tambahPendudukan() async {
+    String FotoNikahPria = selectedImageNikahPria?.path ?? '';
+    String FotoNikahWanita = selectedImageNikahWanita?.path ?? '';
+
+    if (selectedImageKTP == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (_daerahAsalController.text.isEmpty) {
+      _showSnackbar('Daerah Asal tidak boleh kosong');
+      return;
+    }
+
+    if (_daerahTujuanController.text.isEmpty) {
+      _showSnackbar('Daerah Tujuan tidak boleh kosong');
+      return;
+    }
+
+    await _CreatePendudukanService.pendudukan(
+      _judulController.text,
+      selectedImageKTP!.path,
+      selectedImageKK!.path,
+      FotoNikahPria,
+      FotoNikahWanita,
+      _daerahAsalController.text,
+      _daerahTujuanController.text,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -82,7 +140,10 @@ class _PendudukScreenState extends State<PendudukScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -384,21 +445,21 @@ class _PendudukScreenState extends State<PendudukScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageNikahAyah != null
+                    selectedImageNikahPria != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child: Image.file(selectedImageNikahAyah!,
+                              child: Image.file(selectedImageNikahPria!,
                                   fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageNikahAyah == null)
+                    if (selectedImageNikahPria == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageNikahAyah();
+                          await getImageNikahPria();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -421,7 +482,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                   ],
                 ),
               ),
-              if (selectedImageNikahAyah != null)
+              if (selectedImageNikahPria != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -430,7 +491,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageNikahAyah = null;
+                          selectedImageNikahPria = null;
                         });
                       },
                       child: Container(
@@ -496,21 +557,21 @@ class _PendudukScreenState extends State<PendudukScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageNikahIbu != null
+                    selectedImageNikahWanita != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child: Image.file(selectedImageNikahIbu!,
+                              child: Image.file(selectedImageNikahWanita!,
                                   fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageNikahIbu == null)
+                    if (selectedImageNikahWanita == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageNikahIbu();
+                          await getImageNikahWanita();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -533,7 +594,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                   ],
                 ),
               ),
-              if (selectedImageNikahIbu != null)
+              if (selectedImageNikahWanita != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -542,7 +603,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageNikahIbu = null;
+                          selectedImageNikahWanita = null;
                         });
                       },
                       child: Container(
@@ -621,6 +682,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _daerahAsalController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -678,6 +740,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _daerahTujuanController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -712,10 +775,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahPendudukan();
         },
         child: Text(
           'Unggah Formulir',
