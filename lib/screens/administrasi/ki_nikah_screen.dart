@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_nikah_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +15,8 @@ class NikahScreen extends StatefulWidget {
 }
 
 class _NikahScreenState extends State<NikahScreen> {
+  final CreateNikahService _CreateNikahService = CreateNikahService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageKTPPria;
   File? selectedImageKTPWanita;
   File? selectedImageKKPria;
@@ -187,6 +189,102 @@ class _NikahScreenState extends State<NikahScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Pengantar Pernikahan";
+  }
+
+  Future<void> tambahNikah() async {
+    if (selectedImageKTPPria == null) {
+      _showSnackbar('Foto KTP Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageAktePria == null) {
+      _showSnackbar('Foto Akte Kelahiran Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKKPria == null) {
+      _showSnackbar('Foto Kartu Keluarga Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahAyahPria == null) {
+      _showSnackbar('Foto Buku Nikah Ayah Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahIbuPria == null) {
+      _showSnackbar('Foto Buku Nikah Ibu Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageFormulirPria == null) {
+      _showSnackbar('Foto Formulir Pria tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPWanita == null) {
+      _showSnackbar('Foto KTP Wanita tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageAkteWanita == null) {
+      _showSnackbar('Foto Akte Kelahiran Wanita tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKKWanita == null) {
+      _showSnackbar('Foto Kartu Keluarga Wanita tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahAyahWanita == null) {
+      _showSnackbar('Foto Buku Nikah Ayah Wanita tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahIbuWanita == null) {
+      _showSnackbar('Foto Buku Nikah Ibu Wanita tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageFormulirWanita == null) {
+      _showSnackbar('Foto Formulir Wanita tidak boleh kosong');
+      return;
+    }
+
+    await _CreateNikahService.nikah(
+      _judulController.text,
+      selectedImageKTPPria!.path,
+      selectedImageKKPria!.path,
+      selectedImageAktePria!.path,
+      selectedImageFormulirPria!.path,
+      selectedImageNikahAyahPria!.path,
+      selectedImageNikahIbuPria!.path,
+      selectedImageKTPWanita!.path,
+      selectedImageKKWanita!.path,
+      selectedImageAkteWanita!.path,
+      selectedImageFormulirWanita!.path,
+      selectedImageNikahAyahWanita!.path,
+      selectedImageNikahIbuWanita!.path,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -195,7 +293,10 @@ class _NikahScreenState extends State<NikahScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -404,21 +505,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageAktePria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageAktePria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageAktePria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageAktePria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -441,7 +542,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageAktePria != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -450,7 +551,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageAktePria = null;
                             });
                           },
                           child: Container(
@@ -630,21 +731,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageNikahAyahPria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageNikahAyahPria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageNikahAyahPria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageNikahAyahPria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -667,7 +768,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageNikahAyahPria != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -676,7 +777,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageNikahAyahPria = null;
                             });
                           },
                           child: Container(
@@ -743,21 +844,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageNikahIbuPria != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageNikahIbuPria!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageNikahIbuPria == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageNikahIbuPria();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -780,7 +881,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageNikahIbuPria != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -789,7 +890,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageNikahIbuPria = null;
                             });
                           },
                           child: Container(
@@ -1026,21 +1127,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPPria != null
+                        selectedImageKTPWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPPria!,
+                                  child: Image.file(selectedImageKTPWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPPria == null)
+                        if (selectedImageKTPWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPPria();
+                              await getImageKTPWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1063,7 +1164,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPPria != null)
+                  if (selectedImageKTPWanita != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1072,7 +1173,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKTPPria = null;
+                              selectedImageKTPWanita = null;
                             });
                           },
                           child: Container(
@@ -1139,21 +1240,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageAkteWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageAkteWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageAkteWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageAkteWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1176,7 +1277,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageAkteWanita != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1185,7 +1286,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageAkteWanita = null;
                             });
                           },
                           child: Container(
@@ -1252,21 +1353,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageKKWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageKKWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageKKWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageKKWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1289,7 +1390,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageKKWanita != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1298,7 +1399,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageKKWanita = null;
                             });
                           },
                           child: Container(
@@ -1365,21 +1466,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageNikahAyahWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageNikahAyahWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageNikahAyahWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageNikahAyahWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1402,7 +1503,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageNikahAyahWanita != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1411,7 +1512,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageNikahAyahWanita = null;
                             });
                           },
                           child: Container(
@@ -1478,21 +1579,21 @@ class _NikahScreenState extends State<NikahScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKKPria != null
+                        selectedImageNikahIbuWanita != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKKPria!,
+                                  child: Image.file(selectedImageNikahIbuWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKKPria == null)
+                        if (selectedImageNikahIbuWanita == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKKPria();
+                              await getImageNikahIbuWanita();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1515,7 +1616,7 @@ class _NikahScreenState extends State<NikahScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKKPria != null)
+                  if (selectedImageNikahIbuWanita != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1524,7 +1625,7 @@ class _NikahScreenState extends State<NikahScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKKPria = null;
+                              selectedImageNikahIbuWanita = null;
                             });
                           },
                           child: Container(
@@ -1597,7 +1698,8 @@ class _NikahScreenState extends State<NikahScreen> {
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageFormulirWanita!,
+                                  child: Image.file(
+                                      selectedImageFormulirWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
@@ -1630,33 +1732,33 @@ class _NikahScreenState extends State<NikahScreen> {
                   ),
                   if (selectedImageFormulirWanita != null)
                     Positioned(
-                  bottom: 6,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImageFormulirWanita = null;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: const Icon(
-                            PhosphorIconsRegular.trash,
-                            color: Colors.white,
+                      bottom: 6,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImageFormulirWanita = null;
+                            });
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: const Icon(
+                                PhosphorIconsRegular.trash,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
                 ],
               ),
             ),
@@ -1710,10 +1812,7 @@ class _NikahScreenState extends State<NikahScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahNikah();
         },
         child: Text(
           'Unggah Formulir',

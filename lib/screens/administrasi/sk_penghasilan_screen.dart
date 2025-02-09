@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_penghasilan_ortu_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,12 @@ class PenghasilanScreen extends StatefulWidget {
 }
 
 class _PenghasilanScreenState extends State<PenghasilanScreen> {
+  final CreatePenghasilanOrtuService _CreatePenghasilanOrtuService =
+      CreatePenghasilanOrtuService();
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _pekerjaanAyahController =
+      TextEditingController();
+  final TextEditingController _pekerjaanIbuController = TextEditingController();
   String? selectedPendapatanAyah;
   String? selectedPendapatanIbu;
   File? selectedImageKTP;
@@ -76,6 +82,71 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Keterangan Penghasilan Orang Tua";
+  }
+
+  Future<void> tambahPenghasilanOrtu() async {
+    String FotoPendapatanAyah = selectedImageAyah?.path ?? '';
+    String FotoPendapatanIbu = selectedImageIbu?.path ?? '';
+
+    if (selectedImageKTP == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (_pekerjaanAyahController.text.isEmpty) {
+      _showSnackbar('pekerjaan Ayah tidak boleh kosong');
+      return;
+    }
+
+    if (selectedPendapatanAyah == null) {
+      _showSnackbar('Pendapatan Ayah tidak boleh kosong');
+      return;
+    }
+
+    if (_pekerjaanIbuController.text.isEmpty) {
+      _showSnackbar('Pekerjaan Ibu tidak boleh kosong');
+      return;
+    }
+
+    if (selectedPendapatanIbu == null) {
+      _showSnackbar('Pendapatan Ibu tidak boleh kosong');
+      return;
+    }
+
+    await _CreatePenghasilanOrtuService.penghasilanOrtu(
+      _judulController.text,
+      _pekerjaanAyahController.text,
+      selectedPendapatanAyah ?? "",
+      _pekerjaanIbuController.text,
+      selectedPendapatanIbu ?? "",
+      selectedImageKTP!.path,
+      selectedImageKK!.path,
+      FotoPendapatanAyah,
+      FotoPendapatanIbu,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -84,7 +155,10 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -415,6 +489,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _pekerjaanAyahController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -484,7 +559,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
                       ),
                     ),
                     items: <String>[
-                      '0',
+                      'Rp 0,-',
                       '< Rp 1.000.000,-',
                       'Rp 1.000.000,- sampai Rp 2.500.000,-',
                       'Rp 2.500.000,- sampai Rp 5.000.000,-',
@@ -691,6 +766,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _pekerjaanIbuController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -760,7 +836,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
                       ),
                     ),
                     items: <String>[
-                      '0',
+                      'Rp 0,-',
                       '< Rp 1.000.000,-',
                       'Rp 1.000.000,- sampai Rp 2.500.000,-',
                       'Rp 2.500.000,- sampai Rp 5.000.000,-',
@@ -919,10 +995,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahPenghasilanOrtu();
         },
         child: Text(
           'Unggah Formulir',

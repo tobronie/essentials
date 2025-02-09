@@ -69,8 +69,8 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
   @override
   void dispose() {
     _judulController.dispose();
-    _lokasiController.dispose();
     _waktuController.dispose();
+    _lokasiController.dispose();
     _isiController.dispose();
     super.dispose();
   }

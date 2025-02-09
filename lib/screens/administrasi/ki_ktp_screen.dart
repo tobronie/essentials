@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_ktp_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,9 +15,11 @@ class KTPScreen extends StatefulWidget {
 }
 
 class _KTPScreenState extends State<KTPScreen> {
+  final CreateKTPService _CreateKTPService = CreateKTPService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageAkte;
   File? selectedImageKK;
-  File? selectedImageSurat;
+  File? selectedImageFormulir;
 
   Future getImageAkte({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -45,7 +47,7 @@ class _KTPScreenState extends State<KTPScreen> {
     }
   }
 
-  Future getImageSurat({bool fromCamera = false}) async {
+  Future getImageFormulir({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
 
     final XFile? imagePicked = await picker.pickImage(
@@ -53,7 +55,7 @@ class _KTPScreenState extends State<KTPScreen> {
     );
 
     if (imagePicked != null) {
-      selectedImageSurat = File(imagePicked.path);
+      selectedImageFormulir = File(imagePicked.path);
       setState(() {});
     }
   }
@@ -61,6 +63,45 @@ class _KTPScreenState extends State<KTPScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Pengantar Kartu Tanda Penduduk";
+  }
+
+  Future<void> tambahKTP() async {
+    String FotoAkte = selectedImageAkte?.path ?? '';
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageFormulir == null) {
+      _showSnackbar('Surat Persetujuan tidak boleh kosong');
+      return;
+    }
+
+    await _CreateKTPService.ktp(
+      _judulController.text,
+      FotoAkte,
+      selectedImageKK!.path,
+      selectedImageFormulir!.path,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -69,7 +110,10 @@ class _KTPScreenState extends State<KTPScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -367,21 +411,21 @@ class _KTPScreenState extends State<KTPScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    selectedImageSurat != null
+                    selectedImageFormulir != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child: Image.file(selectedImageSurat!,
+                              child: Image.file(selectedImageFormulir!,
                                   fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
-                    if (selectedImageSurat == null)
+                    if (selectedImageFormulir == null)
                       TextButton(
                         onPressed: () async {
-                          await getImageSurat();
+                          await getImageFormulir();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -404,7 +448,7 @@ class _KTPScreenState extends State<KTPScreen> {
                   ],
                 ),
               ),
-              if (selectedImageSurat != null)
+              if (selectedImageFormulir != null)
                 Positioned(
                   bottom: 6,
                   left: 0,
@@ -413,7 +457,7 @@ class _KTPScreenState extends State<KTPScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImageSurat = null;
+                          selectedImageFormulir = null;
                         });
                       },
                       child: Container(
@@ -483,10 +527,7 @@ class _KTPScreenState extends State<KTPScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahKTP();
         },
         child: Text(
           'Unggah Formulir',

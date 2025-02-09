@@ -17,7 +17,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
   final CreateInfoService _CreateInfoService = CreateInfoService();
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _isiController = TextEditingController();
-  String selectedKategori = "Belum Memilih";
+  String? selectedKategori;
   File? selectedImage;
 
   Future getImage({bool fromCamera = false}) async {
@@ -49,7 +49,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
       _showSnackbar('Judul tidak boleh kosong');
       return;
     }
-    if (selectedKategori == "Belum Memilih") {
+    if (selectedKategori == null) {
       _showSnackbar('Kategori tidak boleh kosong');
       return;
     }
@@ -60,7 +60,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
 
     await _CreateInfoService.information(
       _judulController.text,
-      selectedKategori,
+      selectedKategori ?? "",
       _isiController.text,
       selectedImage!.path,
       DateTime.now().toString(),
@@ -329,8 +329,16 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
+                    value: selectedKategori,
+                    hint: Text(
+                      'Belum memilih',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
+                      ),
+                    ),
                     items: <String>[
-                      'Belum Memilih',
                       'Infrastruktur',
                       'Kecelakaan',
                       'Kegiatan',
@@ -350,7 +358,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        selectedKategori = newValue!;
+                        selectedKategori = newValue;
                       });
                     },
                     isExpanded: true,

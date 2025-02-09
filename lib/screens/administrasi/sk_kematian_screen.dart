@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_kematian_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,9 @@ class KematianScreen extends StatefulWidget {
 }
 
 class _KematianScreenState extends State<KematianScreen> {
+  final CreateKematianService _CreateKematianService = CreateKematianService();
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _namaAlmarhumController = TextEditingController();
   File? selectedImageKTPAlmarhum;
   File? selectedImageKK;
   File? selectedImageBukti;
@@ -74,6 +77,57 @@ class _KematianScreenState extends State<KematianScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Keterangan Kematian";
+  }
+
+  Future<void> tambahKematian() async {
+    String FotoBukti = selectedImageBukti?.path ?? '';
+
+    if (_namaAlmarhumController.text.isEmpty) {
+      _showSnackbar('Nama Almarhum tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPAlmarhum == null) {
+      _showSnackbar('Foto KTP Almarhum tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPSaksi == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+
+    await _CreateKematianService.kematian(
+      _judulController.text,
+      _namaAlmarhumController.text,
+      selectedImageKTPAlmarhum!.path,
+      selectedImageKK!.path,
+      FotoBukti,
+      selectedImageKTPSaksi!.path,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -167,6 +221,7 @@ class _KematianScreenState extends State<KematianScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _namaAlmarhumController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -539,7 +594,7 @@ class _KematianScreenState extends State<KematianScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Surat Kematian (opsional)',
+          'Surat Kematian (Opsional)',
           style: GoogleFonts.montserrat(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -658,10 +713,7 @@ class _KematianScreenState extends State<KematianScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahKematian();
         },
         child: Text(
           'Unggah Formulir',

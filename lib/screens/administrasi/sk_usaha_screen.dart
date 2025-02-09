@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_usaha_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,8 @@ class UsahaScreen extends StatefulWidget {
 }
 
 class _UsahaScreenState extends State<UsahaScreen> {
+  final CreateUsahaService _CreateUsahaService = CreateUsahaService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   String? selectedPendapatan;
@@ -47,6 +49,47 @@ class _UsahaScreenState extends State<UsahaScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Keterangan Usaha";
+  }
+
+  Future<void> tambahUsaha() async {
+    if (selectedImageKTP == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (selectedPendapatan == null) {
+      _showSnackbar('Pendapatan tidak boleh kosong');
+      return;
+    }
+
+    await _CreateUsahaService.usaha(
+      _judulController.text,
+      selectedImageKTP!.path,
+      selectedImageKK!.path,
+      selectedPendapatan ?? "",
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -55,7 +98,10 @@ class _UsahaScreenState extends State<UsahaScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -142,8 +188,8 @@ class _UsahaScreenState extends State<UsahaScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKTP!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKTP!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -257,8 +303,8 @@ class _UsahaScreenState extends State<UsahaScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKK!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -421,10 +467,7 @@ class _UsahaScreenState extends State<UsahaScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahUsaha();
         },
         child: Text(
           'Unggah Formulir',

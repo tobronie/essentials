@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_akte_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,16 +14,18 @@ class AkteScreen extends StatefulWidget {
 }
 
 class _AkteScreenState extends State<AkteScreen> {
+  final CreateAkteService _CreateAkteService = CreateAkteService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageSuratKelahiran;
+  File? selectedImageKK;
   File? selectedImageKTPAyah;
   File? selectedImageKTPIbu;
   File? selectedImageNikahAyah;
   File? selectedImageNikahIbu;
   File? selectedImageKTPSaksiSatu;
   File? selectedImageKTPSaksiDua;
-  File? selectedImageAkteSaudara;
   File? selectedImageIjasahBersangkutan;
-  File? selectedImageKK;
+  File? selectedImageAkteSaudara;
 
   Future getImageSuratKelahiran({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -158,6 +160,83 @@ class _AkteScreenState extends State<AkteScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Pengantar Akte Kelahiran";
+  }
+
+  Future<void> tambahAkte() async {
+    String FotoIjasahBersangkutan = selectedImageIjasahBersangkutan?.path ?? '';
+    String FotoAkteSaudara = selectedImageAkteSaudara?.path ?? '';
+
+    if (selectedImageSuratKelahiran == null) {
+      _showSnackbar('Foto Surat Kelahiran tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto Kartu Keluarga tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPAyah == null) {
+      _showSnackbar('Foto KTP Ayah tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahAyah == null) {
+      _showSnackbar('Foto Buku Nikah Ayah tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPIbu == null) {
+      _showSnackbar('Foto KTP Ibu tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahIbu == null) {
+      _showSnackbar('Foto Buku Nikah Ibu tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPSaksiSatu == null) {
+      _showSnackbar('Foto KTP Saksi Satu tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageKTPSaksiDua == null) {
+      _showSnackbar('Foto KTP Saksi Dua tidak boleh kosong');
+      return;
+    }
+
+    await _CreateAkteService.akte(
+      _judulController.text,
+      selectedImageSuratKelahiran!.path,
+      selectedImageKK!.path,
+      selectedImageKTPAyah!.path,
+      selectedImageNikahAyah!.path,
+      selectedImageKTPIbu!.path,
+      selectedImageNikahIbu!.path,
+      selectedImageKTPSaksiSatu!.path,
+      selectedImageKTPSaksiDua!.path,
+      FotoIjasahBersangkutan,
+      FotoAkteSaudara,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -166,7 +245,10 @@ class _AkteScreenState extends State<AkteScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -1016,21 +1098,21 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPIbu != null
+                        selectedImageKTPSaksiSatu != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPIbu!,
+                                  child: Image.file(selectedImageKTPSaksiSatu!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPIbu == null)
+                        if (selectedImageKTPSaksiSatu == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPIbu();
+                              await getImageKTPSaksiSatu();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1053,7 +1135,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPIbu != null)
+                  if (selectedImageKTPSaksiSatu != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1062,7 +1144,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKTPIbu = null;
+                              selectedImageKTPSaksiSatu = null;
                             });
                           },
                           child: Container(
@@ -1129,21 +1211,21 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPIbu != null
+                        selectedImageKTPSaksiDua != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPIbu!,
+                                  child: Image.file(selectedImageKTPSaksiDua!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPIbu == null)
+                        if (selectedImageKTPSaksiDua == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPIbu();
+                              await getImageKTPSaksiDua();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1166,7 +1248,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPIbu != null)
+                  if (selectedImageKTPSaksiDua != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1175,7 +1257,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKTPIbu = null;
+                              selectedImageKTPSaksiDua = null;
                             });
                           },
                           child: Container(
@@ -1254,21 +1336,21 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPIbu != null
+                        selectedImageIjasahBersangkutan != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPIbu!,
+                                  child: Image.file(selectedImageIjasahBersangkutan!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPIbu == null)
+                        if (selectedImageIjasahBersangkutan == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPIbu();
+                              await getImageIjasahBersangkutan();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1291,7 +1373,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPIbu != null)
+                  if (selectedImageIjasahBersangkutan != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1300,7 +1382,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKTPIbu = null;
+                              selectedImageIjasahBersangkutan = null;
                             });
                           },
                           child: Container(
@@ -1364,21 +1446,21 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageKTPIbu != null
+                        selectedImageAkteSaudara != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageKTPIbu!,
+                                  child: Image.file(selectedImageAkteSaudara!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageKTPIbu == null)
+                        if (selectedImageAkteSaudara == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageKTPIbu();
+                              await getImageAkteSaudara();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1401,7 +1483,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageKTPIbu != null)
+                  if (selectedImageAkteSaudara != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1410,7 +1492,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageKTPIbu = null;
+                              selectedImageAkteSaudara = null;
                             });
                           },
                           child: Container(
@@ -1461,10 +1543,7 @@ class _AkteScreenState extends State<AkteScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahAkte();
         },
         child: Text(
           'Unggah Formulir',

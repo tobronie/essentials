@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_sktm_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,11 @@ class SKTMScreen extends StatefulWidget {
 }
 
 class _SKTMScreenState extends State<SKTMScreen> {
+  final CreateSKTMService _CreateSKTMService = CreateSKTMService();
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _namaWaliController = TextEditingController();
+  final TextEditingController _nominalController = TextEditingController();
+  final TextEditingController _rincianController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
 
@@ -46,6 +51,54 @@ class _SKTMScreenState extends State<SKTMScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Keterangan Tidak Mampu";
+  }
+
+  Future<void> tambahSKTM() async {
+    if (selectedImageKTP == null) {
+      _showSnackbar('Foto KTP tidak boleh kosong');
+      return;
+    }
+    if (selectedImageKK == null) {
+      _showSnackbar('Foto KK tidak boleh kosong');
+      return;
+    }
+
+    if (_namaWaliController.text.isEmpty) {
+      _showSnackbar('Nama Wali tidak boleh kosong');
+      return;
+    }
+
+    if (_nominalController.text.isEmpty) {
+      _showSnackbar('Nominal tidak boleh kosong');
+      return;
+    }
+
+    await _CreateSKTMService.sktm(
+      _judulController.text,
+      selectedImageKTP!.path,
+      selectedImageKK!.path,
+      _namaWaliController.text,
+      _nominalController.text,
+      _rincianController.text,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -54,7 +107,10 @@ class _SKTMScreenState extends State<SKTMScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -141,8 +197,8 @@ class _SKTMScreenState extends State<SKTMScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKTP!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKTP!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -256,8 +312,8 @@ class _SKTMScreenState extends State<SKTMScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKK!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -365,6 +421,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _namaWaliController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -422,6 +479,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextField(
+                controller: _nominalController,
                 keyboardType: TextInputType.number,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
@@ -445,26 +503,13 @@ class _SKTMScreenState extends State<SKTMScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Text(
-                  'Rincian Biaya Hidup',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
+            Text(
+              'Rincian Biaya Hidup (Opsional)',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 4),
             Container(
@@ -480,6 +525,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextFormField(
+                controller: _rincianController,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -514,10 +560,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahSKTM();
         },
         child: Text(
           'Unggah Formulir',

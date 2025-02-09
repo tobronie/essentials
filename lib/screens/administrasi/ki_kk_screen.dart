@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:essentials/screens/navigation/activity_screen.dart';
+import 'package:essentials/services/create_ad_kk_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +14,8 @@ class KKScreen extends StatefulWidget {
 }
 
 class _KKScreenState extends State<KKScreen> {
+  final CreateKKService _CreateKKService = CreateKKService();
+  final TextEditingController _judulController = TextEditingController();
   File? selectedImageKK;
   File? selectedImageNikahAyah;
   File? selectedImageNikahIbu;
@@ -88,6 +90,57 @@ class _KKScreenState extends State<KKScreen> {
   @override
   void initState() {
     super.initState();
+    _judulController.text = "Surat Pengantar Kartu keluarga";
+  }
+
+  Future<void> tambahKK() async {
+    String FotoKKbefore = selectedImageKK?.path ?? '';
+
+    if (selectedImageNikahAyah == null) {
+      _showSnackbar('Foto Buku Nikah Ayah tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageNikahIbu == null) {
+      _showSnackbar('Foto Buku Nikah Ibu tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageIjasahKeluarga == null) {
+      _showSnackbar('Foto Ijasah Terakhir Keluarga tidak boleh kosong');
+      return;
+    }
+
+    if (selectedImageAkteKeluarga == null) {
+      _showSnackbar('Foto Akte Keluarga tidak boleh kosong');
+      return;
+    }
+
+    await _CreateKKService.kk(
+      _judulController.text,
+      FotoKKbefore,
+      selectedImageNikahAyah!.path,
+      selectedImageNikahIbu!.path,
+      selectedImageIjasahKeluarga!.path,
+      selectedImageAkteKeluarga!.path,
+      DateTime.now().toString(),
+      context,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.montserrat(
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -96,7 +149,10 @@ class _KKScreenState extends State<KKScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -733,10 +789,7 @@ class _KKScreenState extends State<KKScreen> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ActivityScreen()),
-          );
+          tambahKK();
         },
         child: Text(
           'Unggah Formulir',
