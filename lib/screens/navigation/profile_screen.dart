@@ -1,6 +1,6 @@
 import 'dart:io';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
+import 'package:essentials/screens/admin/listmemo_desa_admin_screen.dart';
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/informasi/informasitersimpan_screen.dart';
 import 'package:essentials/screens/navigation/desa_screen.dart';
@@ -33,17 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (imagePicked != null) {
       selectedImage = File(imagePicked.path);
       setState(() {});
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
     }
   }
 
@@ -173,8 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 12),
         GestureDetector(
-          onTap: () async {
-          },
+          onTap: () async {},
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
             child: Row(
@@ -316,6 +304,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: Text(
                     'Desa Kedungmulyo',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Icon(
+                  PhosphorIconsRegular.caretRight,
+                  size: 20,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Divider(
+          color: Color(0xffD9D9D9),
+        ),
+        // hanya untuk admin (memo desa)
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MemoDesaAdminScreen(),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  PhosphorIconsRegular.note,
+                  size: 28,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'Memo Desa',
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

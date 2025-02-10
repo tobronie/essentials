@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/administrasi/listadministrasi_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
@@ -6,14 +8,13 @@ import 'package:essentials/screens/informasi/listinformasi_screen.dart';
 import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
 import 'package:essentials/services/information_desa_services.dart';
-import 'package:essentials/services/information_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
+import 'package:http/http.dart' as http;
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,38 +24,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ScrollController scrollController = ScrollController();
-  int activeIndex = 0;
-  final double itemWidth = 274.0;
-
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    scrollController.removeListener(_onScroll);
-    scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    double currentScrollPosition = scrollController.position.pixels;
-    int newIndex = (currentScrollPosition / itemWidth).round();
-    if (newIndex < 0) newIndex = 0;
-    if (newIndex > 5) newIndex = 5;
-    if (newIndex != activeIndex) {
-      setState(() {
-        activeIndex = newIndex;
-      });
+  Future<List<dynamic>> getInformation() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
     }
   }
 
@@ -252,183 +233,197 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _homeInformasi() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Cek informasi menarik lainnya',
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 12),
-        StreamBuilder<QuerySnapshot>(
-          stream: DbInformation.getData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final documents = snapshot.data!.docs;
-              final maxCount = documents.length > 5 ? 5 : documents.length;
+    PageController _pageController = PageController(viewportFraction: 0.7);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pageController.jumpTo(0);
+    });
+    return FutureBuilder<List<dynamic>>(
+      future: getInformation(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text("Tidak ada data tersedia"));
+        }
 
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 156,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: maxCount,
-                      controller: scrollController,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot information = documents[index];
-                        return Padding(
-                          padding:
-                              const EdgeInsets.only(left: 2, right: 12, top: 2),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => InformasiDetailScreen(
-                                    information: information.data()
-                                        as Map<String, dynamic>,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: 274,
-                              height: 152,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 3,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
-                              ),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: Image.network(
-                                      information['image'] ?? '',
-                                      width: 274,
-                                      height: 152,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Icon(Icons.error);
-                                      },
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: 152,
-                                      height: 152,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.95),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(18),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              information['kategori'] ?? '',
-                                              style: GoogleFonts.montserrat(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              information['judul'] ?? '',
-                                              style: GoogleFonts.montserrat(
-                                                fontSize: 12,
-                                                height: 1.2,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black,
-                                              ),
-                                              textAlign: TextAlign.justify,
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Align(
-                                              alignment: AlignmentDirectional
-                                                  .centerStart,
-                                              child: Container(
-                                                height: 2,
-                                                width: 42,
-                                                color: const Color(0xff00AA13),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              information['tgl_upload'] != null
-                                                  ? DateFormat('dd MMM yyyy')
-                                                      .format(
-                                                      (information['tgl_upload']
-                                                              as Timestamp)
-                                                          .toDate(),
-                                                    )
-                                                  : 'Tanggal tidak tersedia',
-                                              style: GoogleFonts.montserrat(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+        List<dynamic> informationList = snapshot.data!;
+        informationList.sort((a, b) => DateTime.parse(b['tgl_upload_info'])
+            .compareTo(DateTime.parse(a['tgl_upload_info'])));
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Cek informasi menarik lainnya',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 156,
+              child: ListView.builder(
+                controller: _pageController,
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount:
+                    informationList.length > 5 ? 5 : informationList.length,
+                itemBuilder: (context, index) {
+                  var information = informationList[index];
+
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 2, right: 12, top: 2),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InformasiDetailScreen(
+                              information: information,
                             ),
                           ),
                         );
                       },
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: AnimatedSmoothIndicator(
-                      activeIndex: activeIndex,
-                      count: maxCount,
-                      effect: ExpandingDotsEffect(
-                        dotWidth: 5,
-                        dotHeight: 5,
-                        activeDotColor: const Color(0xFF00AA13),
-                        dotColor: Colors.grey,
-                        spacing: 5,
+                      child: Container(
+                        width: 274,
+                        height: 152,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 3,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image(
+                                image: _getImageProvider(
+                                    information['foto_info'] ?? ''),
+                                width: 274,
+                                height: 152,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.error);
+                                },
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              child: Container(
+                                width: 152,
+                                height: 152,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.95),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(18),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        information['kategori_info'] ?? '',
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        information['judul_info'] ?? '',
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 12,
+                                          height: 1.2,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                        textAlign: TextAlign.justify,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
+                                        child: Container(
+                                          height: 2,
+                                          width: 42,
+                                          color: const Color(0xff00AA13),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        information['tgl_upload_info'] != null
+                                            ? DateFormat('dd MMM yyyy').format(
+                                                DateTime.parse(information[
+                                                    'tgl_upload_info']),
+                                              )
+                                            : 'Tanggal tidak tersedia',
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text("Error: ${snapshot.error}"),
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-      ],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count: informationList.length > 5 ? 5 : informationList.length,
+                effect: ExpandingDotsEffect(
+                  dotHeight: 5,
+                  dotWidth: 5,
+                  activeDotColor: Color(0xff00AA13),
+                  dotColor: Colors.grey.shade400,
+                ),
+              ),
+            )
+          ],
+        );
+      },
     );
+  }
+
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(fotoInfo);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
   }
 
   Widget _homeDesa() {

@@ -1,33 +1,28 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:essentials/screens/admin/editinformasi_admin_screen.dart';
-import 'package:essentials/screens/admin/navigation_admin.dart';
-import 'package:essentials/screens/admin/tambahinformasi_admin_screen.dart';
-import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
+import 'package:essentials/screens/admin/tambahmemo_admin_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class ListInformasiAdminScreen extends StatefulWidget {
-  const ListInformasiAdminScreen({super.key});
+class MemoDesaAdminScreen extends StatefulWidget {
+  const MemoDesaAdminScreen({super.key});
 
   @override
-  _ListInformasiAdminScreenState createState() =>
-      _ListInformasiAdminScreenState();
+  _MemoDesaAdminScreenState createState() => _MemoDesaAdminScreenState();
 }
 
-class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
-  String _selectedOption = 'Semua';
+class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
 
-  Future<List<dynamic>> getInformation() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
+  Future<List<dynamic>> getMemo() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/view_information_desa.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -59,7 +54,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
           },
         ),
         title: Text(
-          'Pengaturan Informasi',
+          'Memo Desa',
           style: GoogleFonts.montserrat(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -80,7 +75,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                 _searchAndCread(),
                 const SizedBox(height: 18),
                 FutureBuilder<List<dynamic>>(
-                  future: getInformation(),
+                  future: getMemo(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -89,13 +84,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(child: Text("Tidak ada data tersedia"));
                     } else {
-                      return Column(
-                        children: [
-                          _option(snapshot.data!),
-                          const SizedBox(height: 18),
-                          _data(snapshot.data!),
-                        ],
-                      );
+                      return _data(snapshot.data!);
                     }
                   },
                 ),
@@ -104,7 +93,6 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AdminCustomNavigationBar(selectedIndex: 2),
     );
   }
 
@@ -181,7 +169,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TambahInformasiScreen(),
+                    builder: (context) => TambahMemoScreen(),
                   ),
                 );
               },
@@ -193,80 +181,21 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
     );
   }
 
-  Widget _option(List<dynamic> data) {
-    List<String> categories = [
-      'Semua',
-      'Infrastruktur',
-      'Kecelakaan',
-      'Kegiatan',
-      'Sosial'
-    ];
-
-    return Container(
-      height: 36,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: categories
-            .map((category) => _buildCategoryOption(category))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildCategoryOption(String category) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedOption = category;
-          _searchQuery = '';
-          _searchController.clear();
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: _selectedOption == category
-              ? Color(0xFF0D0140).withOpacity(0.25)
-              : Colors.white,
-          border: Border.all(
-            color: _selectedOption == category
-                ? Color(0xFF0D0140)
-                : Color(0xffD9D9D9),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Text(
-          category,
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color:
-                _selectedOption == category ? Color(0xFF0D0140) : Colors.black,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _data(List<dynamic> informationList) {
-    List<dynamic> filteredList = informationList.where((info) {
-      bool matchesCategory = _selectedOption == 'Semua' ||
-          info['kategori_info'] == _selectedOption;
-      bool matchesSearch = info['judul_info']
+  Widget _data(List<dynamic> memoList) {
+    List<dynamic> filteredList = memoList.where((memo) {
+      bool matchesSearch = memo['judul_infodes']
           .toString()
           .toLowerCase()
           .contains(_searchQuery.toLowerCase());
 
-      return matchesCategory && matchesSearch;
+      return matchesSearch;
     }).toList();
 
     filteredList.sort((a, b) {
       DateTime dateA =
-          DateTime.tryParse(a['tgl_upload_info'] ?? '') ?? DateTime(1970);
+          DateTime.tryParse(a['tgl_upload_infodes'] ?? '') ?? DateTime(1970);
       DateTime dateB =
-          DateTime.tryParse(b['tgl_upload_info'] ?? '') ?? DateTime(1970);
+          DateTime.tryParse(b['tgl_upload_infodes'] ?? '') ?? DateTime(1970);
       return dateB.compareTo(dateA);
     });
 
@@ -275,20 +204,13 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        var information = filteredList[index];
+        var information_desa = filteredList[index];
 
         return Column(
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => InformasiDetailScreen(
-                      information: information,
-                    ),
-                  ),
-                );
+                //detail infodes
               },
               child: Container(
                 width: double.infinity,
@@ -304,7 +226,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              information['judul_info'] ?? '',
+                              information_desa['judul_infodes'] ?? '',
                               style: GoogleFonts.montserrat(
                                 fontSize: 16,
                                 height: 1.1,
@@ -319,10 +241,10 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  information['tgl_upload_info'] != null
+                                  information_desa['tgl_upload_infodes'] != null
                                       ? DateFormat('dd MMM yyyy').format(
-                                          DateTime.parse(
-                                              information['tgl_upload_info']),
+                                          DateTime.parse(information_desa[
+                                              'tgl_upload_infodes']),
                                         )
                                       : 'Tanggal tidak tersedia',
                                   style: GoogleFonts.montserrat(
@@ -335,19 +257,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) =>
-                                        //         EditInformasiScreen(
-                                        //       editInformation:
-                                        //           information.data()
-                                        //               as Map<String, dynamic>,
-                                        //       documentId: information.id,
-                                        //       EditInformation: {},
-                                        //     ),
-                                        //   ),
-                                        // );
+                                        //edit infodes
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -369,7 +279,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                     const SizedBox(width: 8),
                                     GestureDetector(
                                       onTap: () {
-                                        // _deleteInformation(information.id);
+                                        //delete infodes
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -407,7 +317,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                               image: _getImageProvider(
-                                  information['foto_info'] ?? ''),
+                                  information_desa['foto_infodes'] ?? ''),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -447,79 +357,5 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       print("Error decoding base64: $e");
       return AssetImage('assets/images/no_image.jpg');
     }
-  }
-
-  void _deleteInformation(String documentId) async {
-    bool? confirm = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Konfirmasi Penghapusan',
-            style: GoogleFonts.montserrat(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-          content: Text(
-            'Apakah Anda yakin ingin menghapus informasi ini?',
-            style: GoogleFonts.montserrat(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Text(
-                  'Batal',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Text(
-                  'Hapus',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-
-    // if (confirm == true) {
-    //   await DbInformation.deleteInformation(documentId);
-    //   setState(() {});
-    // }
   }
 }
