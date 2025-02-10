@@ -7,14 +7,12 @@ import 'package:essentials/screens/navigation/desa_screen.dart';
 // import 'package:essentials/screens/navigation/detailpengguna_screen.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:essentials/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -38,25 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void muatPreferensiModeGelap() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      modeGelap = prefs.getBool('modeGelap') ?? false;
-    });
-  }
-
-  void simpanPreferensiModeGelap(bool mode) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('modeGelap', mode);
-  }
-
-  void pengubahModeGelap(bool mode) {
-    setState(() {
-      modeGelap = mode;
-    });
-    simpanPreferensiModeGelap(mode);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -66,7 +45,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       print("No user is currently logged in.");
     }
-    muatPreferensiModeGelap();
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/services/firebase_auth_services.dart';
-// import 'package:essentials/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Essentials',
       debugShowCheckedModeBanner: false,
-      // theme: modeGelap ? darkMode : lightMode,
       initialRoute: '/',
       routes: {
         '/': (context) => const CheckUser(),
