@@ -1,37 +1,76 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 
 class InformasiTetapScreen extends StatefulWidget {
-  final Map<String, dynamic> informationDesa;
+  final String id;
 
-  const InformasiTetapScreen({required this.informationDesa, Key? key}) : super(key: key);
+  const InformasiTetapScreen({super.key, required this.id});
 
   @override
   _InformasiTetapScreenState createState() => _InformasiTetapScreenState();
 }
 
 class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
+  late Future<List<dynamic>> _futureInformationDesa;
+  Map<String, dynamic>? _sharedInformationDesa;
+
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
+    _futureInformationDesa = getInformationDesa();
+  }
+
+  Future<List<dynamic>> getInformationDesa() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_information_desa.php?id_infodes=${widget.id}';
+    try {
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data.isNotEmpty) {
+          _sharedInformationDesa = data[0];
+        }
+        return data;
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
     }
   }
 
-  @override
+  Future<void> shareImageFromBase64(String base64Image, String judul) async {
+    try {
+      Uint8List imageBytes = base64Decode(base64Image);
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/foto_informasi.jpg');
+      await file.writeAsBytes(imageBytes);
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: '$judul\n\nInformasi Selengkapnya di Aplikasi "Essentials"',
+      );
+    } catch (e) {
+      print("Gagal membagikan gambar: $e");
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF9F9F9),
+      backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -40,111 +79,153 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
           Padding(
             padding: const EdgeInsets.only(left: 0),
             child: IconButton(
+              icon: const Icon(PhosphorIconsRegular.arrowBendUpRight,
+                  color: Colors.black),
+              onPressed: () {
+                if (_sharedInformationDesa != null) {
+                  shareImageFromBase64(_sharedInformationDesa!['foto_infodes'],
+                      _sharedInformationDesa!['judul_infodes']);
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: IconButton(
               icon: const Icon(
-                PhosphorIconsRegular.arrowBendUpRight,
+                PhosphorIconsRegular.bookmarkSimple,
                 color: Colors.black,
               ),
-              onPressed: () {
-                final String shareContent =
-                    '${widget.informationDesa['image']}\n${widget.informationDesa['judul']}\n\nInformasi Selengkapnya di Aplikasi "Essentials" Masyarakat Ds. Kedungmulyo, Kec. Bangilan, Kab. Tuban';
-                Share.share(shareContent);
-              },
+              onPressed: () {},
             ),
           ),
         ],
         elevation: 0,
-        backgroundColor: Color(0xffF9F9F9),
+        backgroundColor: const Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 240,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(widget.informationDesa['image'] ?? ''),
-                  fit: BoxFit.cover,
+      body: FutureBuilder<List<dynamic>>(
+        future: _futureInformationDesa,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data!.isEmpty) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var informationDesa = snapshot.data![0];
+
+          return SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 240,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: _getImageProvider_infodes(
+                          informationDesa['foto_infodes'] ?? ''),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    margin: const EdgeInsets.only(top: 216),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(25)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 3,
+                          width: 40,
+                          color: const Color(0xff00AA13),
+                        ),
+                        const SizedBox(height: 32),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            informationDesa['judul_infodes'] ?? '',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Container(
+                            height: 2,
+                            width: 118,
+                            color: const Color(0xffD9D9D9),
+                          ),
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: 
+                            Text(
+                              informationDesa['tgl_upload_infodes'] != null
+                                  ? DateFormat('dd MMMM yyyy').format(
+                                      DateTime.parse(
+                                          informationDesa['tgl_upload_infodes']),
+                                    )
+                                  : 'Tanggal tidak tersedia',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                        ),
+                        const SizedBox(height: 24),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            informationDesa['isi_infodes'] ?? '',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 18, right: 18, top: 8, bottom: 24),
-                margin: const EdgeInsets.only(top: 216),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(25)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 3,
-                      width: 40,
-                      color: const Color(0xff00AA13),
-                    ),
-                    const SizedBox(height: 32),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        widget.informationDesa['judul'] ?? '',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          height: 1.2,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Container(
-                        height: 2,
-                        width: 118,
-                        color: const Color(0xffD9D9D9),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Text(
-                        widget.informationDesa['update'] ?? '',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        widget.informationDesa['isi'] ?? '',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          height: 1.2,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
+  }
+
+  ImageProvider _getImageProvider_infodes(String fotoInfoDesa) {
+    if (fotoInfoDesa.isEmpty) {
+      return const AssetImage('assets/images/no_image.jpg');
+    }
+    if (fotoInfoDesa.startsWith('http')) {
+      return NetworkImage(fotoInfoDesa);
+    }
+    try {
+      Uint8List bytes = base64Decode(fotoInfoDesa);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return const AssetImage('assets/images/no_image.jpg');
+    }
   }
 }

@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/administrasi/listadministrasi_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/informasi/listinformasi_screen.dart';
 import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
-import 'package:essentials/services/information_desa_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -24,8 +22,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PageController _pageController = PageController(viewportFraction: 0.7);
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   Future<List<dynamic>> getInformation() async {
     String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getMemo() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/view_information_desa.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -233,10 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _homeInformasi() {
-    PageController _pageController = PageController(viewportFraction: 0.7);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pageController.jumpTo(0);
-    });
     return FutureBuilder<List<dynamic>>(
       future: getInformation(),
       builder: (context, snapshot) {
@@ -248,8 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
           return Center(child: Text("Tidak ada data tersedia"));
         }
 
-        List<dynamic> informationList = snapshot.data!;
-        informationList.sort((a, b) => DateTime.parse(b['tgl_upload_info'])
+        List<dynamic> informasiList = snapshot.data!;
+        informasiList.sort((a, b) => DateTime.parse(b['tgl_upload_info'])
             .compareTo(DateTime.parse(a['tgl_upload_info'])));
 
         return Column(
@@ -270,10 +288,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemCount:
-                    informationList.length > 5 ? 5 : informationList.length,
+                itemCount: informasiList.length > 5 ? 5 : informasiList.length,
                 itemBuilder: (context, index) {
-                  var information = informationList[index];
+                  var informasi = informasiList[index];
 
                   return Padding(
                     padding: const EdgeInsets.only(left: 2, right: 12, top: 2),
@@ -283,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => InformasiDetailScreen(
-                              information: information,
+                              id: informasi['id_info'].toString(),
                             ),
                           ),
                         );
@@ -306,8 +323,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(15),
                               child: Image(
-                                image: _getImageProvider(
-                                    information['foto_info'] ?? ''),
+                                image: _getImageProvider_info(
+                                    informasi['foto_info'] ?? ''),
                                 width: 274,
                                 height: 152,
                                 fit: BoxFit.cover,
@@ -333,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        information['kategori_info'] ?? '',
+                                        informasi['kategori_info'] ?? '',
                                         style: GoogleFonts.montserrat(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
@@ -342,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        information['judul_info'] ?? '',
+                                        informasi['judul_info'] ?? '',
                                         style: GoogleFonts.montserrat(
                                           fontSize: 12,
                                           height: 1.2,
@@ -363,9 +380,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        information['tgl_upload_info'] != null
+                                        informasi['tgl_upload_info'] != null
                                             ? DateFormat('dd MMM yyyy').format(
-                                                DateTime.parse(information[
+                                                DateTime.parse(informasi[
                                                     'tgl_upload_info']),
                                               )
                                             : 'Tanggal tidak tersedia',
@@ -393,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.centerLeft,
               child: SmoothPageIndicator(
                 controller: _pageController,
-                count: informationList.length > 5 ? 5 : informationList.length,
+                count: informasiList.length > 5 ? 5 : informasiList.length,
                 effect: ExpandingDotsEffect(
                   dotHeight: 5,
                   dotWidth: 5,
@@ -408,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ImageProvider _getImageProvider(String fotoInfo) {
+  ImageProvider _getImageProvider_info(String fotoInfo) {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
@@ -427,126 +444,126 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _homeDesa() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Informasi Desa Kedungmulyo',
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 12),
-        StreamBuilder<QuerySnapshot>(
-          stream: DbInformationDesa.getData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: List.generate(
-                  snapshot.data!.docs.length > 2
-                      ? 2
-                      : snapshot.data!.docs.length,
-                  (index) {
-                    DocumentSnapshot informationDesa =
-                        snapshot.data!.docs[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => InformasiTetapScreen(
-                                informationDesa: informationDesa.data()
-                                    as Map<String, dynamic>,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 3,
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(15),
-                                  topRight: Radius.circular(15),
-                                ),
-                                child: Image.network(
-                                  informationDesa['image'] ?? '',
-                                  width: double.infinity,
-                                  height: 140,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons.error);
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 18),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      informationDesa['judul'] ?? '',
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      informationDesa['isi'] ?? '',
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 12,
-                                        height: 1.2,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                      ),
-                                      textAlign: TextAlign.justify,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+    return FutureBuilder<List<dynamic>>(
+      future: getMemo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text("Tidak ada data tersedia"));
+        }
+
+        List informasiDesaList = snapshot.data!;
+        return Column(
+          children: List.generate(
+            informasiDesaList.length > 2 ? 2 : informasiDesaList.length,
+            (index) {
+              Map<String, dynamic> informasiDesa = informasiDesaList[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InformasiTetapScreen(
+                          id: informasiDesa['id_infodes'].toString(),
                         ),
                       ),
                     );
                   },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 3,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                          ),
+                          child: Image(
+                            image: _getImageProvider_info(
+                                informasiDesa['foto_infodes'] ?? ''),
+                            width: double.infinity,
+                            height: 140,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.error);
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18, vertical: 18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                informasiDesa['judul_infodes'] ?? '',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                informasiDesa['isi_infodes'] ?? '',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 12,
+                                  height: 1.2,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.justify,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text("Error: ${snapshot.error}"),
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-      ],
+            },
+          ),
+        );
+      },
     );
+  }
+
+  ImageProvider _getImageProvider_infodes(String fotoInfodes) {
+    if (fotoInfodes.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (fotoInfodes.startsWith('http')) {
+      return NetworkImage(fotoInfodes);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(fotoInfodes);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
   }
 }

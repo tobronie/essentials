@@ -202,8 +202,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
     );
   }
 
-  Widget _data(List<dynamic> informationList) {
-    List<dynamic> filteredList = informationList.where((info) {
+  Widget _data(List<dynamic> informasiList) {
+    List<dynamic> filteredList = informasiList.where((info) {
       bool matchesCategory = _selectedOption == 'Semua' ||
           info['kategori_info'] == _selectedOption;
       bool matchesSearch = info['judul_info']
@@ -227,7 +227,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        var information = filteredList[index];
+        var informasi = filteredList[index];
 
         return Column(
           children: [
@@ -237,7 +237,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => InformasiDetailScreen(
-                      information: information,
+                      id: informasi['id_info'].toString(),
                     ),
                   ),
                 );
@@ -255,7 +255,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            information['judul_info'] ?? '',
+                            informasi['judul_info'] ?? '',
                             style: GoogleFonts.montserrat(
                               fontSize: 16,
                               height: 1.1,
@@ -267,10 +267,10 @@ class _InformasiScreenState extends State<InformasiScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            information['tgl_upload_info'] != null
+                            informasi['tgl_upload_info'] != null
                                 ? DateFormat('dd MMM yyyy').format(
                                     DateTime.parse(
-                                        information['tgl_upload_info']),
+                                        informasi['tgl_upload_info']),
                                   )
                                 : 'Tanggal tidak tersedia',
                             style: GoogleFonts.montserrat(
@@ -293,7 +293,7 @@ class _InformasiScreenState extends State<InformasiScreen> {
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                               image: _getImageProvider(
-                                  information['foto_info'] ?? ''),
+                                  informasi['foto_info'] ?? ''),
                               fit: BoxFit.cover,
                             ),
                           ),

@@ -5,7 +5,6 @@ import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/tambahinformasi_admin_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:essentials/services/information_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -250,8 +249,8 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
     );
   }
 
-  Widget _data(List<dynamic> informationList) {
-    List<dynamic> filteredList = informationList.where((info) {
+  Widget _data(List<dynamic> informasiList) {
+    List<dynamic> filteredList = informasiList.where((info) {
       bool matchesCategory = _selectedOption == 'Semua' ||
           info['kategori_info'] == _selectedOption;
       bool matchesSearch = info['judul_info']
@@ -275,7 +274,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        var information = filteredList[index];
+        var informasi = filteredList[index];
 
         return Column(
           children: [
@@ -285,7 +284,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => InformasiDetailScreen(
-                      information: information,
+                      id: informasi['id_info'].toString(),
                     ),
                   ),
                 );
@@ -304,7 +303,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              information['judul_info'] ?? '',
+                              informasi['judul_info'] ?? '',
                               style: GoogleFonts.montserrat(
                                 fontSize: 16,
                                 height: 1.1,
@@ -319,10 +318,10 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  information['tgl_upload_info'] != null
+                                  informasi['tgl_upload_info'] != null
                                       ? DateFormat('dd MMM yyyy').format(
                                           DateTime.parse(
-                                              information['tgl_upload_info']),
+                                              informasi['tgl_upload_info']),
                                         )
                                       : 'Tanggal tidak tersedia',
                                   style: GoogleFonts.montserrat(
@@ -340,11 +339,11 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                         //   MaterialPageRoute(
                                         //     builder: (context) =>
                                         //         EditInformasiScreen(
-                                        //       editInformation:
-                                        //           information.data()
+                                        //       editinformasi:
+                                        //           informasi.data()
                                         //               as Map<String, dynamic>,
-                                        //       documentId: information.id,
-                                        //       EditInformation: {},
+                                        //       documentId: informasi.id,
+                                        //       Editinformasi: {},
                                         //     ),
                                         //   ),
                                         // );
@@ -369,7 +368,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                     const SizedBox(width: 8),
                                     GestureDetector(
                                       onTap: () {
-                                        // _deleteInformation(information.id);
+                                        // _deleteInformasi(informasi.id);
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -407,7 +406,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                               image: _getImageProvider(
-                                  information['foto_info'] ?? ''),
+                                  informasi['foto_info'] ?? ''),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -449,7 +448,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
     }
   }
 
-  void _deleteInformation(String documentId) async {
+  void _deleteInformasi(String documentId) async {
     bool? confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
