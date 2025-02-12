@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:essentials/screens/admin/tambahmemo_admin_screen.dart';
+import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -204,13 +205,20 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        var information_desa = filteredList[index];
+        var informasiDesa = filteredList[index];
 
         return Column(
           children: [
             GestureDetector(
               onTap: () {
-                //detail infodes
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => InformasiTetapScreen(
+                      id: informasiDesa['id_infodes'].toString(),
+                    ),
+                  ),
+                );
               },
               child: Container(
                 width: double.infinity,
@@ -220,109 +228,99 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              information_desa['judul_infodes'] ?? '',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 16,
-                                height: 1.1,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  information_desa['tgl_upload_infodes'] != null
-                                      ? DateFormat('dd MMM yyyy').format(
-                                          DateTime.parse(information_desa[
-                                              'tgl_upload_infodes']),
-                                        )
-                                      : 'Tanggal tidak tersedia',
-                                  style: GoogleFonts.montserrat(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        //edit infodes
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              Color(0xFF9D00).withOpacity(0.7),
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Icon(
-                                          PhosphorIcons.pencilSimpleLine(),
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    GestureDetector(
-                                      onTap: () {
-                                        //delete infodes
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              Color(0xFF0000).withOpacity(0.7),
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Icon(
-                                          PhosphorIcons.trash(),
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                    // Foto di sebelah kiri
+                    Container(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                          image: _getImageProvider(
+                              informasiDesa['foto_infodes'] ?? ''),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 76,
-                          height: 76,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: _getImageProvider(
-                                  information_desa['foto_infodes'] ?? ''),
-                              fit: BoxFit.cover,
+                    const SizedBox(width: 12), // Jarak antara foto dan teks
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            informasiDesa['judul_infodes'] ?? '',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16,
+                              height: 1.1,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
                             ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                informasiDesa['tgl_upload_infodes'] != null
+                                    ? DateFormat('dd MMM yyyy').format(
+                                        DateTime.parse(informasiDesa[
+                                            'tgl_upload_infodes']),
+                                      )
+                                    : 'Tanggal tidak tersedia',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      // edit infodes
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFFA500)
+                                            .withOpacity(0.7),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Icon(
+                                        PhosphorIcons.pencilSimpleLine(),
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // delete infodes
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFF0000)
+                                            .withOpacity(0.7),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Icon(
+                                        PhosphorIcons.trash(),
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

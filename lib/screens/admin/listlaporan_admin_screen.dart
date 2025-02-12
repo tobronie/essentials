@@ -1,12 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/admin/verifikasilaporan_admin_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:essentials/services/pelaporan_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ListVerifikasiLaporanAdminScreen extends StatefulWidget {
@@ -22,17 +22,20 @@ class _ListVerifikasiLaporanAdminScreenState
   String _selectedOption = 'Belum diverifikasi';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _isSearchActive = false;
   FocusNode _searchFocusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
+  Future<List<dynamic>> getPelaporan() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_pelaporan.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
     }
   }
 
@@ -42,7 +45,10 @@ class _ListVerifikasiLaporanAdminScreenState
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -73,7 +79,20 @@ class _ListVerifikasiLaporanAdminScreenState
                 const SizedBox(height: 18),
                 _option(context),
                 const SizedBox(height: 18),
-                _data(),
+                FutureBuilder<List<dynamic>>(
+                  future: getPelaporan(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text("Tidak ada data tersedia"));
+                    } else {
+                      return _data(snapshot.data!);
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -98,7 +117,7 @@ class _ListVerifikasiLaporanAdminScreenState
       ),
       child: Row(
         children: [
-          Icon(PhosphorIconsRegular.magnifyingGlass, color: Color(0xFF0D0140)),
+          Icon(PhosphorIconsRegular.magnifyingGlass, color: Color(0xff00AA13)),
           SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -112,16 +131,6 @@ class _ListVerifikasiLaporanAdminScreenState
               onChanged: (query) {
                 setState(() {
                   _searchQuery = query;
-                  _isSearchActive = query.isNotEmpty;
-                  if (_isSearchActive) {
-                    _selectedOption = 'Belum diverifikasi';
-                  }
-                });
-              },
-              onTap: () {
-                setState(() {
-                  _isSearchActive = true;
-                  _selectedOption = 'Belum diverifikasi';
                 });
               },
               decoration: InputDecoration(
@@ -149,9 +158,7 @@ class _ListVerifikasiLaporanAdminScreenState
         scrollDirection: Axis.horizontal,
         children: [
           _buildCategoryOption('Belum diverifikasi'),
-          if (!_isSearchActive) ...[
-            _buildCategoryOption('Sudah diverifikasi'),
-          ],
+          _buildCategoryOption('Sudah diverifikasi'),
         ],
       ),
     );
@@ -163,7 +170,6 @@ class _ListVerifikasiLaporanAdminScreenState
         setState(() {
           _selectedOption = category;
           _searchQuery = '';
-          _isSearchActive = false;
           _searchController.clear();
         });
       },
@@ -195,134 +201,144 @@ class _ListVerifikasiLaporanAdminScreenState
     );
   }
 
-  Widget _data() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          StreamBuilder<QuerySnapshot>(
-            stream: DbPelaporan.getDataBySearch(_selectedOption, _searchQuery),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final documents = snapshot.data!.docs;
+  Widget _data(List<dynamic> pelaporanList) {
+    List<dynamic> filteredList = pelaporanList.where((lapor) {
+      bool matchesSearch = lapor['judul_lapor']
+          .toString()
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
 
-                return ListView.builder(
-                  itemCount: documents.length,
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot pelaporan = documents[index];
-                    String FormatUpload = '';
-                    if (pelaporan['tgl_upload'] != null) {
-                      Timestamp timestamp = pelaporan['tgl_upload'];
-                      DateTime date = timestamp.toDate();
-                      FormatUpload = DateFormat('dd MMM yyyy').format(date);
-                    }
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            final String documentId = documents[index].id;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DataVerifikasiLaporanScreen(
-                                          id: documentId)),
-                            );
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            height: 114,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 3,
-                                  spreadRadius: 1,
-                                  offset: Offset(0.0, 0.0),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 98,
-                                  height: 98,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: Image.network(
-                                      pelaporan['image'] ?? '',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          pelaporan['judul'] ?? '',
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 16,
-                                            height: 1.1,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Container(
-                                          height: 2,
-                                          width: 60,
-                                          color: Color(0xFF0D0140),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          FormatUpload,
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+      return matchesSearch;
+    }).toList();
+
+    filteredList.sort((a, b) {
+      DateTime dateA =
+          DateTime.tryParse(a['tgl_upload_lapor'] ?? '') ?? DateTime(1970);
+      DateTime dateB =
+          DateTime.tryParse(b['tgl_upload_lapor'] ?? '') ?? DateTime(1970);
+      return dateB.compareTo(dateA);
+    });
+
+    return ListView.builder(
+      itemCount: filteredList.length,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        var pelaporan = filteredList[index];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DataVerifikasiLaporanScreen(
+                      id: pelaporan['id_lapor'].toString(),
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 114,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: Offset(0.0, 0.0),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 98,
+                      height: 98,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        image: DecorationImage(
+                          image:
+                              _getImageProvider(pelaporan['foto_lapor'] ?? ''),
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(height: 12),
-                      ],
-                    );
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text("Error: ${snapshot.error}"),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-        ],
-      ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              pelaporan['judul_lapor'] ?? '',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                height: 1.1,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              height: 2,
+                              width: 60,
+                              color: Color(0xFF0D0140),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              pelaporan['tgl_upload_lapor'] != null
+                                  ? DateFormat('dd MMM yyyy').format(
+                                      DateTime.parse(
+                                          pelaporan['tgl_upload_lapor']),
+                                    )
+                                  : 'Tanggal tidak tersedia',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
     );
+  }
+
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(fotoInfo);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
   }
 }

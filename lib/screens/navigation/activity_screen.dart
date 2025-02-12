@@ -1,23 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/navigation/activityadministrasi_screen.dart';
 import 'package:essentials/screens/navigation/activitypelaporan_screen.dart';
-import 'package:essentials/services/akte_services.dart';
-import 'package:essentials/services/domisili_services.dart';
-import 'package:essentials/services/kematian_services.dart';
-import 'package:essentials/services/kk_services.dart';
-import 'package:essentials/services/ktp_services.dart';
-import 'package:essentials/services/nikah_services.dart';
-import 'package:essentials/services/pelaporan_services.dart';
-import 'package:essentials/services/pendudukan_services.dart';
-import 'package:essentials/services/penghasilan_ortu_services.dart';
-import 'package:essentials/services/sktm_services.dart';
-import 'package:essentials/services/tanah_services.dart';
-import 'package:essentials/services/usaha_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -31,17 +20,186 @@ class _ActivityScreenState extends State<ActivityScreen> {
   String _selectedOption = 'Dalam Proses';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _isSearchActive = false;
   FocusNode _searchFocusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
+  Future<List<dynamic>> getPelaporan() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_pelaporan.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getAkte() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_akte.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getDomisili() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_domisili.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getKematian() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_kematian.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getKK() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_kk.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getKTP() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_ktp.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getNikah() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_nikah.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getPendudukan() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_pendudukan.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getPenghasilanOrtu() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/view_ad_penghasilan_ortu.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getSKTM() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_sktm.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getTanah() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_tanah.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getUsaha() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_usaha.php';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return [];
     }
   }
 
@@ -77,18 +235,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 const SizedBox(height: 18),
                 _process(context),
                 const SizedBox(height: 18),
-                _dataCollection('pelaporan'),
-                _dataCollection('domisili'),
-                _dataCollection('usaha'),
-                _dataCollection('sktm'),
-                _dataCollection('kematian'),
-                _dataCollection('penghasilan_ortu'),
-                _dataCollection('ktp'),
-                _dataCollection('kk'),
-                _dataCollection('akte'),
-                _dataCollection('nikah'),
-                _dataCollection('tanah'),
-                _dataCollection('pendudukan'),
+                // _dataCollection('pelaporan'),
+                // _dataCollection('domisili'),
+                // _dataCollection('usaha'),
+                // _dataCollection('sktm'),
+                // _dataCollection('kematian'),
+                // _dataCollection('penghasilan_ortu'),
+                // _dataCollection('ktp'),
+                // _dataCollection('kk'),
+                // _dataCollection('akte'),
+                // _dataCollection('nikah'),
+                // _dataCollection('tanah'),
+                // _dataCollection('pendudukan'),
               ],
             ),
           ),
@@ -122,20 +280,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
+                color: Colors.black,
               ),
               onChanged: (query) {
                 setState(() {
                   _searchQuery = query;
-                  _isSearchActive = query.isNotEmpty;
-                  if (_isSearchActive) {
-                    _selectedOption = 'Dalam Proses';
-                  }
-                });
-              },
-              onTap: () {
-                setState(() {
-                  _isSearchActive = true;
-                  _selectedOption = 'Dalam Proses';
                 });
               },
               decoration: InputDecoration(
@@ -226,224 +375,231 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _dataCollection(String collectionType) {
-    Stream<QuerySnapshot> getStream() {
-      switch (collectionType) {
-        case 'pelaporan':
-          return DbPelaporan.getDataBySearch(_selectedOption, _searchQuery);
-        case 'domisili':
-          return DbDomisili.getDataBySearch(_selectedOption, _searchQuery);
-        case 'usaha':
-          return DbUsaha.getDataBySearch(_selectedOption, _searchQuery);
-        case 'sktm':
-          return DbSKTM.getDataBySearch(_selectedOption, _searchQuery);
-        case 'kematian':
-          return DbKematian.getDataBySearch(_selectedOption, _searchQuery);
-        case 'penghasilan_ortu':
-          return DbPenghasilanOrtu.getDataBySearch(
-              _selectedOption, _searchQuery);
-        case 'ktp':
-          return DbKTP.getDataBySearch(_selectedOption, _searchQuery);
-        case 'kk':
-          return DbKK.getDataBySearch(_selectedOption, _searchQuery);
-        case 'akte':
-          return DbAkte.getDataBySearch(_selectedOption, _searchQuery);
-        case 'nikah':
-          return DbNikah.getDataBySearch(_selectedOption, _searchQuery);
-        case 'tanah':
-          return DbTanah.getDataBySearch(_selectedOption, _searchQuery);
-        case 'pendudukan':
-          return DbPendudukan.getDataBySearch(_selectedOption, _searchQuery);
-        default:
-          throw Exception('Unknown collection type');
-      }
-    }
+  // Widget _dataCollection(String collectionType) {
+  //   Stream<QuerySnapshot> getStream() {
+  //     switch (collectionType) {
+  //       case 'pelaporan':
+  //         return DbPelaporan.getDataBySearch(_selectedOption, _searchQuery);
+  //       case 'domisili':
+  //         return DbDomisili.getDataBySearch(_selectedOption, _searchQuery);
+  //       case 'akte':
+  //         return DbAkte.getDataBySearch(_selectedOption, _searchQuery);
+  //       default:
+  //         throw Exception('Unknown collection type');
+  //     }
+  //   }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: getStream(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final documents = snapshot.data!.docs;
+  //   return StreamBuilder<QuerySnapshot>(
+  //     stream: getStream(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.hasData) {
+  //         final documents = snapshot.data!.docs;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    final data =
-                        documents[index].data() as Map<String, dynamic>;
-                    String formattedDate = '';
-                    if (data['tgl_upload'] is Timestamp) {
-                      DateTime date =
-                          (data['tgl_upload'] as Timestamp).toDate();
-                      formattedDate = DateFormat('dd MMM yyyy').format(date);
-                    } else {
-                      formattedDate = data['tgl_upload'] ?? '';
-                    }
+  //         return SingleChildScrollView(
+  //           child: Column(
+  //             children: [
+  //               ListView.builder(
+  //                 shrinkWrap: true,
+  //                 physics: NeverScrollableScrollPhysics(),
+  //                 itemCount: documents.length,
+  //                 itemBuilder: (context, index) {
+  //                   final data =
+  //                       documents[index].data() as Map<String, dynamic>;
+  //                   String formattedDate = '';
+  //                   if (data['ak_tgl_upload'] is Timestamp) {
+  //                     DateTime date =
+  //                         (data['ak_tgl_upload'] as Timestamp).toDate();
+  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
+  //                   } else {
+  //                     formattedDate = data['ak_tgl_upload'] ?? '';
+  //                   }
+  //                   if (data['dom_tgl_upload'] is Timestamp) {
+  //                     DateTime date =
+  //                         (data['dom_tgl_upload'] as Timestamp).toDate();
+  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
+  //                   } else {
+  //                     formattedDate = data['dom_tgl_upload'] ?? '';
+  //                   }
+  //                   if (data['tgl_upload_lapor'] is Timestamp) {
+  //                     DateTime date =
+  //                         (data['tgl_upload_lapor'] as Timestamp).toDate();
+  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
+  //                   } else {
+  //                     formattedDate = data['tgl_upload_lapor'] ?? '';
+  //                   }
 
-                    if (collectionType == 'pelaporan') {
-                      return GestureDetector(
-                        onTap: () {
-                          final String documentId = documents[index].id;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ActivityPelaporanScreen(id: documentId),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          width: double.infinity,
-                          height: 114,
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 3,
-                                spreadRadius: 1,
-                                offset: Offset(0.0, 0.0),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 98,
-                                height: 98,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.network(
-                                    data['image'] ?? '',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        data['judul'] ?? '',
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Container(
-                                        height: 2,
-                                        width: 60,
-                                        color: const Color(0xff00AA13),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        formattedDate,
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return GestureDetector(
-                        onTap: () {
-                          final String documentId = documents[index].id;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ActivityAdministrasiScreen(id: documentId, collectionType: collectionType),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          width: double.infinity,
-                          height: 84,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 3,
-                                spreadRadius: 1,
-                                offset: Offset(0.0, 0.0),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data['judul'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 16,
-                                  height: 1.1,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 2,
-                                width: 60,
-                                color: const Color(0xff00AA13),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                formattedDate,
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error: ${snapshot.error}"),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
-  }
+  //                   if (collectionType == 'pelaporan') {
+  //                     return GestureDetector(
+  //                       onTap: () {
+  //                         final String documentId = documents[index].id;
+  //                         Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                             builder: (context) =>
+  //                                 ActivityPelaporanScreen(id: documentId),
+  //                           ),
+  //                         );
+  //                       },
+  //                       child: Container(
+  //                         margin: const EdgeInsets.only(bottom: 10),
+  //                         width: double.infinity,
+  //                         height: 114,
+  //                         padding: const EdgeInsets.all(8),
+  //                         decoration: BoxDecoration(
+  //                           color: Colors.white,
+  //                           borderRadius: BorderRadius.circular(15),
+  //                           boxShadow: [
+  //                             BoxShadow(
+  //                               color: Colors.black.withOpacity(0.1),
+  //                               blurRadius: 3,
+  //                               spreadRadius: 1,
+  //                               offset: Offset(0.0, 0.0),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         child: Row(
+  //                           children: [
+  //                             Container(
+  //                               width: 98,
+  //                               height: 98,
+  //                               child: ClipRRect(
+  //                                 borderRadius: BorderRadius.circular(15),
+  //                                 child: Image.network(
+  //                                   data['foto_lapor'] ?? '',
+  //                                   fit: BoxFit.cover,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                             Expanded(
+  //                               child: Padding(
+  //                                 padding: const EdgeInsets.all(8),
+  //                                 child: Column(
+  //                                   crossAxisAlignment:
+  //                                       CrossAxisAlignment.start,
+  //                                   children: [
+  //                                     Text(
+  //                                       data['judul_lapor'] ?? '',
+  //                                       style: GoogleFonts.montserrat(
+  //                                         fontSize: 16,
+  //                                         fontWeight: FontWeight.w500,
+  //                                         color: Colors.black,
+  //                                       ),
+  //                                       maxLines: 2,
+  //                                       overflow: TextOverflow.ellipsis,
+  //                                     ),
+  //                                     const SizedBox(height: 8),
+  //                                     Container(
+  //                                       height: 2,
+  //                                       width: 60,
+  //                                       color: const Color(0xff00AA13),
+  //                                     ),
+  //                                     const SizedBox(height: 4),
+  //                                     Text(
+  //                                       formattedDate,
+  //                                       style: GoogleFonts.montserrat(
+  //                                         fontSize: 12,
+  //                                         fontWeight: FontWeight.w500,
+  //                                         color: Colors.black,
+  //                                       ),
+  //                                     ),
+  //                                   ],
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     );
+  //                   } else {
+  //                     return GestureDetector(
+  //                       onTap: () {
+  //                         final String documentId = documents[index].id;
+  //                         Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                             builder: (context) => ActivityAdministrasiScreen(
+  //                                 id: documentId,
+  //                                 collectionType: collectionType),
+  //                           ),
+  //                         );
+  //                       },
+  //                       child: Container(
+  //                         margin: const EdgeInsets.only(bottom: 10),
+  //                         width: double.infinity,
+  //                         height: 84,
+  //                         padding: const EdgeInsets.all(14),
+  //                         decoration: BoxDecoration(
+  //                           color: Colors.white,
+  //                           borderRadius: BorderRadius.circular(15),
+  //                           boxShadow: [
+  //                             BoxShadow(
+  //                               color: Colors.black.withOpacity(0.1),
+  //                               blurRadius: 3,
+  //                               spreadRadius: 1,
+  //                               offset: Offset(0.0, 0.0),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         child: Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             Text(
+  //                               data['ak_judul'] ?? '',
+  //                               style: GoogleFonts.montserrat(
+  //                                 fontSize: 16,
+  //                                 height: 1.1,
+  //                                 fontWeight: FontWeight.w500,
+  //                                 color: Colors.black,
+  //                               ),
+  //                               maxLines: 1,
+  //                               overflow: TextOverflow.ellipsis,
+  //                             ),
+  //                             Text(
+  //                               data['dom_judul'] ?? '',
+  //                               style: GoogleFonts.montserrat(
+  //                                 fontSize: 16,
+  //                                 height: 1.1,
+  //                                 fontWeight: FontWeight.w500,
+  //                                 color: Colors.black,
+  //                               ),
+  //                               maxLines: 1,
+  //                               overflow: TextOverflow.ellipsis,
+  //                             ),
+  //                             const SizedBox(height: 8),
+  //                             Container(
+  //                               height: 2,
+  //                               width: 60,
+  //                               color: const Color(0xff00AA13),
+  //                             ),
+  //                             const SizedBox(height: 4),
+  //                             Text(
+  //                               formattedDate,
+  //                               style: GoogleFonts.montserrat(
+  //                                 fontSize: 12,
+  //                                 fontWeight: FontWeight.w500,
+  //                                 color: Colors.black,
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     );
+  //                   }
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         );
+  //       } else if (snapshot.hasError) {
+  //         return Center(
+  //           child: Text("Error: ${snapshot.error}"),
+  //         );
+  //       } else {
+  //         return const Center(
+  //           child: CircularProgressIndicator(),
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
 }
