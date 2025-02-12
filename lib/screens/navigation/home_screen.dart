@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(15),
                               child: Image(
-                                image: _getImageProvider_info(
+                                image: _getImageProvider(
                                     informasi['foto_info'] ?? ''),
                                 width: 274,
                                 height: 152,
@@ -425,24 +425,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ImageProvider _getImageProvider_info(String fotoInfo) {
-    if (fotoInfo.isEmpty) {
-      return AssetImage('assets/images/no_image.jpg');
-    }
-
-    if (fotoInfo.startsWith('http')) {
-      return NetworkImage(fotoInfo);
-    }
-
-    try {
-      Uint8List bytes = base64Decode(fotoInfo);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
-  }
-
   Widget _homeDesa() {
     return FutureBuilder<List<dynamic>>(
       future: getMemo(),
@@ -495,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             topRight: Radius.circular(15),
                           ),
                           child: Image(
-                            image: _getImageProvider_info(
+                            image: _getImageProvider(
                                 informasiDesa['foto_infodes'] ?? ''),
                             width: double.infinity,
                             height: 140,
@@ -549,17 +531,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ImageProvider _getImageProvider_infodes(String fotoInfodes) {
-    if (fotoInfodes.isEmpty) {
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
 
-    if (fotoInfodes.startsWith('http')) {
-      return NetworkImage(fotoInfodes);
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
     }
 
     try {
-      Uint8List bytes = base64Decode(fotoInfodes);
+      Uint8List bytes = base64Decode(foto);
       return MemoryImage(bytes);
     } catch (e) {
       print("Error decoding base64: $e");

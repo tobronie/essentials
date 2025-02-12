@@ -258,7 +258,7 @@ class _DataVerifikasiLaporanScreenState
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          foto,
+                          "foto berhasil diupload",
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,

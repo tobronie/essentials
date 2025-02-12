@@ -1,13 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivityPelaporanScreen extends StatefulWidget {
   final String id;
-  const ActivityPelaporanScreen({Key? key, required this.id}) : super(key: key);
+
+  const ActivityPelaporanScreen({super.key, required this.id});
 
   @override
   _ActivityPelaporanScreenState createState() =>
@@ -16,44 +17,32 @@ class ActivityPelaporanScreen extends StatefulWidget {
 
 class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
   bool _isImageVisible = false;
-  Map<String, dynamic>? data;
   bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futurePelaporan;
 
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futurePelaporan = getPelaporan();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getPelaporan() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_pelaporan.php?id_lapor=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('pelaporan')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -62,7 +51,10 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -78,41 +70,60 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _tglUpload(),
-                          const SizedBox(height: 12),
-                          _image(),
-                          const SizedBox(height: 12),
-                          _data(),
-                          const SizedBox(height: 24),
-                          _verification(),
-                        ],
-                      ),
-                    ),
-                  ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futurePelaporan,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var pelaporan = snapshot.data!;
+          String tglUploadPengadu =
+              pelaporan["tgl_upload_lapor"] ?? "Tidak diketahui";
+          String fotoPengadu = pelaporan["foto_lapor"] ?? "Tidak diketahui";
+          String judulPengadu = pelaporan["judul_lapor"] ?? "Tidak diketahui";
+          String waktuKejadianPengadu =
+              pelaporan["waktu_lapor"] ?? "Tidak diketahui";
+          String lokasiPengadu = pelaporan["lokasi_lapor"] ?? "Tidak diketahui";
+          String isiPengadu = pelaporan["isi_lapor"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _tglUploadLapor(tglUploadPengadu),
+                    const SizedBox(height: 12),
+                    _fotoLapor(fotoPengadu),
+                    const SizedBox(height: 12),
+                    _judulLapor(judulPengadu),
+                    const SizedBox(height: 12),
+                    _waktuKejadianLapor(waktuKejadianPengadu),
+                    const SizedBox(height: 12),
+                    _lokasiLapor(lokasiPengadu),
+                    const SizedBox(height: 12),
+                    _isiLapor(isiPengadu),
+                    const SizedBox(height: 24),
+                    _verification(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Column _tglUpload() {
-    String formatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      formatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _tglUploadLapor(String tglUpload) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,7 +131,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Waktu Pengaduan',
+              'Waktu Upload Pengaduan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -141,13 +152,16 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                formatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
                   color: Colors.black,
                 ),
                 textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
@@ -156,7 +170,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
     );
   }
 
-  Column _image() {
+  Column _fotoLapor(String foto) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -197,10 +211,11 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          data?['image'] ?? '',
+                          "foto berhasil diupload",
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.italic,
                             color: Colors.black,
                           ),
                           textAlign: TextAlign.left,
@@ -224,7 +239,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
                   setState(() {
                     _isImageVisible = !_isImageVisible;
                   });
-                  _showImageDialog(context);
+                  _showImageDialog(context, foto);
                 },
               ),
             ],
@@ -234,19 +249,18 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
     );
   }
 
-  void _showImageDialog(BuildContext context) {
+  void _showImageDialog(BuildContext context, String fotoLapor) {
     if (_isImageVisible) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
             backgroundColor: Colors.transparent,
             child: InteractiveViewer(
               minScale: 0.1,
               maxScale: 5.0,
-              child: Image.network(
-                data?['image'] ?? '',
+              child: Image(
+                image: _getImageProvider(fotoLapor),
                 fit: BoxFit.contain,
               ),
             ),
@@ -260,162 +274,183 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
     }
   }
 
-  Column _data() {
-    String FormatWaktuKejadian = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatWaktuKejadian = DateFormat('dd MMMM yyyy - HH:mm').format(date);
+  ImageProvider _getImageProvider(String fotoLapor) {
+    if (fotoLapor.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
     }
+
+    if (fotoLapor.startsWith('http')) {
+      return NetworkImage(fotoLapor);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(fotoLapor);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
+  }
+
+  Column _judulLapor(String judul) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Judul Pengaduan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                data?['judul'] ?? '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.visible,
-              ),
-            ),
-          ],
+        Text(
+          'Judul Pengaduan',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
         ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Waktu Kejadian',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+        const SizedBox(height: 4),
+        Container(
+          height: 42,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xffD9D9D9),
+              width: 2,
             ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                FormatWaktuKejadian,
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-              ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            judul,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: Colors.black,
             ),
-          ],
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Lokasi Kejadian',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                data?['lokasi'] ?? '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.visible,
-              ),
-            ),
-          ],
+      ],
+    );
+  }
+
+  Column _waktuKejadianLapor(String waktu) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Waktu Kejadian',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
         ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Isi Pengaduan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+        const SizedBox(height: 4),
+        Container(
+          height: 42,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xffD9D9D9),
+              width: 2,
             ),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                data?['isi'] ?? '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.visible,
-              ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            waktu,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: Colors.black,
             ),
-          ],
+            textAlign: TextAlign.left,
+            maxLines: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column _lokasiLapor(String lokasi) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Lokasi Kejadian',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          height: 42,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xffD9D9D9),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            lokasi,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column _isiLapor(String isi) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Isi Pengaduan',
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          height: 100,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xffD9D9D9),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            isi,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.visible,
+          ),
         ),
       ],
     );

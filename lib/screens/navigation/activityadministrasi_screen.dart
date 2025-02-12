@@ -1,17 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ActivityAdministrasiScreen extends StatefulWidget {
   final String id;
-  final String collectionType;
   const ActivityAdministrasiScreen({
     Key? key,
     required this.id,
-    required this.collectionType,
   }) : super(key: key);
 
   @override
@@ -24,41 +21,35 @@ class _ActivityAdministrasiScreenState
   Map<String, dynamic>? data;
   bool isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
-  }
-
-  void fetchData() async {
+  Future<List<dynamic>> fetchData(String endpoint) async {
+    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint?(id_akte atau id_domisili atau id_kematian dst)=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection(widget.collectionType)
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        throw Exception('Gagal mengambil data dari $endpoint');
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error fetching $endpoint: $e");
+      return [];
     }
+  }
+
+  Future<List<List<dynamic>>> getAllData() async {
+    return await Future.wait([
+      fetchData('get_ad_akte.php'),
+      fetchData('get_ad_domisili.php'),
+      fetchData('get_ad_kematian.php'),
+      fetchData('get_ad_kk.php'),
+      fetchData('get_ad_ktp.php'),
+      fetchData('get_ad_nikah.php'),
+      fetchData('get_ad_pendudukan.php'),
+      fetchData('get_ad_penghasilan_ortu.php'),
+      fetchData('get_ad_sktm.php'),
+      fetchData('get_ad_tanah.php'),
+      fetchData('get_ad_usaha.php'),
+    ]);
   }
 
   @override
@@ -67,7 +58,10 @@ class _ActivityAdministrasiScreenState
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -96,8 +90,6 @@ class _ActivityAdministrasiScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _text(),
-                          const SizedBox(height: 18),
                           _data(),
                           const SizedBox(height: 52),
                           _verifikasiKepalaDesa(),
@@ -111,7 +103,7 @@ class _ActivityAdministrasiScreenState
     );
   }
 
-  Widget _text() {
+  Column _data() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,20 +116,7 @@ class _ActivityAdministrasiScreenState
             color: Colors.black,
           ),
         ),
-      ],
-    );
-  }
-
-  Column _data() {
-    String formattedDate = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      formattedDate = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        const SizedBox(height: 18),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -163,7 +142,7 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                item['nama'] ?? '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -202,7 +181,18 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['judul'] ?? '',
+                item['ak_judul'] ??
+                    item['dom_judul'] ??
+                    item['kem_judul'] ??
+                    item['kk_judul'] ??
+                    item['kt_judul'] ??
+                    item['ni_judul'] ??
+                    item['pen_judul'] ??
+                    item['has_judul'] ??
+                    item['sktm_judul'] ??
+                    item['tan_judul'] ??
+                    item['us_judul'] ??
+                    '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -241,7 +231,18 @@ class _ActivityAdministrasiScreenState
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                formattedDate,
+                item['ak_tgl_upload'] ??
+                    item['dom_tgl_upload'] ??
+                    item['kem_tgl_upload'] ??
+                    item['kk_tgl_upload'] ??
+                    item['kt_tgl_upload'] ??
+                    item['ni_tgl_upload'] ??
+                    item['pen_tgl_upload'] ??
+                    item['has_tgl_upload'] ??
+                    item['sktm_tgl_upload'] ??
+                    item['tan_tgl_upload'] ??
+                    item['us_tgl_upload'] ??
+                    '',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

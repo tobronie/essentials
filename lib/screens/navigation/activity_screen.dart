@@ -3,7 +3,6 @@ import 'package:essentials/screens/navigation/activitypelaporan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
@@ -22,185 +21,36 @@ class _ActivityScreenState extends State<ActivityScreen> {
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
 
-  Future<List<dynamic>> getPelaporan() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_pelaporan.php';
+  Future<List<dynamic>> fetchData(String endpoint) async {
+    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        throw Exception('Gagal mengambil data');
+        throw Exception('Gagal mengambil data dari $endpoint');
       }
     } catch (e) {
-      print("Error: $e");
+      print("Error fetching $endpoint: $e");
       return [];
     }
   }
 
-  Future<List<dynamic>> getAkte() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_akte.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getDomisili() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_domisili.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getKematian() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_kematian.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getKK() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_kk.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getKTP() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_ktp.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getNikah() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_nikah.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getPendudukan() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_pendudukan.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getPenghasilanOrtu() async {
-    String url =
-        'http://10.0.2.2:8080/essentials_api/view_ad_penghasilan_ortu.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getSKTM() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_sktm.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getTanah() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_tanah.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> getUsaha() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_ad_usaha.php';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Gagal mengambil data');
-      }
-    } catch (e) {
-      print("Error: $e");
-      return [];
-    }
+  Future<List<List<dynamic>>> getAllData() async {
+    return await Future.wait([
+      fetchData('view_pelaporan.php'),
+      fetchData('view_ad_akte.php'),
+      fetchData('view_ad_domisili.php'),
+      fetchData('view_ad_kematian.php'),
+      fetchData('view_ad_kk.php'),
+      fetchData('view_ad_ktp.php'),
+      fetchData('view_ad_nikah.php'),
+      fetchData('view_ad_pendudukan.php'),
+      fetchData('view_ad_penghasilan_ortu.php'),
+      fetchData('view_ad_sktm.php'),
+      fetchData('view_ad_tanah.php'),
+      fetchData('view_ad_usaha.php'),
+    ]);
   }
 
   @override
@@ -235,18 +85,35 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 const SizedBox(height: 18),
                 _process(context),
                 const SizedBox(height: 18),
-                // _dataCollection('pelaporan'),
-                // _dataCollection('domisili'),
-                // _dataCollection('usaha'),
-                // _dataCollection('sktm'),
-                // _dataCollection('kematian'),
-                // _dataCollection('penghasilan_ortu'),
-                // _dataCollection('ktp'),
-                // _dataCollection('kk'),
-                // _dataCollection('akte'),
-                // _dataCollection('nikah'),
-                // _dataCollection('tanah'),
-                // _dataCollection('pendudukan'),
+                FutureBuilder<List<List<dynamic>>>(
+                  future: getAllData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (snapshot.data == null ||
+                        snapshot.data!.isEmpty) {
+                      return Center(child: Text("Tidak ada data tersedia"));
+                    }
+
+                    final data = snapshot.data!;
+                    return _data(
+                      data[0],
+                      data[1],
+                      data[2],
+                      data[3],
+                      data[4],
+                      data[5],
+                      data[6],
+                      data[7],
+                      data[8],
+                      data[9],
+                      data[10],
+                      data[11],
+                    );
+                  },
+                )
               ],
             ),
           ),
@@ -375,231 +242,304 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  // Widget _dataCollection(String collectionType) {
-  //   Stream<QuerySnapshot> getStream() {
-  //     switch (collectionType) {
-  //       case 'pelaporan':
-  //         return DbPelaporan.getDataBySearch(_selectedOption, _searchQuery);
-  //       case 'domisili':
-  //         return DbDomisili.getDataBySearch(_selectedOption, _searchQuery);
-  //       case 'akte':
-  //         return DbAkte.getDataBySearch(_selectedOption, _searchQuery);
-  //       default:
-  //         throw Exception('Unknown collection type');
-  //     }
-  //   }
+  Widget _data(
+      List<dynamic> pelaporanList,
+      List<dynamic> akteList,
+      List<dynamic> domisiliList,
+      List<dynamic> kematianList,
+      List<dynamic> kkList,
+      List<dynamic> ktpList,
+      List<dynamic> nikahList,
+      List<dynamic> pendudukanList,
+      List<dynamic> penghasilanOrtuList,
+      List<dynamic> sktmList,
+      List<dynamic> tanahList,
+      List<dynamic> usahaList) {
+    List<dynamic> combinedList = [
+      ...pelaporanList,
+      ...akteList,
+      ...domisiliList,
+      ...kematianList,
+      ...kkList,
+      ...ktpList,
+      ...nikahList,
+      ...pendudukanList,
+      ...penghasilanOrtuList,
+      ...sktmList,
+      ...tanahList,
+      ...usahaList,
+    ];
 
-  //   return StreamBuilder<QuerySnapshot>(
-  //     stream: getStream(),
-  //     builder: (context, snapshot) {
-  //       if (snapshot.hasData) {
-  //         final documents = snapshot.data!.docs;
+    List<dynamic> filteredList = combinedList.where((item) {
+      String query = _searchQuery.toLowerCase();
+      return [
+        'judul_lapor',
+        'ak_judul',
+        'dom_judul',
+        'kem_judul',
+        'kk_judul',
+        'kt_judul',
+        'ni_judul',
+        'pen_judul',
+        'has_judul',
+        'sktm_judul',
+        'tan_judul',
+        'us_judul'
+      ].any(
+          (key) => (item[key]?.toString() ?? '').toLowerCase().contains(query));
+    }).toList();
 
-  //         return SingleChildScrollView(
-  //           child: Column(
-  //             children: [
-  //               ListView.builder(
-  //                 shrinkWrap: true,
-  //                 physics: NeverScrollableScrollPhysics(),
-  //                 itemCount: documents.length,
-  //                 itemBuilder: (context, index) {
-  //                   final data =
-  //                       documents[index].data() as Map<String, dynamic>;
-  //                   String formattedDate = '';
-  //                   if (data['ak_tgl_upload'] is Timestamp) {
-  //                     DateTime date =
-  //                         (data['ak_tgl_upload'] as Timestamp).toDate();
-  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
-  //                   } else {
-  //                     formattedDate = data['ak_tgl_upload'] ?? '';
-  //                   }
-  //                   if (data['dom_tgl_upload'] is Timestamp) {
-  //                     DateTime date =
-  //                         (data['dom_tgl_upload'] as Timestamp).toDate();
-  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
-  //                   } else {
-  //                     formattedDate = data['dom_tgl_upload'] ?? '';
-  //                   }
-  //                   if (data['tgl_upload_lapor'] is Timestamp) {
-  //                     DateTime date =
-  //                         (data['tgl_upload_lapor'] as Timestamp).toDate();
-  //                     formattedDate = DateFormat('dd MMM yyyy').format(date);
-  //                   } else {
-  //                     formattedDate = data['tgl_upload_lapor'] ?? '';
-  //                   }
+    filteredList.sort((a, b) {
+      DateTime getLatestDate(Map<String, dynamic> item) {
+        List<String> dateKeys = [
+          'tgl_upload_lapor',
+          'ak_tgl_upload',
+          'dom_tgl_upload',
+          'kem_tgl_upload',
+          'kk_tgl_upload',
+          'kt_tgl_upload',
+          'ni_tgl_upload',
+          'pen_tgl_upload',
+          'has_tgl_upload',
+          'sktm_tgl_upload',
+          'tan_tgl_upload',
+          'us_tgl_upload'
+        ];
 
-  //                   if (collectionType == 'pelaporan') {
-  //                     return GestureDetector(
-  //                       onTap: () {
-  //                         final String documentId = documents[index].id;
-  //                         Navigator.push(
-  //                           context,
-  //                           MaterialPageRoute(
-  //                             builder: (context) =>
-  //                                 ActivityPelaporanScreen(id: documentId),
-  //                           ),
-  //                         );
-  //                       },
-  //                       child: Container(
-  //                         margin: const EdgeInsets.only(bottom: 10),
-  //                         width: double.infinity,
-  //                         height: 114,
-  //                         padding: const EdgeInsets.all(8),
-  //                         decoration: BoxDecoration(
-  //                           color: Colors.white,
-  //                           borderRadius: BorderRadius.circular(15),
-  //                           boxShadow: [
-  //                             BoxShadow(
-  //                               color: Colors.black.withOpacity(0.1),
-  //                               blurRadius: 3,
-  //                               spreadRadius: 1,
-  //                               offset: Offset(0.0, 0.0),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                         child: Row(
-  //                           children: [
-  //                             Container(
-  //                               width: 98,
-  //                               height: 98,
-  //                               child: ClipRRect(
-  //                                 borderRadius: BorderRadius.circular(15),
-  //                                 child: Image.network(
-  //                                   data['foto_lapor'] ?? '',
-  //                                   fit: BoxFit.cover,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                             Expanded(
-  //                               child: Padding(
-  //                                 padding: const EdgeInsets.all(8),
-  //                                 child: Column(
-  //                                   crossAxisAlignment:
-  //                                       CrossAxisAlignment.start,
-  //                                   children: [
-  //                                     Text(
-  //                                       data['judul_lapor'] ?? '',
-  //                                       style: GoogleFonts.montserrat(
-  //                                         fontSize: 16,
-  //                                         fontWeight: FontWeight.w500,
-  //                                         color: Colors.black,
-  //                                       ),
-  //                                       maxLines: 2,
-  //                                       overflow: TextOverflow.ellipsis,
-  //                                     ),
-  //                                     const SizedBox(height: 8),
-  //                                     Container(
-  //                                       height: 2,
-  //                                       width: 60,
-  //                                       color: const Color(0xff00AA13),
-  //                                     ),
-  //                                     const SizedBox(height: 4),
-  //                                     Text(
-  //                                       formattedDate,
-  //                                       style: GoogleFonts.montserrat(
-  //                                         fontSize: 12,
-  //                                         fontWeight: FontWeight.w500,
-  //                                         color: Colors.black,
-  //                                       ),
-  //                                     ),
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     );
-  //                   } else {
-  //                     return GestureDetector(
-  //                       onTap: () {
-  //                         final String documentId = documents[index].id;
-  //                         Navigator.push(
-  //                           context,
-  //                           MaterialPageRoute(
-  //                             builder: (context) => ActivityAdministrasiScreen(
-  //                                 id: documentId,
-  //                                 collectionType: collectionType),
-  //                           ),
-  //                         );
-  //                       },
-  //                       child: Container(
-  //                         margin: const EdgeInsets.only(bottom: 10),
-  //                         width: double.infinity,
-  //                         height: 84,
-  //                         padding: const EdgeInsets.all(14),
-  //                         decoration: BoxDecoration(
-  //                           color: Colors.white,
-  //                           borderRadius: BorderRadius.circular(15),
-  //                           boxShadow: [
-  //                             BoxShadow(
-  //                               color: Colors.black.withOpacity(0.1),
-  //                               blurRadius: 3,
-  //                               spreadRadius: 1,
-  //                               offset: Offset(0.0, 0.0),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                         child: Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           children: [
-  //                             Text(
-  //                               data['ak_judul'] ?? '',
-  //                               style: GoogleFonts.montserrat(
-  //                                 fontSize: 16,
-  //                                 height: 1.1,
-  //                                 fontWeight: FontWeight.w500,
-  //                                 color: Colors.black,
-  //                               ),
-  //                               maxLines: 1,
-  //                               overflow: TextOverflow.ellipsis,
-  //                             ),
-  //                             Text(
-  //                               data['dom_judul'] ?? '',
-  //                               style: GoogleFonts.montserrat(
-  //                                 fontSize: 16,
-  //                                 height: 1.1,
-  //                                 fontWeight: FontWeight.w500,
-  //                                 color: Colors.black,
-  //                               ),
-  //                               maxLines: 1,
-  //                               overflow: TextOverflow.ellipsis,
-  //                             ),
-  //                             const SizedBox(height: 8),
-  //                             Container(
-  //                               height: 2,
-  //                               width: 60,
-  //                               color: const Color(0xff00AA13),
-  //                             ),
-  //                             const SizedBox(height: 4),
-  //                             Text(
-  //                               formattedDate,
-  //                               style: GoogleFonts.montserrat(
-  //                                 fontSize: 12,
-  //                                 fontWeight: FontWeight.w500,
-  //                                 color: Colors.black,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     );
-  //                   }
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       } else if (snapshot.hasError) {
-  //         return Center(
-  //           child: Text("Error: ${snapshot.error}"),
-  //         );
-  //       } else {
-  //         return const Center(
-  //           child: CircularProgressIndicator(),
-  //         );
-  //       }
-  //     },
-  //   );
-  // }
+        DateTime latestDate = DateTime(1970);
+        for (String key in dateKeys) {
+          DateTime? date = DateTime.tryParse(item[key] ?? '');
+          if (date != null && date.isAfter(latestDate)) {
+            latestDate = date;
+          }
+        }
+        return latestDate;
+      }
+
+      return getLatestDate(b).compareTo(getLatestDate(a));
+    });
+
+    return ListView.builder(
+      itemCount: filteredList.length,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        var item = filteredList[index];
+
+        bool isLapor = item.containsKey('judul_lapor');
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isLapor)
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ActivityPelaporanScreen(
+                        id: item['id_lapor']?.toString() ?? '',
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 114,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 3,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 98,
+                        height: 98,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          image: DecorationImage(
+                            image: _getImageProvider(item['foto_lapor'] ?? ''),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item['judul_lapor'] ?? '',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                height: 2,
+                                width: 60,
+                                color: Color(0xff00AA13),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                item['tgl_upload_lapor'] ?? '',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              GestureDetector(
+                onTap: () {
+                  Map<String, String?> idMap = {
+                    'akte': item['id_akte']?.toString(),
+                    'domisili': item['id_domisili']?.toString(),
+                    'kematian': item['id_kematian']?.toString(),
+                    'kk': item['id_kk']?.toString(),
+                    'ktp': item['id_ktp']?.toString(),
+                    'nikah': item['id_nikah']?.toString(),
+                    'pendudukan': item['id_pendudukan']?.toString(),
+                    'penghasilan': item['id_penghasilan']?.toString(),
+                    'sktm': item['id_sktm']?.toString(),
+                    'tanah': item['id_tanah']?.toString(),
+                    'usaha': item['id_usaha']?.toString(),
+                  };
+
+                  String? selectedId = idMap.values.firstWhere(
+                    (id) => id != null && id.isNotEmpty,
+                    orElse: () => '',
+                  );
+
+                  if (selectedId != null && selectedId.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ActivityAdministrasiScreen(
+                          id: selectedId,
+                        ),
+                      ),
+                    );
+                  } else {
+                    print("Tidak ada ID yang tersedia.");
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  width: double.infinity,
+                  height: 84,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 3,
+                        spreadRadius: 1,
+                        offset: Offset(0.0, 0.0),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item['ak_judul'] ??
+                            item['dom_judul'] ??
+                            item['kem_judul'] ??
+                            item['kk_judul'] ??
+                            item['kt_judul'] ??
+                            item['ni_judul'] ??
+                            item['pen_judul'] ??
+                            item['has_judul'] ??
+                            item['sktm_judul'] ??
+                            item['tan_judul'] ??
+                            item['us_judul'] ??
+                            '',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 16,
+                          height: 1.1,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 2,
+                        width: 60,
+                        color: const Color(0xff00AA13),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item['ak_tgl_upload'] ??
+                            item['dom_tgl_upload'] ??
+                            item['kem_tgl_upload'] ??
+                            item['kk_tgl_upload'] ??
+                            item['kt_tgl_upload'] ??
+                            item['ni_tgl_upload'] ??
+                            item['pen_tgl_upload'] ??
+                            item['has_tgl_upload'] ??
+                            item['sktm_tgl_upload'] ??
+                            item['tan_tgl_upload'] ??
+                            item['us_tgl_upload'] ??
+                            '',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
+  }
 }
