@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DataVerifikasiLaporanScreen extends StatefulWidget {
@@ -85,8 +86,11 @@ class _DataVerifikasiLaporanScreenState
 
           var pelaporan = snapshot.data!;
           String namaPengadu = pelaporan["nama"] ?? "Tidak diketahui";
-          String tglUploadPengadu =
-              pelaporan["tgl_upload_lapor"] ?? "Tidak diketahui";
+          String tglUploadPengadu = pelaporan["tgl_upload_lapor"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(pelaporan["tgl_upload_lapor"]),
+                )
+              : "Tidak diketahui";
           String fotoPengadu = pelaporan["foto_lapor"] ?? "Tidak diketahui";
           String judulPengadu = pelaporan["judul_lapor"] ?? "Tidak diketahui";
           String waktuKejadianPengadu =
@@ -302,6 +306,7 @@ class _DataVerifikasiLaporanScreenState
         context: context,
         builder: (BuildContext context) {
           return Dialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
             backgroundColor: Colors.transparent,
             child: InteractiveViewer(
               minScale: 0.1,

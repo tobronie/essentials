@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/administrasi_admin/admin_akte_screen.dart';
 import 'package:essentials/screens/admin/administrasi_admin/admin_domisili_screen.dart';
 import 'package:essentials/screens/admin/administrasi_admin/admin_kematian_screen.dart';
@@ -12,21 +11,12 @@ import 'package:essentials/screens/admin/administrasi_admin/admin_tanah_screen.d
 import 'package:essentials/screens/admin/administrasi_admin/admin_usaha_screen.dart';
 import 'package:essentials/screens/admin/navigation_admin.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:essentials/services/akte_services.dart';
-import 'package:essentials/services/domisili_services.dart';
-import 'package:essentials/services/kematian_services.dart';
-import 'package:essentials/services/kk_services.dart';
-import 'package:essentials/services/ktp_services.dart';
-import 'package:essentials/services/nikah_services.dart';
-import 'package:essentials/services/pendudukan_services.dart';
-import 'package:essentials/services/penghasilan_ortu_services.dart';
-import 'package:essentials/services/sktm_services.dart';
-import 'package:essentials/services/tanah_services.dart';
-import 'package:essentials/services/usaha_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class ListVerifikasiAdministrasiAdminScreen extends StatefulWidget {
   const ListVerifikasiAdministrasiAdminScreen({super.key});
@@ -41,18 +31,60 @@ class _ListVerifikasiAdministrasiAdminScreenState
   String _selectedText = 'Dalam Proses';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _isSearchActive = false;
   FocusNode _searchFocusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
+  Future<List<dynamic>> fetchData(String endpoint) async {
+    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal mengambil data dari $endpoint');
+      }
+    } catch (e) {
+      print("Error fetching $endpoint: $e");
+      return [];
     }
+  }
+
+  Future<List<List<dynamic>>> getAllData() async {
+    return await Future.wait([
+      fetchData('view_ad_akte.php'),
+      fetchData('view_ad_domisili.php'),
+      fetchData('view_ad_kematian.php'),
+      fetchData('view_ad_kk.php'),
+      fetchData('view_ad_ktp.php'),
+      fetchData('view_ad_nikah.php'),
+      fetchData('view_ad_pendudukan.php'),
+      fetchData('view_ad_penghasilan_ortu.php'),
+      fetchData('view_ad_sktm.php'),
+      fetchData('view_ad_tanah.php'),
+      fetchData('view_ad_usaha.php'),
+    ]);
+  }
+
+  String formatTanggal(Map<String, dynamic> item) {
+    String? rawDate = item['ak_tgl_upload'] ??
+        item['dom_tgl_upload'] ??
+        item['kem_tgl_upload'] ??
+        item['kk_tgl_upload'] ??
+        item['kt_tgl_upload'] ??
+        item['ni_tgl_upload'] ??
+        item['pen_tgl_upload'] ??
+        item['has_tgl_upload'] ??
+        item['sktm_tgl_upload'] ??
+        item['tan_tgl_upload'] ??
+        item['us_tgl_upload'];
+
+    if (rawDate != null) {
+      try {
+        return DateFormat('dd MMMM yyyy').format(DateTime.parse(rawDate));
+      } catch (e) {
+        return 'Format tanggal tidak valid';
+      }
+    }
+    return 'Tanggal tidak tersedia';
   }
 
   @override
@@ -61,7 +93,10 @@ class _ListVerifikasiAdministrasiAdminScreenState
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -92,17 +127,34 @@ class _ListVerifikasiAdministrasiAdminScreenState
                 const SizedBox(height: 18),
                 _process(context),
                 const SizedBox(height: 18),
-                _dataCollection('domisili'),
-                _dataCollection('usaha'),
-                _dataCollection('sktm'),
-                _dataCollection('kematian'),
-                _dataCollection('penghasilan_ortu'),
-                _dataCollection('ktp'),
-                _dataCollection('kk'),
-                _dataCollection('akte'),
-                _dataCollection('nikah'),
-                _dataCollection('tanah'),
-                _dataCollection('pendudukan'),
+                FutureBuilder<List<List<dynamic>>>(
+                  future: getAllData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (snapshot.data == null ||
+                        snapshot.data!.isEmpty) {
+                      return Center(child: Text("Tidak ada data tersedia"));
+                    }
+
+                    final data = snapshot.data!;
+                    return _data(
+                      data[0],
+                      data[1],
+                      data[2],
+                      data[3],
+                      data[4],
+                      data[5],
+                      data[6],
+                      data[7],
+                      data[8],
+                      data[9],
+                      data[10],
+                    );
+                  },
+                )
               ],
             ),
           ),
@@ -141,16 +193,6 @@ class _ListVerifikasiAdministrasiAdminScreenState
               onChanged: (query) {
                 setState(() {
                   _searchQuery = query;
-                  _isSearchActive = query.isNotEmpty;
-                  if (_isSearchActive) {
-                    _selectedText = 'Dalam proses';
-                  }
-                });
-              },
-              onTap: () {
-                setState(() {
-                  _isSearchActive = true;
-                  _selectedText = 'Dalam proses';
                 });
               },
               decoration: InputDecoration(
@@ -241,225 +283,205 @@ class _ListVerifikasiAdministrasiAdminScreenState
     );
   }
 
-  Widget _dataCollection(String collectionType) {
-    Stream<QuerySnapshot> getStream() {
-      switch (collectionType) {
-        case 'domisili':
-          return DbDomisili.getDataBySearch(_selectedText, _searchQuery);
-        case 'usaha':
-          return DbUsaha.getDataBySearch(_selectedText, _searchQuery);
-        case 'sktm':
-          return DbSKTM.getDataBySearch(_selectedText, _searchQuery);
-        case 'kematian':
-          return DbKematian.getDataBySearch(_selectedText, _searchQuery);
-        case 'penghasilan_ortu':
-          return DbPenghasilanOrtu.getDataBySearch(_selectedText, _searchQuery);
-        case 'ktp':
-          return DbKTP.getDataBySearch(_selectedText, _searchQuery);
-        case 'kk':
-          return DbKK.getDataBySearch(_selectedText, _searchQuery);
-        case 'akte':
-          return DbAkte.getDataBySearch(_selectedText, _searchQuery);
-        case 'nikah':
-          return DbNikah.getDataBySearch(_selectedText, _searchQuery);
-        case 'tanah':
-          return DbTanah.getDataBySearch(_selectedText, _searchQuery);
-        case 'pendudukan':
-          return DbPendudukan.getDataBySearch(_selectedText, _searchQuery);
-        default:
-          throw Exception('Jenis koleksi tidak diketahui');
-      }
-    }
+  Widget _data(
+      List<dynamic> akteList,
+      List<dynamic> domisiliList,
+      List<dynamic> kematianList,
+      List<dynamic> kkList,
+      List<dynamic> ktpList,
+      List<dynamic> nikahList,
+      List<dynamic> pendudukanList,
+      List<dynamic> penghasilanOrtuList,
+      List<dynamic> sktmList,
+      List<dynamic> tanahList,
+      List<dynamic> usahaList) {
+    List<dynamic> combinedList = [
+      ...akteList,
+      ...domisiliList,
+      ...kematianList,
+      ...kkList,
+      ...ktpList,
+      ...nikahList,
+      ...pendudukanList,
+      ...penghasilanOrtuList,
+      ...sktmList,
+      ...tanahList,
+      ...usahaList,
+    ];
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: getStream(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final documents = snapshot.data!.docs;
+    List<dynamic> filteredList = combinedList.where((item) {
+      String query = _searchQuery.toLowerCase();
+      return [
+        'ak_judul',
+        'dom_judul',
+        'kem_judul',
+        'kk_judul',
+        'kt_judul',
+        'ni_judul',
+        'pen_judul',
+        'has_judul',
+        'sktm_judul',
+        'tan_judul',
+        'us_judul'
+      ].any(
+          (key) => (item[key]?.toString() ?? '').toLowerCase().contains(query));
+    }).toList();
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: documents.length,
-                    itemBuilder: (context, index) {
-                      final data =
-                          documents[index].data() as Map<String, dynamic>;
-                      return GestureDetector(
-                        onTap: () {
-                          final String documentId = documents[index].id;
-                          switch (collectionType) {
-                            case 'domisili':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_DomisiliScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'usaha':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_UsahaScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'sktm':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_SKTMScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'kematian':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_KematianScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'penghasilan_ortu':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_PenghasilanScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'ktp':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_KTPScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'kk':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_KKScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'akte':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_AkteScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'nikah':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_NikahScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'tanah':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_TanahScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            case 'pendudukan':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Admin_PendudukScreen(id: documentId),
-                                ),
-                              );
-                              break;
-                            default:
-                              break;
-                          }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          width: double.infinity,
-                          height: 84,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 3,
-                                spreadRadius: 1,
-                                offset: Offset(0.0, 0.0),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data['judul'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 16,
-                                  height: 1.1,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 2,
-                                width: 60,
-                                color: const Color(0xFF0D0140),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                data['nama'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
-                                ),
-                                textAlign: TextAlign.left,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-              ],
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error: ${snapshot.error}"),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+    filteredList.sort((a, b) {
+      DateTime getLatestDate(Map<String, dynamic> item) {
+        List<String> dateKeys = [
+          'ak_tgl_upload',
+          'dom_tgl_upload',
+          'kem_tgl_upload',
+          'kk_tgl_upload',
+          'kt_tgl_upload',
+          'ni_tgl_upload',
+          'pen_tgl_upload',
+          'has_tgl_upload',
+          'sktm_tgl_upload',
+          'tan_tgl_upload',
+          'us_tgl_upload'
+        ];
+
+        DateTime latestDate = DateTime(1970);
+        for (String key in dateKeys) {
+          DateTime? date = DateTime.tryParse(item[key] ?? '');
+          if (date != null && date.isAfter(latestDate)) {
+            latestDate = date;
+          }
         }
+        return latestDate;
+      }
+
+      return getLatestDate(b).compareTo(getLatestDate(a));
+    });
+
+    return ListView.builder(
+      itemCount: filteredList.length,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        var item = filteredList[index];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Map<String, Widget Function(String)> screenMap = {
+                  'id_akte': (id) => Admin_AkteScreen(id: id),
+                  'id_domisili': (id) => Admin_DomisiliScreen(id: id),
+                  'id_kematian': (id) => Admin_KematianScreen(id: id),
+                  'id_kk': (id) => Admin_KKScreen(id: id),
+                  'id_ktp': (id) => Admin_KTPScreen(id: id),
+                  'id_nikah': (id) => Admin_NikahScreen(id: id),
+                  'id_pendudukan': (id) => Admin_PendudukScreen(id: id),
+                  'id_penghasilan': (id) => Admin_PenghasilanScreen(id: id),
+                  'id_sktm': (id) => Admin_SKTMScreen(id: id),
+                  'id_tanah': (id) => Admin_TanahScreen(id: id),
+                  'id_usaha': (id) => Admin_UsahaScreen(id: id),
+                };
+
+                Map<String, String?> idMap = {
+                  'id_akte': item['id_akte']?.toString(),
+                  'id_domisili': item['id_domisili']?.toString(),
+                  'id_kematian': item['id_kematian']?.toString(),
+                  'id_kk': item['id_kk']?.toString(),
+                  'id_ktp': item['id_ktp']?.toString(),
+                  'id_nikah': item['id_nikah']?.toString(),
+                  'id_pendudukan': item['id_pendudukan']?.toString(),
+                  'id_penghasilan': item['id_penghasilan']?.toString(),
+                  'id_sktm': item['id_sktm']?.toString(),
+                  'id_tanah': item['id_tanah']?.toString(),
+                  'id_usaha': item['id_usaha']?.toString(),
+                };
+
+                var selectedEntry = idMap.entries.firstWhere(
+                  (entry) => entry.value != null && entry.value!.isNotEmpty,
+                  orElse: () => MapEntry('', ''),
+                );
+
+                if (selectedEntry.key.isNotEmpty &&
+                    selectedEntry.value!.isNotEmpty) {
+                  var screenBuilder = screenMap[selectedEntry.key];
+
+                  if (screenBuilder != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            screenBuilder(selectedEntry.value!),
+                      ),
+                    );
+                  } else {
+                    print("Screen tidak ditemukan untuk ${selectedEntry.key}");
+                  }
+                } else {
+                  print("Tidak ada ID yang tersedia.");
+                }
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                width: double.infinity,
+                height: 76,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: Offset(0.0, 0.0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['ak_judul'] ??
+                          item['dom_judul'] ??
+                          item['kem_judul'] ??
+                          item['kk_judul'] ??
+                          item['kt_judul'] ??
+                          item['ni_judul'] ??
+                          item['pen_judul'] ??
+                          item['has_judul'] ??
+                          item['sktm_judul'] ??
+                          item['tan_judul'] ??
+                          item['us_judul'] ??
+                          '',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 16,
+                        height: 1.1,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 2,
+                      width: 60,
+                      color: const Color(0xFF0D0140),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      formatTanggal(item),
+                      style: GoogleFonts.montserrat(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
   }

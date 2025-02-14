@@ -1,15 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 
 class Pejabat_AkteScreen extends StatefulWidget {
   final String id;
-  const Pejabat_AkteScreen({Key? key, required this.id}) : super(key: key);
+  const Pejabat_AkteScreen({super.key, required this.id});
 
   @override
   _Pejabat_AkteScreenState createState() => _Pejabat_AkteScreenState();
@@ -26,44 +27,31 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
   bool _isImageVisibleKTPSaksi2 = false;
   bool _isImageVisibleAkteSaudara = false;
   bool _isImageVisibleIjasah = false;
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureAkte;
 
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futureAkte = getAkte();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getAkte() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_ad_akte.php?id_akte=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('akte')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -72,7 +60,10 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -88,44 +79,107 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _dataPengajuan(),
-                          const SizedBox(height: 8),
-                          _imageSuartKelahiran(),
-                          const SizedBox(height: 8),
-                          _imageKK(),
-                          const SizedBox(height: 24),
-                          _biodataAyah(),
-                          const SizedBox(height: 24),
-                          _biodataIbu(),
-                          const SizedBox(height: 24),
-                          _dataSaksi(),
-                          const SizedBox(height: 24),
-                          _dataPendukung(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _dataAkun(),
-                          const SizedBox(height: 42),
-                          _konfirmasi(),
-                        ],
-                      ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureAkte,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var akte = snapshot.data!;
+          String namaPemohon = akte["nama"] ?? "Tidak diketahui";
+          String noHpPemohon = akte["no_hp"] ?? "Tidak diketahui";
+          String emailPemohon = akte["email"] ?? "Tidak diketahui";
+          String tglUploadPemohon = akte["ak_tgl_upload"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(akte["ak_tgl_upload"]),
+                )
+              : "Tidak diketahui";
+          String fotoSuratKelahiran =
+              akte["ak_foto_surat_kelahiran"] ?? "Tidak diketahui";
+          String fotoKK = akte["ak_foto_kk"] ?? "Tidak diketahui";
+          String fotoKTPAyah = akte["ak_foto_ktp_ayah"] ?? "Tidak diketahui";
+          String fotoKTPIbu = akte["ak_foto_ktp_ibu"] ?? "Tidak diketahui";
+          String fotoNikahAyah =
+              akte["ak_foto_nikah_ayah"] ?? "Tidak diketahui";
+          String fotoNikahIbu = akte["ak_foto_nikah_ibu"] ?? "Tidak diketahui";
+          String fotoKTPSaksiSatu =
+              akte["ak_foto_ktp_saksi_satu"] ?? "Tidak diketahui";
+          String fotoKTPSaksiDua =
+              akte["ak_foto_ktp_saksi_dua"] ?? "Tidak diketahui";
+          String fotoIjasahBersangkutan =
+              akte["ak_foto_ijasah_bersangkutan"] ?? "Tidak diketahui";
+          String fotoAkteSaudara =
+              akte["ak_foto_akte_saudara"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 8),
+                    _imageSuartKelahiran(fotoSuratKelahiran),
+                    const SizedBox(height: 12),
+                    _imageKK(fotoKK),
+                    const SizedBox(height: 24),
+                    _dataAyah(),
+                    const SizedBox(height: 6),
+                    _ktpAyah(fotoKTPAyah),
+                    const SizedBox(height: 12),
+                    _nikahAyah(fotoNikahAyah),
+                    const SizedBox(height: 24),
+                    _dataIbu(),
+                    const SizedBox(height: 6),
+                    _ktpIbu(fotoKTPIbu),
+                    const SizedBox(height: 12),
+                    _nikahIbu(fotoNikahIbu),
+                    const SizedBox(height: 24),
+                    _dataSaksi(),
+                    const SizedBox(height: 6),
+                    _ktpSaksiSatu(fotoKTPSaksiSatu),
+                    const SizedBox(height: 12),
+                    _ktpSaksiDua(fotoKTPSaksiDua),
+                    const SizedBox(height: 24),
+                    _dataPendukung(),
+                    const SizedBox(height: 6),
+                    _ijasahBersangkutan(fotoIjasahBersangkutan),
+                    const SizedBox(height: 12),
+                    _akteSaudara(fotoAkteSaudara),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _dataPemohon(),
+                    const SizedBox(height: 6),
+                    _namaPemohon(namaPemohon),
+                    const SizedBox(height: 12),
+                    _noHpPemohon(noHpPemohon),
+                    const SizedBox(height: 12),
+                    _emailPemohon(emailPemohon),
+                    const SizedBox(height: 12),
+                    _tglUploadPemohon(tglUploadPemohon),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
+                    ),
+                    const SizedBox(height: 42),
+                    _konfirmasi(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -151,7 +205,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  Column _imageSuartKelahiran() {
+  Column _imageSuartKelahiran(String SuratKelahiran) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +249,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['surat_kelahiran'] ?? '',
+                              "Foto Surat Kelahiran Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -222,7 +276,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKelahiran = !_isImageVisibleKelahiran;
                       });
-                      _showDialogSuratKelahiran(context);
+                      _showDialogSuratKelahiran(context, SuratKelahiran);
                     },
                   ),
                 ],
@@ -234,7 +288,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  Column _imageKK() {
+  Column _imageKK(String KK) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -278,7 +332,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_kk'] ?? '',
+                              "Foto Kartu Keluarga Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -305,7 +359,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKK = !_isImageVisibleKK;
                       });
-                      _showDialogFotoKK(context);
+                      _showDialogFotoKK(context, KK);
                     },
                   ),
                 ],
@@ -317,7 +371,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  Column _biodataAyah() {
+  Column _dataAyah() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -334,7 +388,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _ktpAyah(String KTPAyah) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -375,7 +436,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_ayah'] ?? '',
+                              "Foto KTP Ayah Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -402,7 +463,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKTPAyah = !_isImageVisibleKTPAyah;
                       });
-                      _showDialogFotoKTPAyah(context);
+                      _showDialogFotoKTPAyah(context, KTPAyah);
                     },
                   ),
                 ],
@@ -410,7 +471,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _nikahAyah(String NikahAyah) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -451,7 +519,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ayah'] ?? '',
+                              "Foto Buku Nikah Ayah Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -478,7 +546,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleNikahAyah = !_isImageVisibleNikahAyah;
                       });
-                      _showDialogFotoNikahAyah(context);
+                      _showDialogFotoNikahAyah(context, NikahAyah);
                     },
                   ),
                 ],
@@ -490,7 +558,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  Column _biodataIbu() {
+  Column _dataIbu() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -507,7 +575,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _ktpIbu(String KTPIbu) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -548,7 +623,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_ibu'] ?? '',
+                              "Foto KTP Ibu Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -575,7 +650,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKTPIbu = !_isImageVisibleKTPIbu;
                       });
-                      _showDialogFotoKTPIbu(context);
+                      _showDialogFotoKTPIbu(context, KTPIbu);
                     },
                   ),
                 ],
@@ -583,7 +658,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _nikahIbu(String NikahIbu) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -624,7 +706,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ibu'] ?? '',
+                              "Foto Buku Nikah Ibu Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -651,7 +733,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleNikahIbu = !_isImageVisibleNikahIbu;
                       });
-                      _showDialogFotoNikahIbu(context);
+                      _showDialogFotoNikahIbu(context, NikahIbu);
                     },
                   ),
                 ],
@@ -680,7 +762,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _ktpSaksiSatu(String SaksiSatu) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -721,7 +810,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_saksi_satu'] ?? '',
+                              "Foto KTP Saksi 1 Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -748,7 +837,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKTPSaksi1 = !_isImageVisibleKTPSaksi1;
                       });
-                      _showDialogFotoKTPSaksiSatu(context);
+                      _showDialogFotoKTPSaksiSatu(context, SaksiSatu);
                     },
                   ),
                 ],
@@ -756,7 +845,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _ktpSaksiDua(String SaksiDua) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -797,7 +893,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_saksi_dua'] ?? '',
+                              "Foto KTP Saksi 2 Tersedia", 
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -824,7 +920,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                       setState(() {
                         _isImageVisibleKTPSaksi2 = !_isImageVisibleKTPSaksi2;
                       });
-                      _showDialogFotoKTPSaksiDua(context);
+                      _showDialogFotoKTPSaksiDua(context, SaksiDua);
                     },
                   ),
                 ],
@@ -853,7 +949,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _akteSaudara(String Akte) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -877,8 +980,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: data?['foto_akte_saudara'] != null &&
-                      data!['foto_akte_saudara'].isNotEmpty
+              child: Akte.isNotEmpty
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -896,7 +998,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    data?['foto_akte_saudara'] ?? '',
+                                    "Foto Akte Saudara Tersedia",
                                     style: GoogleFonts.montserrat(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -924,7 +1026,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                               _isImageVisibleAkteSaudara =
                                   !_isImageVisibleAkteSaudara;
                             });
-                            _showDialogFotoAkteSaudara(context);
+                            _showDialogFotoAkteSaudara(context, Akte);
                           },
                         ),
                       ],
@@ -942,7 +1044,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _ijasahBersangkutan(String Ijasah) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -966,8 +1075,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: data?['foto_ijasah_bersangkutan'] != null &&
-                      data!['foto_ijasah_bersangkutan'].isNotEmpty
+              child: Ijasah.isNotEmpty
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -985,7 +1093,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    data!['foto_ijasah_bersangkutan'],
+                                    "Foto Ijasah Bersangkutan Tersedia",
                                     style: GoogleFonts.montserrat(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -1012,7 +1120,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                             setState(() {
                               _isImageVisibleIjasah = !_isImageVisibleIjasah;
                             });
-                            _showDialogFotoIjasahBersangkutan(context);
+                            _showDialogFotoIjasahBersangkutan(context, Ijasah);
                           },
                         ),
                       ],
@@ -1034,13 +1142,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  Column _dataAkun() {
-    String FormatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _dataPemohon() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1057,7 +1159,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Column _namaPemohon(String nama) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1082,7 +1191,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1094,7 +1203,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _noHpPemohon(String noHp) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1120,7 +1236,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['no_hp'] ?? '',
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1133,7 +1249,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _emailPemohon(String email) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1158,7 +1281,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['email'] ?? '',
+                email,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1170,7 +1293,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _tglUploadPemohon(String tglUpload) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1196,7 +1326,7 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                FormatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1213,262 +1343,104 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     );
   }
 
-  void _showDialogSuratKelahiran(BuildContext context) {
+  void _showImageDialog(
+      BuildContext context, String foto, VoidCallback onClose) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          backgroundColor: Colors.transparent,
+          child: InteractiveViewer(
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Image(
+              image: _getImageProvider(foto),
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(onClose);
+    });
+  }
+
+  void _showDialogSuratKelahiran(BuildContext context, String foto) {
     if (_isImageVisibleKelahiran) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['surat_kelahiran'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKelahiran = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKelahiran = false);
     }
   }
 
-  void _showDialogFotoKK(BuildContext context) {
+  void _showDialogFotoKK(BuildContext context, String foto) {
     if (_isImageVisibleKK) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKK = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKK = false);
     }
   }
 
-  void _showDialogFotoKTPAyah(BuildContext context) {
+  void _showDialogFotoKTPAyah(BuildContext context, String foto) {
     if (_isImageVisibleKTPAyah) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_ayah'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPAyah = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKTPAyah = false);
     }
   }
 
-  void _showDialogFotoNikahAyah(BuildContext context) {
+  void _showDialogFotoNikahAyah(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyah) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ayah'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahAyah = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleNikahAyah = false);
     }
   }
 
-  void _showDialogFotoKTPIbu(BuildContext context) {
+  void _showDialogFotoKTPIbu(BuildContext context, String foto) {
     if (_isImageVisibleKTPIbu) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_ibu'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPIbu = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKTPIbu = false);
     }
   }
 
-  void _showDialogFotoNikahIbu(BuildContext context) {
+  void _showDialogFotoNikahIbu(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbu) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ibu'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahIbu = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleNikahIbu = false);
     }
   }
 
-  void _showDialogFotoKTPSaksiSatu(BuildContext context) {
+  void _showDialogFotoKTPSaksiSatu(BuildContext context, String foto) {
     if (_isImageVisibleKTPSaksi1) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_saksi_satu'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPSaksi1 = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKTPSaksi1 = false);
     }
   }
 
-  void _showDialogFotoKTPSaksiDua(BuildContext context) {
+  void _showDialogFotoKTPSaksiDua(BuildContext context, String foto) {
     if (_isImageVisibleKTPSaksi2) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_saksi_dua'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPSaksi2 = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKTPSaksi2 = false);
     }
   }
 
-  void _showDialogFotoAkteSaudara(BuildContext context) {
+  void _showDialogFotoAkteSaudara(BuildContext context, String foto) {
     if (_isImageVisibleAkteSaudara) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_akte_saudara'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleAkteSaudara = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleAkteSaudara = false);
     }
   }
 
-  void _showDialogFotoIjasahBersangkutan(BuildContext context) {
+  void _showDialogFotoIjasahBersangkutan(BuildContext context, String foto) {
     if (_isImageVisibleIjasah) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ijasah_bersangkutan'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleIjasah = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleIjasah = false);
+    }
+  }
+
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
     }
   }
 

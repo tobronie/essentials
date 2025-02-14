@@ -4,12 +4,14 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class ActivityAdministrasiScreen extends StatefulWidget {
   final String id;
-  const ActivityAdministrasiScreen({
-    Key? key,
-    required this.id,
-  }) : super(key: key);
+  final String idType;
+
+  const ActivityAdministrasiScreen(
+      {super.key, required this.id, required this.idType});
 
   @override
   _ActivityAdministrasiScreenState createState() =>
@@ -21,35 +23,85 @@ class _ActivityAdministrasiScreenState
   Map<String, dynamic>? data;
   bool isLoading = true;
 
-  Future<List<dynamic>> fetchData(String endpoint) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint?(id_akte atau id_domisili atau id_kematian dst)=${widget.id}';
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    String endpoint = getEndpoint(widget.idType);
+    if (endpoint.isEmpty) {
+      setState(() {
+        isLoading = false;
+        data = null;
+      });
+      return;
+    }
+
+    String url =
+        'http://10.0.2.2:8080/essentials_api/$endpoint?${widget.idType}=${widget.id}';
+
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        List<dynamic> responseData = jsonDecode(response.body);
+        setState(() {
+          isLoading = false;
+          data = responseData.isNotEmpty ? responseData.first : null;
+        });
       } else {
-        throw Exception('Gagal mengambil data dari $endpoint');
+        throw Exception('Gagal mengambil data');
       }
     } catch (e) {
-      print("Error fetching $endpoint: $e");
-      return [];
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+        data = null;
+      });
     }
   }
 
-  Future<List<List<dynamic>>> getAllData() async {
-    return await Future.wait([
-      fetchData('get_ad_akte.php'),
-      fetchData('get_ad_domisili.php'),
-      fetchData('get_ad_kematian.php'),
-      fetchData('get_ad_kk.php'),
-      fetchData('get_ad_ktp.php'),
-      fetchData('get_ad_nikah.php'),
-      fetchData('get_ad_pendudukan.php'),
-      fetchData('get_ad_penghasilan_ortu.php'),
-      fetchData('get_ad_sktm.php'),
-      fetchData('get_ad_tanah.php'),
-      fetchData('get_ad_usaha.php'),
-    ]);
+  String getEndpoint(String idType) {
+    Map<String, String> endpointMap = {
+      'id_akte': 'get_ad_akte.php',
+      'id_domisili': 'get_ad_domisili.php',
+      'id_kematian': 'get_ad_kematian.php',
+      'id_kk': 'get_ad_kk.php',
+      'id_ktp': 'get_ad_ktp.php',
+      'id_nikah': 'get_ad_nikah.php',
+      'id_pendudukan': 'get_ad_pendudukan.php',
+      'id_penghasilan': 'get_ad_penghasilan_ortu.php',
+      'id_sktm': 'get_ad_sktm.php',
+      'id_tanah': 'get_ad_tanah.php',
+      'id_usaha': 'get_ad_usaha.php',
+    };
+
+    return endpointMap[idType] ?? '';
+  }
+
+  String formatTanggal(Map<String, dynamic> item) {
+    String? rawDate = item['ak_tgl_upload'] ??
+        item['dom_tgl_upload'] ??
+        item['kem_tgl_upload'] ??
+        item['kk_tgl_upload'] ??
+        item['kt_tgl_upload'] ??
+        item['ni_tgl_upload'] ??
+        item['pen_tgl_upload'] ??
+        item['has_tgl_upload'] ??
+        item['sktm_tgl_upload'] ??
+        item['tan_tgl_upload'] ??
+        item['us_tgl_upload'];
+
+    if (rawDate != null) {
+      try {
+        return DateFormat('dd MMMM yyyy - HH:mm:ss')
+            .format(DateTime.parse(rawDate));
+      } catch (e) {
+        return 'Format tanggal tidak valid';
+      }
+    }
+    return 'Tanggal tidak tersedia';
   }
 
   @override
@@ -58,13 +110,8 @@ class _ActivityAdministrasiScreenState
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Administrasi Anda',
@@ -90,7 +137,7 @@ class _ActivityAdministrasiScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _data(),
+                          _data(data!),
                           const SizedBox(height: 52),
                           _verifikasiKepalaDesa(),
                           const SizedBox(height: 16),
@@ -103,7 +150,7 @@ class _ActivityAdministrasiScreenState
     );
   }
 
-  Column _data() {
+  Widget _data(Map<String, dynamic> item) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -111,147 +158,71 @@ class _ActivityAdministrasiScreenState
           'Data pengajuan surat Anda:',
           style: GoogleFonts.montserrat(
             fontSize: 14,
-            height: 1.2,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
         const SizedBox(height: 18),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nama Pemohon',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                item['nama'] ?? '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
+        _buildInfoBox('Nama Pemohon', item['nama'] ?? '-'),
         const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Jenis Pengajuan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                item['ak_judul'] ??
-                    item['dom_judul'] ??
-                    item['kem_judul'] ??
-                    item['kk_judul'] ??
-                    item['kt_judul'] ??
-                    item['ni_judul'] ??
-                    item['pen_judul'] ??
-                    item['has_judul'] ??
-                    item['sktm_judul'] ??
-                    item['tan_judul'] ??
-                    item['us_judul'] ??
-                    '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
+        _buildInfoBox(
+            'Jenis Pengajuan',
+            item['ak_judul'] ??
+                item['dom_judul'] ??
+                item['kem_judul'] ??
+                item['kk_judul'] ??
+                item['kt_judul'] ??
+                item['ni_judul'] ??
+                item['pen_judul'] ??
+                item['has_judul'] ??
+                item['sktm_judul'] ??
+                item['tan_judul'] ??
+                item['us_judul'] ??
+                '-'),
         const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Tanggal Pengajuan',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+        _buildInfoBox(
+            'Tanggal Pengajuan',
+            formatTanggal(item))
+      ],
+    );
+  }
+
+  Widget _buildInfoBox(String title, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          height: 42,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xffD9D9D9),
+              width: 2,
             ),
-            const SizedBox(height: 4),
-            Container(
-              height: 42,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: const Color(0xffD9D9D9),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                item['ak_tgl_upload'] ??
-                    item['dom_tgl_upload'] ??
-                    item['kem_tgl_upload'] ??
-                    item['kk_tgl_upload'] ??
-                    item['kt_tgl_upload'] ??
-                    item['ni_tgl_upload'] ??
-                    item['pen_tgl_upload'] ??
-                    item['has_tgl_upload'] ??
-                    item['sktm_tgl_upload'] ??
-                    item['tan_tgl_upload'] ??
-                    item['us_tgl_upload'] ??
-                    '',
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.left,
-              ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            value,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
             ),
-          ],
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
       ],
     );

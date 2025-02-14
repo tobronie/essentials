@@ -439,93 +439,105 @@ class _HomeScreenState extends State<HomeScreen> {
 
         List informasiDesaList = snapshot.data!;
         return Column(
-          children: List.generate(
-            informasiDesaList.length > 2 ? 2 : informasiDesaList.length,
-            (index) {
-              Map<String, dynamic> informasiDesa = informasiDesaList[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InformasiTetapScreen(
-                          id: informasiDesa['id_infodes'].toString(),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Memo Desa Kedungmulyo',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...List.generate(
+              informasiDesaList.length > 2 ? 2 : informasiDesaList.length,
+              (index) {
+                Map<String, dynamic> informasiDesa = informasiDesaList[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InformasiTetapScreen(
+                            id: informasiDesa['id_infodes'].toString(),
+                          ),
                         ),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 3,
+                            spreadRadius: 0,
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 3,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                            child: Image(
+                              image: _getImageProvider(
+                                  informasiDesa['foto_infodes'] ?? ''),
+                              width: double.infinity,
+                              height: 140,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.error);
+                              },
+                            ),
                           ),
-                          child: Image(
-                            image: _getImageProvider(
-                                informasiDesa['foto_infodes'] ?? ''),
-                            width: double.infinity,
-                            height: 140,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.error);
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 18),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                informasiDesa['judul_infodes'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 18),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  informasiDesa['judul_infodes'] ?? '',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                informasiDesa['isi_infodes'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 12,
-                                  height: 1.2,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                const SizedBox(height: 6),
+                                Text(
+                                  informasiDesa['isi_infodes'] ?? '',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 12,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
                                 ),
-                                textAlign: TextAlign.justify,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 3,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
+          ],
         );
       },
     );

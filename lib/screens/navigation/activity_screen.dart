@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -16,7 +17,8 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  String _selectedOption = 'Dalam Proses';
+  String _selectedProses = 'Dalam Proses';
+  String _selectedOption = 'Semua';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
@@ -53,6 +55,30 @@ class _ActivityScreenState extends State<ActivityScreen> {
     ]);
   }
 
+  String formatTanggal(Map<String, dynamic> item) {
+    String? rawDate = item['tgl_upload_lapor'] ??
+        item['ak_tgl_upload'] ??
+        item['dom_tgl_upload'] ??
+        item['kem_tgl_upload'] ??
+        item['kk_tgl_upload'] ??
+        item['kt_tgl_upload'] ??
+        item['ni_tgl_upload'] ??
+        item['pen_tgl_upload'] ??
+        item['has_tgl_upload'] ??
+        item['sktm_tgl_upload'] ??
+        item['tan_tgl_upload'] ??
+        item['us_tgl_upload'];
+
+    if (rawDate != null) {
+      try {
+        return DateFormat('dd MMMM yyyy').format(DateTime.parse(rawDate));
+      } catch (e) {
+        return 'Format tanggal tidak valid';
+      }
+    }
+    return 'Tanggal tidak tersedia';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +110,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 _search(),
                 const SizedBox(height: 18),
                 _process(context),
+                const SizedBox(height: 18),
+                _option(context),
                 const SizedBox(height: 18),
                 FutureBuilder<List<List<dynamic>>>(
                   future: getAllData(),
@@ -182,7 +210,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedOption = 'Dalam Proses';
+                  _selectedProses = 'Dalam Proses';
                 });
               },
               child: Stack(
@@ -193,12 +221,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedOption == 'Dalam Proses'
+                      color: _selectedProses == 'Dalam Proses'
                           ? Color(0xff00AA13)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedOption == 'Dalam Proses')
+                  if (_selectedProses == 'Dalam Proses')
                     Container(
                       height: 2,
                       width: 'Dalam Proses'.length * 8.5,
@@ -211,7 +239,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedOption = 'Riwayat';
+                  _selectedProses = 'Riwayat';
                 });
               },
               child: Stack(
@@ -222,12 +250,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedOption == 'Riwayat'
+                      color: _selectedProses == 'Riwayat'
                           ? Color(0xff00AA13)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedOption == 'Riwayat')
+                  if (_selectedProses == 'Riwayat')
                     Container(
                       height: 2,
                       width: 'Riwayat'.length * 8.5,
@@ -239,6 +267,57 @@ class _ActivityScreenState extends State<ActivityScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _option(BuildContext context) {
+    return Container(
+      height: 36,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _buildCategoryOption('Semua'),
+          _buildCategoryOption('Pengaduan'),
+          _buildCategoryOption('Administrasi'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryOption(String category) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedOption = category;
+          _searchQuery = '';
+          _searchController.clear();
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: _selectedOption == category
+              ? Color(0xff00AA13).withOpacity(0.25)
+              : Colors.white,
+          border: Border.all(
+            color: _selectedOption == category
+                ? Color(0xff00AA13)
+                : Color(0xffD9D9D9),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Text(
+          category,
+          style: GoogleFonts.montserrat(
+            fontSize: 14, 
+            fontWeight: FontWeight.w500,
+            color:
+                _selectedOption == category ? Color(0xff00AA13) : Colors.black,
+          ),
+        ),
+      ),
     );
   }
 
@@ -397,7 +476,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                item['tgl_upload_lapor'] ?? '',
+                                formatTanggal(item),
                                 style: GoogleFonts.montserrat(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w500,
@@ -416,30 +495,32 @@ class _ActivityScreenState extends State<ActivityScreen> {
               GestureDetector(
                 onTap: () {
                   Map<String, String?> idMap = {
-                    'akte': item['id_akte']?.toString(),
-                    'domisili': item['id_domisili']?.toString(),
-                    'kematian': item['id_kematian']?.toString(),
-                    'kk': item['id_kk']?.toString(),
-                    'ktp': item['id_ktp']?.toString(),
-                    'nikah': item['id_nikah']?.toString(),
-                    'pendudukan': item['id_pendudukan']?.toString(),
-                    'penghasilan': item['id_penghasilan']?.toString(),
-                    'sktm': item['id_sktm']?.toString(),
-                    'tanah': item['id_tanah']?.toString(),
-                    'usaha': item['id_usaha']?.toString(),
+                    'id_akte': item['id_akte']?.toString(),
+                    'id_domisili': item['id_domisili']?.toString(),
+                    'id_kematian': item['id_kematian']?.toString(),
+                    'id_kk': item['id_kk']?.toString(),
+                    'id_ktp': item['id_ktp']?.toString(),
+                    'id_nikah': item['id_nikah']?.toString(),
+                    'id_pendudukan': item['id_pendudukan']?.toString(),
+                    'id_penghasilan': item['id_penghasilan']?.toString(),
+                    'id_sktm': item['id_sktm']?.toString(),
+                    'id_tanah': item['id_tanah']?.toString(),
+                    'id_usaha': item['id_usaha']?.toString(),
                   };
 
-                  String? selectedId = idMap.values.firstWhere(
-                    (id) => id != null && id.isNotEmpty,
-                    orElse: () => '',
+                  var selectedEntry = idMap.entries.firstWhere(
+                    (entry) => entry.value != null && entry.value!.isNotEmpty,
+                    orElse: () => MapEntry('', ''),
                   );
 
-                  if (selectedId != null && selectedId.isNotEmpty) {
+                  if (selectedEntry.key.isNotEmpty &&
+                      selectedEntry.value!.isNotEmpty) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ActivityAdministrasiScreen(
-                          id: selectedId,
+                          idType: selectedEntry.key,
+                          id: selectedEntry.value!,
                         ),
                       ),
                     );
@@ -450,7 +531,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 10),
                   width: double.infinity,
-                  height: 84,
+                  height: 76,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -497,18 +578,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        item['ak_tgl_upload'] ??
-                            item['dom_tgl_upload'] ??
-                            item['kem_tgl_upload'] ??
-                            item['kk_tgl_upload'] ??
-                            item['kt_tgl_upload'] ??
-                            item['ni_tgl_upload'] ??
-                            item['pen_tgl_upload'] ??
-                            item['has_tgl_upload'] ??
-                            item['sktm_tgl_upload'] ??
-                            item['tan_tgl_upload'] ??
-                            item['us_tgl_upload'] ??
-                            '',
+                        formatTanggal(item),
                         style: GoogleFonts.montserrat(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,

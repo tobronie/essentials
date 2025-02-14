@@ -1,8 +1,9 @@
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/services.dart';
 
 class Admin_KKScreen extends StatefulWidget {
   final String id;
-  const Admin_KKScreen({Key? key, required this.id}) : super(key: key);
+  const Admin_KKScreen({super.key, required this.id});
 
   @override
   _Admin_KKScreenState createState() => _Admin_KKScreenState();
@@ -24,8 +25,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
   bool _isImageVisibleNikahIbu = false;
   bool _isImageVisibleIjasahKeluarga = false;
   bool _isImageVisibleAkteKeluarga = false;
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureKK;
 
   Future<void> pickDocument() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -49,38 +49,26 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futureKK = getKK();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getKK() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_ad_kk.php?id_kk=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('kk')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -89,7 +77,10 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -105,50 +96,84 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _dataPengajuan(),
-                          const SizedBox(height: 8),
-                          _imageKK(),
-                          const SizedBox(height: 12),
-                          _imageNikahAyah(),
-                          const SizedBox(height: 12),
-                          _imageNikahIbu(),
-                          const SizedBox(height: 12),
-                          _imageIjasahKeluarga(),
-                          const SizedBox(height: 12),
-                          _imageAkteKeluarga(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _dataAkun(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _verifikasiKepalaDesa(),
-                          const SizedBox(height: 12),
-                          _uploadDocument(),
-                          const SizedBox(height: 32),
-                          _konfirmasi(),
-                        ],
-                      ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureKK,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var kk = snapshot.data!;
+          String namaPemohon = kk["nama"] ?? "Tidak diketahui";
+          String noHpPemohon = kk["no_hp"] ?? "Tidak diketahui";
+          String emailPemohon = kk["email"] ?? "Tidak diketahui";
+          String tglUploadPemohon = kk["kk_tgl_upload"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(kk["kk_tgl_upload"]),
+                )
+              : "Tidak diketahui";
+          String fotoKK = kk["kk_foto_kk"] ?? "Tidak diketahui";
+          String fotoNikahAyah = kk["kk_foto_nikah_ayah"] ?? "Tidak diketahui";
+          String fotoNikahIbu = kk["kk_foto_nikah_ibu"] ?? "Tidak diketahui";
+          String fotoIjasahKeluarga =
+              kk["kk_foto_ijasah_keluarga"] ?? "Tidak diketahui";
+          String fotoAkteKeluarga =
+              kk["kk_foto_akte_keluarga"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 8),
+                    _imageKK(fotoKK),
+                    const SizedBox(height: 12),
+                    _imageNikahAyah(fotoNikahAyah),
+                    const SizedBox(height: 12),
+                    _imageNikahIbu(fotoNikahIbu),
+                    const SizedBox(height: 12),
+                    _imageIjasahKeluarga(fotoIjasahKeluarga),
+                    const SizedBox(height: 12),
+                    _imageAkteKeluarga(fotoAkteKeluarga),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _dataPemohon(),
+                    const SizedBox(height: 6),
+                    _namaPemohon(namaPemohon),
+                    const SizedBox(height: 12),
+                    _noHpPemohon(noHpPemohon),
+                    const SizedBox(height: 12),
+                    _emailPemohon(emailPemohon),
+                    const SizedBox(height: 12),
+                    _tglUploadPemohon(tglUploadPemohon),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
+                    ),
+                    const SizedBox(height: 24),
+                    _verifikasiKepalaDesa(),
+                    const SizedBox(height: 12),
+                    _uploadDocument(),
+                    const SizedBox(height: 32),
+                    _konfirmasi(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -174,7 +199,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageKK() {
+  Column _imageKK(String KK) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -201,7 +226,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: data?['foto_kk'] != null && data!['foto_kk'].isNotEmpty
+              child: KK.isNotEmpty
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -219,7 +244,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    data?['foto_kk'] ?? '',
+                                    "Foto Kartu Keluarga Tersedia",
                                     style: GoogleFonts.montserrat(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -246,7 +271,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                             setState(() {
                               _isImageVisibleKKAsli = !_isImageVisibleKKAsli;
                             });
-                            _showDialogFotoKKAsli(context);
+                            _showDialogFotoKKAsli(context, KK);
                           },
                         ),
                       ],
@@ -268,7 +293,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageNikahAyah() {
+  Column _imageNikahAyah(String NikahAyah) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -312,7 +337,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ayah'] ?? '',
+                              "Foto Buku Nikah Ayah Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -339,7 +364,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                       setState(() {
                         _isImageVisibleNikahAyah = !_isImageVisibleNikahAyah;
                       });
-                      _showDialogFotoNikahAyah(context);
+                      _showDialogFotoNikahAyah(context, NikahAyah);
                     },
                   ),
                 ],
@@ -351,7 +376,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageNikahIbu() {
+  Column _imageNikahIbu(String NikahIbu) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -395,7 +420,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ibu'] ?? '',
+                              "Foto Buku Nikah Ibu Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -422,7 +447,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                       setState(() {
                         _isImageVisibleNikahIbu = !_isImageVisibleNikahIbu;
                       });
-                      _showDialogFotoNikahIbu(context);
+                      _showDialogFotoNikahIbu(context, NikahIbu);
                     },
                   ),
                 ],
@@ -434,7 +459,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageIjasahKeluarga() {
+  Column _imageIjasahKeluarga(String IjasahKeluarga) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -478,7 +503,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ijasah_keluarga'] ?? '',
+                              "Foto Ijasah Sekeluarga Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -503,9 +528,10 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleIjasahKeluarga = !_isImageVisibleIjasahKeluarga;
+                        _isImageVisibleIjasahKeluarga =
+                            !_isImageVisibleIjasahKeluarga;
                       });
-                      _showDialogFotoIjasahKeluarga(context);
+                      _showDialogFotoIjasahKeluarga(context, IjasahKeluarga);
                     },
                   ),
                 ],
@@ -517,7 +543,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _imageAkteKeluarga() {
+  Column _imageAkteKeluarga(String AkteKeluarga) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -561,7 +587,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_akte_keluarga'] ?? '',
+                              "Foto Akte Kelahiran Sekeluarga Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -586,9 +612,10 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleAkteKeluarga = !_isImageVisibleAkteKeluarga;
+                        _isImageVisibleAkteKeluarga =
+                            !_isImageVisibleAkteKeluarga;
                       });
-                      _showDialogFotoAkteKeluarga(context);
+                      _showDialogFotoAkteKeluarga(context, AkteKeluarga);
                     },
                   ),
                 ],
@@ -600,13 +627,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  Column _dataAkun() {
-    String FormatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _dataPemohon() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -623,7 +644,14 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Column _namaPemohon(String nama) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -648,7 +676,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -660,7 +688,14 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _noHpPemohon(String noHp) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -686,7 +721,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['no_hp'] ?? '',
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -699,7 +734,14 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _emailPemohon(String email) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -724,7 +766,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['email'] ?? '',
+                email,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -736,7 +778,14 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _tglUploadPemohon(String tglUpload) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -762,7 +811,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                FormatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -779,133 +828,76 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
     );
   }
 
-  void _showDialogFotoKKAsli(BuildContext context) {
+  void _showImageDialog(
+      BuildContext context, String foto, VoidCallback onClose) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          backgroundColor: Colors.transparent,
+          child: InteractiveViewer(
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Image(
+              image: _getImageProvider(foto),
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(onClose);
+    });
+  }
+
+  void _showDialogFotoKKAsli(BuildContext context, String foto) {
     if (_isImageVisibleKKAsli) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKKAsli = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKKAsli = false);
     }
   }
 
-  void _showDialogFotoNikahAyah(BuildContext context) {
+  void _showDialogFotoNikahAyah(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyah) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ayah'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahAyah = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleNikahAyah = false);
     }
   }
 
-  void _showDialogFotoNikahIbu(BuildContext context) {
+  void _showDialogFotoNikahIbu(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbu) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ibu'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahIbu = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleNikahIbu = false);
     }
   }
 
-  void _showDialogFotoAkteKeluarga(BuildContext context) {
-    if (_isImageVisibleAkteKeluarga) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_akte_keluarga'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleAkteKeluarga = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoIjasahKeluarga(BuildContext context) {
+  void _showDialogFotoIjasahKeluarga(BuildContext context, String foto) {
     if (_isImageVisibleIjasahKeluarga) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ijasah_keluarga'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleIjasahKeluarga = false;
-        });
-      });
+      _showImageDialog(
+          context, foto, () => _isImageVisibleIjasahKeluarga = false);
+    }
+  }
+
+  void _showDialogFotoAkteKeluarga(BuildContext context, String foto) {
+    if (_isImageVisibleAkteKeluarga) {
+      _showImageDialog(
+          context, foto, () => _isImageVisibleAkteKeluarga = false);
+    }
+  }
+
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
     }
   }
 
