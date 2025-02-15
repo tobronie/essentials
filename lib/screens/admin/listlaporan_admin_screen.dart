@@ -23,6 +23,13 @@ class _ListVerifikasiLaporanAdminScreenState
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<dynamic>> futurePelaporan;
+
+  @override
+  void initState() {
+    super.initState();
+    futurePelaporan = getPelaporan();
+  }
 
   Future<List<dynamic>> getPelaporan() async {
     String url = 'http://10.0.2.2:8080/essentials_api/view_pelaporan.php';
@@ -80,7 +87,7 @@ class _ListVerifikasiLaporanAdminScreenState
                 _option(context),
                 const SizedBox(height: 18),
                 FutureBuilder<List<dynamic>>(
-                  future: getPelaporan(),
+                  future: futurePelaporan,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());

@@ -111,7 +111,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                 _searchAndCread(),
                 const SizedBox(height: 18),
                 FutureBuilder<List<dynamic>>(
-                  future: getInformation(),
+                  future: futureInformation,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());

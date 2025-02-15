@@ -110,7 +110,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                 _searchAndCread(),
                 const SizedBox(height: 18),
                 FutureBuilder<List<dynamic>>(
-                  future: getMemo(),
+                  future: futureInformationDesa,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());

@@ -23,11 +23,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController(viewportFraction: 0.7);
+  late Future<List<dynamic>> futureInformation;
+  late Future<List<dynamic>> futureInformationDesa;
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureInformation = getInformation();
+    futureInformationDesa = getMemo();
   }
 
   Future<List<dynamic>> getInformation() async {
@@ -256,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _homeInformasi() {
     return FutureBuilder<List<dynamic>>(
-      future: getInformation(),
+      future: futureInformation,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -429,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _homeDesa() {
     return FutureBuilder<List<dynamic>>(
-      future: getMemo(),
+      future: futureInformationDesa,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

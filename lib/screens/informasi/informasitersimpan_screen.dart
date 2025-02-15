@@ -19,6 +19,13 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<dynamic>> futureInformation;
+
+  @override
+  void initState() {
+    super.initState();
+    futureInformation = getInformation();
+  }
 
   Future<List<dynamic>> getInformation() async {
     String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
@@ -71,7 +78,7 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
                 _search(),
                 const SizedBox(height: 18),
                 FutureBuilder<List<dynamic>>(
-                  future: getInformation(),
+                  future: futureInformation,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());

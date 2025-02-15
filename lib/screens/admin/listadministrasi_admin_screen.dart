@@ -32,6 +32,13 @@ class _ListVerifikasiAdministrasiAdminScreenState
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<List<dynamic>>> _futureData;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureData = getAllData();
+  }
 
   Future<List<dynamic>> fetchData(String endpoint) async {
     String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
@@ -128,7 +135,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
                 _process(context),
                 const SizedBox(height: 18),
                 FutureBuilder<List<List<dynamic>>>(
-                  future: getAllData(),
+                  future: _futureData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
