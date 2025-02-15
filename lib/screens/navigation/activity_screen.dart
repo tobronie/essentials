@@ -22,6 +22,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<List<dynamic>>> _futureData;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureData = getAllData();
+  }
 
   Future<List<dynamic>> fetchData(String endpoint) async {
     String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
@@ -114,7 +121,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 _option(context),
                 const SizedBox(height: 18),
                 FutureBuilder<List<List<dynamic>>>(
-                  future: getAllData(),
+                  future: _futureData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -311,7 +318,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         child: Text(
           category,
           style: GoogleFonts.montserrat(
-            fontSize: 14, 
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color:
                 _selectedOption == category ? Color(0xff00AA13) : Colors.black,
@@ -334,23 +341,43 @@ class _ActivityScreenState extends State<ActivityScreen> {
       List<dynamic> sktmList,
       List<dynamic> tanahList,
       List<dynamic> usahaList) {
-    List<dynamic> combinedList = [
-      ...pelaporanList,
-      ...akteList,
-      ...domisiliList,
-      ...kematianList,
-      ...kkList,
-      ...ktpList,
-      ...nikahList,
-      ...pendudukanList,
-      ...penghasilanOrtuList,
-      ...sktmList,
-      ...tanahList,
-      ...usahaList,
-    ];
+    List<dynamic> filteredList = [];
 
-    List<dynamic> filteredList = combinedList.where((item) {
-      String query = _searchQuery.toLowerCase();
+    if (_selectedOption == "Pengaduan") {
+      filteredList = pelaporanList;
+    } else if (_selectedOption == "Administrasi") {
+      filteredList = [
+        ...akteList,
+        ...domisiliList,
+        ...kematianList,
+        ...kkList,
+        ...ktpList,
+        ...nikahList,
+        ...pendudukanList,
+        ...penghasilanOrtuList,
+        ...sktmList,
+        ...tanahList,
+        ...usahaList,
+      ];
+    } else {
+      filteredList = [
+        ...pelaporanList,
+        ...akteList,
+        ...domisiliList,
+        ...kematianList,
+        ...kkList,
+        ...ktpList,
+        ...nikahList,
+        ...pendudukanList,
+        ...penghasilanOrtuList,
+        ...sktmList,
+        ...tanahList,
+        ...usahaList,
+      ];
+    }
+
+    String query = _searchQuery.toLowerCase();
+    filteredList = filteredList.where((item) {
       return [
         'judul_lapor',
         'ak_judul',
