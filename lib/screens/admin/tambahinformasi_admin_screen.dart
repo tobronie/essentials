@@ -49,6 +49,10 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
       _showSnackbar('Judul tidak boleh kosong');
       return;
     }
+    if (_judulController.text.length > 50) {
+      _showSnackbar('Judul maksimal 50 karakter');
+      return;
+    }
     if (selectedKategori == null) {
       _showSnackbar('Kategori tidak boleh kosong');
       return;

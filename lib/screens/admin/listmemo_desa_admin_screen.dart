@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/screens/admin/editmemo_admin_screen.dart';
 import 'package:essentials/screens/admin/tambahmemo_admin_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
@@ -52,7 +53,8 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
 
   Future<void> delInformationDesa(String id) async {
     try {
-      String url = 'http://10.0.2.2:8080/essentials_api/delete_information_desa.php';
+      String url =
+          'http://10.0.2.2:8080/essentials_api/delete_information_desa.php';
       var res = await http.post(
         Uri.parse(url),
         body: {"id": id},
@@ -260,7 +262,6 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Foto di sebelah kiri
                     Container(
                       width: 76,
                       height: 76,
@@ -273,7 +274,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12), // Jarak antara foto dan teks
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +287,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
                             ),
-                            maxLines: 3,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
@@ -310,7 +311,16 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      // edit infodes
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditInformasiDesaScreen(
+                                                  id_infodes: informasiDesa[
+                                                          'id_infodes']
+                                                      .toString()),
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(6),

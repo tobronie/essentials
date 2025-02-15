@@ -342,7 +342,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black,
                               ),
-                              maxLines: 3,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 8),
@@ -366,19 +366,15 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) =>
-                                        //         EditInformasiScreen(
-                                        //       editinformasi:
-                                        //           informasi.data()
-                                        //               as Map<String, dynamic>,
-                                        //       documentId: informasi.id,
-                                        //       Editinformasi: {},
-                                        //     ),
-                                        //   ),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditInformasiScreen(
+                                                    id_info: informasi['id_info']
+                                                        .toString()),
+                                          ),
+                                        );
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(

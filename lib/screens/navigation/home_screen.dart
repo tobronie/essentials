@@ -367,6 +367,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.black,
                                         ),
                                         textAlign: TextAlign.justify,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 4,
                                       ),
                                       const SizedBox(height: 12),
                                       Align(

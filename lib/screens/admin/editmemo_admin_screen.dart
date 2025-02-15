@@ -1,34 +1,33 @@
 import 'dart:convert';
-import 'package:essentials/services/update/update_information_services.dart';
+import 'package:essentials/services/update/update_information_desa_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-class EditInformasiScreen extends StatefulWidget {
-  final String id_info;
-  const EditInformasiScreen({super.key, required this.id_info});
+class EditInformasiDesaScreen extends StatefulWidget {
+  final String id_infodes;
+  const EditInformasiDesaScreen({super.key, required this.id_infodes});
 
   @override
-  _EditInformasiScreenState createState() => _EditInformasiScreenState();
+  _EditInformasiDesaScreenState createState() => _EditInformasiDesaScreenState();
 }
 
-class _EditInformasiScreenState extends State<EditInformasiScreen> {
-  final UpdateInfoService _UpdateInfoService = UpdateInfoService();
+class _EditInformasiDesaScreenState extends State<EditInformasiDesaScreen> {
+  final UpdateMemoService _UpdateMemoService = UpdateMemoService();
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _isiController = TextEditingController();
-  String? selectedKategori;
-  late Future<List<dynamic>> _futureInformation;
+  late Future<List<dynamic>> _futureInformationDesa;
 
   @override
   void initState() {
     super.initState();
-    _futureInformation = getInformation();
+    _futureInformationDesa = getInformationDesa();
   }
 
-  Future<List<dynamic>> getInformation() async {
+  Future<List<dynamic>> getInformationDesa() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_information.php?id_info=${widget.id_info}';
+        'http://10.0.2.2:8080/essentials_api/get_information_desa.php?id_infodes=${widget.id_infodes}';
     try {
       var response = await http.get(Uri.parse(url));
 
@@ -37,13 +36,10 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
         if (data.isNotEmpty) {
           setState(() {
             if (_judulController.text.isEmpty) {
-              _judulController.text = data[0]['judul_info'];
+              _judulController.text = data[0]['judul_infodes'];
             }
             if (_isiController.text.isEmpty) {
-              _isiController.text = data[0]['isi_info'];
-            }
-            if (selectedKategori == null) {
-              selectedKategori = data[0]['kategori_info'];
+              _isiController.text = data[0]['isi_infodes'];
             }
           });
           return data;
@@ -56,7 +52,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
     }
   }
 
-  Future<void> editInformasi() async {
+  Future<void> editInformasiDesa() async {
     if (_judulController.text.isEmpty) {
       _showSnackbar('Judul tidak boleh kosong');
       return;
@@ -65,19 +61,14 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
       _showSnackbar('Judul maksimal 50 karakter');
       return;
     }
-    if (selectedKategori == null || selectedKategori == 'Belum Memilih') {
-      _showSnackbar('Kategori tidak boleh kosong');
-      return;
-    }
     if (_isiController.text.isEmpty) {
       _showSnackbar('Isi tidak boleh kosong');
       return;
     }
 
-    await _UpdateInfoService.information(
-      widget.id_info,
+    await _UpdateMemoService.memo(
+      widget.id_infodes,
       _judulController.text,
-      selectedKategori!,
       _isiController.text,
       DateTime.now().toString(),
       context,
@@ -114,7 +105,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
           },
         ),
         title: Text(
-          'Edit Informasi',
+          'Edit Memo Desa',
           style: GoogleFonts.montserrat(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -125,7 +116,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
         backgroundColor: Color(0xffF9F9F9),
       ),
       body: FutureBuilder<List<dynamic>>(
-        future: _futureInformation,
+        future: _futureInformationDesa,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -144,8 +135,8 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
               snapshot.hasData) {
             var information = snapshot.data![0];
             if (_judulController.text.isEmpty && _isiController.text.isEmpty) {
-              _judulController.text = information['judul_info'];
-              _isiController.text = information['isi_info'];
+              _judulController.text = information['judul_infodes'];
+              _isiController.text = information['isi_infodes'];
             }
           }
 
@@ -155,7 +146,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _informasi(),
+                  _InformasiDesa(),
                   const SizedBox(height: 32),
                   _uploadButton(),
                 ],
@@ -167,7 +158,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
     );
   }
 
-  Column _informasi() {
+  Column _InformasiDesa() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +168,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
             Row(
               children: [
                 Text(
-                  'Judul Informasi',
+                  'Judul Memo Desa',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -237,84 +228,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
             Row(
               children: [
                 Text(
-                  'Kategori Informasi',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            GestureDetector(
-              child: Container(
-                height: 42,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: const Color(0xffD9D9D9),
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedKategori,
-                    items: <String>[
-                      'Belum Memilih',
-                      'Infrastruktur',
-                      'Kecelakaan',
-                      'Kegiatan',
-                      'Sosial'
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null && newValue != selectedKategori) {
-                        setState(() {
-                          selectedKategori = newValue;
-                        });
-                      }
-                    },
-                    isExpanded: true,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-                    dropdownColor: Color(0xffF9F9F9),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Isi Informasi',
+                  'Isi Memo Desa',
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -383,10 +297,10 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
           ),
         ),
         onPressed: () {
-          editInformasi();
+          editInformasiDesa();
         },
         child: Text(
-          'Perbarui Informasi',
+          'Perbarui Memo Desa',
           style: GoogleFonts.montserrat(
             fontSize: 16,
             fontWeight: FontWeight.w700,

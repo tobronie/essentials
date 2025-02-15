@@ -264,7 +264,7 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
                             ),
-                            maxLines: 3,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
