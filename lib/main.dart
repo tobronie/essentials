@@ -1,18 +1,14 @@
-import 'package:essentials/firebase_options.dart';
 import 'package:essentials/screens/authentication/login_screen.dart';
 import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
-import 'package:essentials/services/firebase_auth_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials/screens/spalsh_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
@@ -24,8 +20,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var auth = FirebaseAuth.instance;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -57,14 +51,19 @@ class _CheckUserState extends State<CheckUser> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero).then((_) {
-      FirebaseAuthService().isLoggedIn().then((isLoggedIn) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/splash',
-          arguments: isLoggedIn ? '/home' : '/onboarding',
-        );
-      });
+      checkLoginStatus();
     });
+  }
+
+  Future<void> checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    Navigator.pushReplacementNamed(
+      context,
+      '/splash',
+      arguments: isLoggedIn ? '/home' : '/onboarding',
+    );
   }
 
   @override

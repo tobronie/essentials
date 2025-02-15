@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 
 class Pejabat_KTPScreen extends StatefulWidget {
   final String id;
-  const Pejabat_KTPScreen({Key? key, required this.id}) : super(key: key);
+  const Pejabat_KTPScreen({super.key, required this.id});
 
   @override
   _Pejabat_KTPScreenState createState() => _Pejabat_KTPScreenState();
@@ -19,44 +19,31 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
   bool _isImageVisibleAkte = false;
   bool _isImageVisibleKK = false;
   bool _isImageVisiblePersetujuan = false;
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureKTP;
 
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futureKTP = getKTP();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getKTP() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_ad_ktp.php?id_ktp=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('ktp')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -65,7 +52,10 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -81,38 +71,72 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _dataPengajuan(),
-                          const SizedBox(height: 8),
-                          _imageAkte(),
-                          const SizedBox(height: 12),
-                          _imageKK(),
-                          const SizedBox(height: 12),
-                          _imageSurat(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _dataAkun(),
-                          const SizedBox(height: 42),
-                          _konfirmasi(),
-                        ],
-                      ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureKTP,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var ktp = snapshot.data!;
+          String namaPemohon = ktp["nama"] ?? "Tidak diketahui";
+          String noHpPemohon = ktp["no_hp"] ?? "Tidak diketahui";
+          String emailPemohon = ktp["email"] ?? "Tidak diketahui";
+          String tglUploadPemohon = ktp["kt_tgl_upload"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(ktp["kt_tgl_upload"]),
+                )
+              : "Tidak diketahui";
+          String fotoAkte = ktp["kt_foto_akte"] ?? "Tidak diketahui";
+          String fotoKK = ktp["kt_foto_kk"] ?? "Tidak diketahui";
+          String fotoFormulir = ktp["kt_foto_formulir"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 8),
+                    _imageAkte(fotoAkte),
+                    const SizedBox(height: 12),
+                    _imageKK(fotoKK),
+                    const SizedBox(height: 12),
+                    _imageSurat(fotoFormulir),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _dataPemohon(),
+                    const SizedBox(height: 6),
+                    _namaPemohon(namaPemohon),
+                    const SizedBox(height: 12),
+                    _noHpPemohon(noHpPemohon),
+                    const SizedBox(height: 12),
+                    _emailPemohon(emailPemohon),
+                    const SizedBox(height: 12),
+                    _tglUploadPemohon(tglUploadPemohon),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
+                    ),
+                    const SizedBox(height: 42),
+                    _konfirmasi(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -138,7 +162,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
     );
   }
 
-  Column _imageAkte() {
+  Column _imageAkte(String Akte) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -165,55 +189,66 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          right: 2, left: 8, top: 8, bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            PhosphorIcons.file(),
-                            color: Colors.black.withOpacity(0.7),
-                            size: 22,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              data?['foto_akte'] ?? '',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+              child: Akte.isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                right: 2, left: 8, top: 8, bottom: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  PhosphorIcons.file(),
+                                  color: Colors.black.withOpacity(0.7),
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    "Foto Surat kematian Tersedia",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            _isImageVisibleAkte
+                                ? PhosphorIcons.eye()
+                                : PhosphorIcons.eyeSlash(),
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isImageVisibleAkte = !_isImageVisibleAkte;
+                            });
+                            _showDialogFotoAkte(context, Akte);
+                          },
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: Text(
+                        "Foto tidak tersedia",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.red.withOpacity(0.8),
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      _isImageVisibleAkte
-                          ? PhosphorIcons.eye()
-                          : PhosphorIcons.eyeSlash(),
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isImageVisibleAkte = !_isImageVisibleAkte;
-                      });
-                      _showDialogFotoAkte(context);
-                    },
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -221,7 +256,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
     );
   }
 
-  Column _imageKK() {
+  Column _imageKK(String KK) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -265,7 +300,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_kk'] ?? '',
+                              "Foto Kartu Keluarga Teredia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -292,7 +327,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                       setState(() {
                         _isImageVisibleKK = !_isImageVisibleKK;
                       });
-                      _showDialogFotoKK(context);
+                      _showDialogFotoKK(context, KK);
                     },
                   ),
                 ],
@@ -304,7 +339,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
     );
   }
 
-  Column _imageSurat() {
+  Column _imageSurat(String Formulir) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -348,7 +383,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['surat'] ?? '',
+                              "Foto Formulir Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -376,7 +411,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                         _isImageVisiblePersetujuan =
                             !_isImageVisiblePersetujuan;
                       });
-                      _showDialogFotoPersetujuan(context);
+                      _showDialogFotoPersetujuan(context, Formulir);
                     },
                   ),
                 ],
@@ -388,13 +423,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
     );
   }
 
-  Column _dataAkun() {
-    String FormatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _dataPemohon() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -411,7 +440,14 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Column _namaPemohon(String nama) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -436,7 +472,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -448,7 +484,14 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _noHpPemohon(String noHp) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -474,7 +517,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['no_hp'] ?? '',
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -487,7 +530,14 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _emailPemohon(String email) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -512,7 +562,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['email'] ?? '',
+                email,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -524,7 +574,14 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _tglUploadPemohon(String tglUpload) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -550,7 +607,7 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                FormatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -567,113 +624,63 @@ class _Pejabat_KTPScreenState extends State<Pejabat_KTPScreen> {
     );
   }
 
-  void _showDialogFotoAkte(BuildContext context) {
+  void _showImageDialog(
+      BuildContext context, String foto, VoidCallback onClose) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          backgroundColor: Colors.transparent,
+          child: InteractiveViewer(
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Image(
+              image: _getImageProvider(foto),
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(onClose);
+    });
+  }
+
+  void _showDialogFotoAkte(BuildContext context, String foto) {
     if (_isImageVisibleAkte) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_akte'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleAkte = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleAkte = false);
     }
   }
 
-  void _showDialogFotoKK(BuildContext context) {
+  void _showDialogFotoKK(BuildContext context, String foto) {
     if (_isImageVisibleKK) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKK = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKK = false);
     }
   }
 
-  void _showDialogFotoPersetujuan(BuildContext context) {
+  void _showDialogFotoPersetujuan(BuildContext context, String foto) {
     if (_isImageVisiblePersetujuan) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['surat'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisiblePersetujuan = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisiblePersetujuan = false);
     }
   }
 
-  Container _verifikasiKepalaDesa() {
-    return Container(
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'Tidak disetujui',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFF0004),
-              ),
-            ),
-            TextSpan(text: ' '),
-            TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                height: 1.1,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-    );
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
+    }
   }
 
   Row _konfirmasi() {

@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-
+import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 class Pejabat_NikahScreen extends StatefulWidget {
   final String id;
-  const Pejabat_NikahScreen({Key? key, required this.id}) : super(key: key);
+  const Pejabat_NikahScreen({super.key, required this.id});
 
   @override
   _Pejabat_NikahScreenState createState() => _Pejabat_NikahScreenState();
@@ -28,44 +27,31 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
   bool _isImageVisibleNikahAyahWanita = false;
   bool _isImageVisibleNikahIbuWanita = false;
   bool _isImageVisibleFormulirWanita = false;
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureNikah;
 
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futureNikah = getNikah();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getNikah() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_ad_nikah.php?id_nikah=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('nikah')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -90,36 +76,111 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _dataPengajuan(),
-                          const SizedBox(height: 8),
-                          _biodataPria(),
-                          const SizedBox(height: 24),
-                          _biodataWanita(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _dataAkun(),
-                          const SizedBox(height: 42),
-                          _konfirmasi(),
-                        ],
-                      ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureNikah,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var nikah = snapshot.data!;
+          String namaPemohon = nikah["nama"] ?? "Tidak diketahui";
+          String noHpPemohon = nikah["no_hp"] ?? "Tidak diketahui";
+          String emailPemohon = nikah["email"] ?? "Tidak diketahui";
+          String tglUploadPemohon = nikah["ni_tgl_upload"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(nikah["ni_tgl_upload"]),
+                )
+              : "Tidak diketahui";
+          String fotoKTPPria = nikah["ni_foto_ktp_pria"] ?? "Tidak diketahui";
+          String fotoKKPria = nikah["ni_foto_kk_pria"] ?? "Tidak diketahui";
+          String fotoAktePria = nikah["ni_foto_akte_pria"] ?? "Tidak diketahui";
+          String fotoFormulirPria =
+              nikah["ni_foto_formulir_pria"] ?? "Tidak diketahui";
+          String fotoNikahAyahPria =
+              nikah["ni_foto_nikah_ayah_pria"] ?? "Tidak diketahui";
+          String fotoNikahIbuPria =
+              nikah["ni_foto_nikah_ibu_pria"] ?? "Tidak diketahui";
+          String fotoKTPWanita =
+              nikah["ni_foto_ktp_wanita"] ?? "Tidak diketahui";
+          String fotoKKWanita = nikah["ni_foto_kk_wanita"] ?? "Tidak diketahui";
+          String fotoAkteWanita =
+              nikah["ni_foto_akte_wanita"] ?? "Tidak diketahui";
+          String fotoFormulirWanita =
+              nikah["ni_foto_formulir_wanita"] ?? "Tidak diketahui";
+          String fotoNikahAyahWanita =
+              nikah["ni_foto_nikah_ayah_wanita"] ?? "Tidak diketahui";
+          String fotoNikahIbuWanita =
+              nikah["ni_foto_nikah_ibu_wanita"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 8),
+                    _biodataPria(),
+                    const SizedBox(height: 6),
+                    _imageKTPPria(fotoKTPPria),
+                    const SizedBox(height: 12),
+                    _imageAktePria(fotoAktePria),
+                    const SizedBox(height: 12),
+                    _imageKKPria(fotoKKPria),
+                    const SizedBox(height: 12),
+                    _imageNikahAyahPria(fotoNikahAyahPria),
+                    const SizedBox(height: 12),
+                    _imageNikahIbuPria(fotoNikahIbuPria),
+                    const SizedBox(height: 12),
+                    _imageFormulirPria(fotoFormulirPria),
+                    const SizedBox(height: 24),
+                    _biodataWanita(),
+                    const SizedBox(height: 6),
+                    _imageKTPWanita(fotoKTPWanita),
+                    const SizedBox(height: 12),
+                    _imageAkteWanita(fotoAkteWanita),
+                    const SizedBox(height: 12),
+                    _imageKKWanita(fotoKKWanita),
+                    const SizedBox(height: 12),
+                    _imageNikahAyahWanita(fotoNikahAyahWanita),
+                    const SizedBox(height: 12),
+                    _imageNikahIbuWanita(fotoNikahIbuWanita),
+                    const SizedBox(height: 12),
+                    _imageFormulirWanita(fotoFormulirWanita),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _dataPemohon(),
+                    const SizedBox(height: 6),
+                    _namaPemohon(namaPemohon),
+                    const SizedBox(height: 12),
+                    _noHpPemohon(noHpPemohon),
+                    const SizedBox(height: 12),
+                    _emailPemohon(emailPemohon),
+                    const SizedBox(height: 12),
+                    _tglUploadPemohon(tglUploadPemohon),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
+                    ),
+                    const SizedBox(height: 42),
+                    _konfirmasi(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -162,7 +223,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _imageKTPPria(String KTPPria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -203,7 +271,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_pria'] ?? '',
+                              "Foto KTP Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -230,7 +298,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleKTPPria = !_isImageVisibleKTPPria;
                       });
-                      _showDialogFotoKTPPria(context);
+                      _showDialogFotoKTPPria(context, KTPPria);
                     },
                   ),
                 ],
@@ -238,7 +306,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageAktePria(String AktePria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -279,7 +354,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_akte_pria'] ?? '',
+                              "Foto Akte Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -306,7 +381,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleAktePria = !_isImageVisibleAktePria;
                       });
-                      _showDialogFotoAktePria(context);
+                      _showDialogFotoAktePria(context, AktePria);
                     },
                   ),
                 ],
@@ -314,7 +389,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageKKPria(String KKPria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -355,7 +437,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_kk_pria'] ?? '',
+                              "Foto Kartu Keluarga Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -382,7 +464,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleKKPria = !_isImageVisibleKKPria;
                       });
-                      _showDialogFotoKKPria(context);
+                      _showDialogFotoKKPria(context, KKPria);
                     },
                   ),
                 ],
@@ -390,7 +472,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageNikahAyahPria(String NikahAyahPria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -431,7 +520,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ayah_pria'] ?? '',
+                              "Foto Buku Nikah Ayah Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -456,9 +545,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleNikahAyahPria = !_isImageVisibleNikahAyahPria;
+                        _isImageVisibleNikahAyahPria =
+                            !_isImageVisibleNikahAyahPria;
                       });
-                      _showDialogFotoNikahAyahPria(context);
+                      _showDialogFotoNikahAyahPria(context, NikahAyahPria);
                     },
                   ),
                 ],
@@ -466,7 +556,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageNikahIbuPria(String NikahIbuPria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -507,7 +604,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ibu_pria'] ?? '',
+                              "Foto Nikah Ibu Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -532,9 +629,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleNikahIbuPria = !_isImageVisibleNikahIbuPria;
+                        _isImageVisibleNikahIbuPria =
+                            !_isImageVisibleNikahIbuPria;
                       });
-                      _showDialogFotoNikahIbuPria(context);
+                      _showDialogFotoNikahIbuPria(context, NikahIbuPria);
                     },
                   ),
                 ],
@@ -542,7 +640,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageFormulirPria(String FormulirPria) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -583,7 +688,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_formulir_pria'] ?? '',
+                              "Foto Formulir Pria Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -608,9 +713,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleFormulirPria = !_isImageVisibleFormulirPria;
+                        _isImageVisibleFormulirPria =
+                            !_isImageVisibleFormulirPria;
                       });
-                      _showDialogFotoFormulirPria(context);
+                      _showDialogFotoFormulirPria(context, FormulirPria);
                     },
                   ),
                 ],
@@ -639,7 +745,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 6),
+      ],
+    );
+  }
+
+  Column _imageKTPWanita(String KTPWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -680,7 +793,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp_wanita'] ?? '',
+                              "Foto KTP Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -707,7 +820,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleKTPWanita = !_isImageVisibleKTPWanita;
                       });
-                      _showDialogFotoKTPWanita(context);
+                      _showDialogFotoKTPWanita(context, KTPWanita);
                     },
                   ),
                 ],
@@ -715,7 +828,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageAkteWanita(String AkteWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -756,7 +876,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_akte_wanita'] ?? '',
+                              "Foto Akte Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -783,7 +903,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleAkteWanita = !_isImageVisibleAkteWanita;
                       });
-                      _showDialogFotoAkteWanita(context);
+                      _showDialogFotoAkteWanita(context, AkteWanita);
                     },
                   ),
                 ],
@@ -791,7 +911,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageKKWanita(String KKWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -832,7 +959,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_kk_wanita'] ?? '',
+                              "Foto Kartu Keluarga Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -859,7 +986,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                       setState(() {
                         _isImageVisibleKKWanita = !_isImageVisibleKKWanita;
                       });
-                      _showDialogFotoKKWanita(context);
+                      _showDialogFotoKKWanita(context, KKWanita);
                     },
                   ),
                 ],
@@ -867,7 +994,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageNikahAyahWanita(String NikahAyahWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -908,7 +1042,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ayah_wanita'] ?? '',
+                              "Foto Buku Nikah Ayah Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -933,9 +1067,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleNikahAyahWanita = !_isImageVisibleNikahAyahWanita;
+                        _isImageVisibleNikahAyahWanita =
+                            !_isImageVisibleNikahAyahWanita;
                       });
-                      _showDialogFotoNikahAyahWanita(context);
+                      _showDialogFotoNikahAyahWanita(context, NikahAyahWanita);
                     },
                   ),
                 ],
@@ -943,7 +1078,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageNikahIbuWanita(String NikahIbuWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -984,7 +1126,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_nikah_ibu_wanita'] ?? '',
+                              "Foto Nikah Ibu Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -1009,9 +1151,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleNikahIbuWanita = !_isImageVisibleNikahIbuWanita;
+                        _isImageVisibleNikahIbuWanita =
+                            !_isImageVisibleNikahIbuWanita;
                       });
-                      _showDialogFotoNikahIbuWanita(context);
+                      _showDialogFotoNikahIbuWanita(context, NikahIbuWanita);
                     },
                   ),
                 ],
@@ -1019,7 +1162,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _imageFormulirWanita(String FormulirWanita) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1060,7 +1210,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_formulir_wanita'] ?? '',
+                              "Foto Formulir Wanita Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -1085,9 +1235,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isImageVisibleFormulirWanita = !_isImageVisibleFormulirWanita;
+                        _isImageVisibleFormulirWanita =
+                            !_isImageVisibleFormulirWanita;
                       });
-                      _showDialogFotoFormulirWanita(context);
+                      _showDialogFotoFormulirWanita(context, FormulirWanita);
                     },
                   ),
                 ],
@@ -1099,13 +1250,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
     );
   }
 
-  Column _dataAkun() {
-    String FormatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _dataPemohon() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1122,7 +1267,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Column _namaPemohon(String nama) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1147,7 +1299,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1159,7 +1311,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _noHpPemohon(String noHp) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1185,7 +1344,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['no_hp'] ?? '',
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1198,7 +1357,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _emailPemohon(String email) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1223,7 +1389,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['email'] ?? '',
+                email,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1235,7 +1401,14 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _tglUploadPemohon(String tglUpload) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1261,7 +1434,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                FormatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -1278,315 +1451,116 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
     );
   }
 
-  void _showDialogFotoKTPPria(BuildContext context) {
+  void _showImageDialog(
+      BuildContext context, String foto, VoidCallback onClose) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          backgroundColor: Colors.transparent,
+          child: InteractiveViewer(
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Image(
+              image: _getImageProvider(foto),
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      setState(onClose);
+    });
+  }
+
+  void _showDialogFotoKTPPria(BuildContext context, String foto) {
     if (_isImageVisibleKTPPria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPPria = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKTPPria = false);
     }
   }
 
-  void _showDialogFotoKTPWanita(BuildContext context) {
-    if (_isImageVisibleKTPWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTPWanita = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoAktePria(BuildContext context) {
-    if (_isImageVisibleAktePria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_akte_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleAktePria = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoAkteWanita(BuildContext context) {
-    if (_isImageVisibleAkteWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_akte_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleAkteWanita = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoKKPria(BuildContext context) {
+  void _showDialogFotoKKPria(BuildContext context, String foto) {
     if (_isImageVisibleKKPria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKKPria = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKKPria = false);
     }
   }
 
-  void _showDialogFotoKKWanita(BuildContext context) {
-    if (_isImageVisibleKKWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKKWanita = false;
-        });
-      });
+  void _showDialogFotoAktePria(BuildContext context, String foto) {
+    if (_isImageVisibleAktePria) {
+      _showImageDialog(context, foto, () => _isImageVisibleAktePria = false);
     }
   }
 
-  void _showDialogFotoNikahAyahPria(BuildContext context) {
-    if (_isImageVisibleNikahAyahPria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ayah_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahAyahPria = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoNikahAyahWanita(BuildContext context) {
-    if (_isImageVisibleNikahAyahWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ayah_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahAyahWanita = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoNikahIbuPria(BuildContext context) {
-    if (_isImageVisibleNikahIbuPria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ibu_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahIbuPria = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoNikahIbuWanita(BuildContext context) {
-    if (_isImageVisibleNikahIbuWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_nikah_ibu_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleNikahIbuWanita = false;
-        });
-      });
-    }
-  }
-
-  void _showDialogFotoFormulirPria(BuildContext context) {
+  void _showDialogFotoFormulirPria(BuildContext context, String foto) {
     if (_isImageVisibleFormulirPria) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_formulir_pria'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleFormulirPria = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleFormulirPria = false);
     }
   }
 
-  void _showDialogFotoFormulirWanita(BuildContext context) {
+  void _showDialogFotoNikahAyahPria(BuildContext context, String foto) {
+    if (_isImageVisibleNikahAyahPria) {
+      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahPria = false);
+    }
+  }
+
+  void _showDialogFotoNikahIbuPria(BuildContext context, String foto) {
+    if (_isImageVisibleNikahIbuPria) {
+      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuPria = false);
+    }
+  }
+
+  void _showDialogFotoKTPWanita(BuildContext context, String foto) {
+    if (_isImageVisibleKTPWanita) {
+      _showImageDialog(context, foto, () => _isImageVisibleKTPWanita = false);
+    }
+  }
+
+  void _showDialogFotoKKWanita(BuildContext context, String foto) {
+    if (_isImageVisibleKKWanita) {
+      _showImageDialog(context, foto, () => _isImageVisibleKKWanita = false);
+    }
+  }
+
+  void _showDialogFotoAkteWanita(BuildContext context, String foto) {
+    if (_isImageVisibleAkteWanita) {
+      _showImageDialog(context, foto, () => _isImageVisibleAkteWanita = false);
+    }
+  }
+
+  void _showDialogFotoFormulirWanita(BuildContext context, String foto) {
     if (_isImageVisibleFormulirWanita) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_formulir_wanita'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleFormulirWanita = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleFormulirWanita = false);
+    }
+  }
+
+  void _showDialogFotoNikahAyahWanita(BuildContext context, String foto) {
+    if (_isImageVisibleNikahAyahWanita) {
+      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahWanita = false);
+    }
+  }
+
+  void _showDialogFotoNikahIbuWanita(BuildContext context, String foto) {
+    if (_isImageVisibleNikahIbuWanita) {
+      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuWanita = false);
+    }
+  }
+
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
     }
   }
 

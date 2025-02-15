@@ -20,6 +20,19 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<dynamic>> futureInformationDesa;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInformationDesa();
+  }
+
+  void fetchInformationDesa() {
+    setState(() {
+      futureInformationDesa = getMemo();
+    });
+  }
 
   Future<List<dynamic>> getMemo() async {
     String url =
@@ -34,6 +47,25 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
     } catch (e) {
       print("Error: $e");
       return [];
+    }
+  }
+
+  Future<void> delInformationDesa(String id) async {
+    try {
+      String url = 'http://10.0.2.2:8080/essentials_api/delete_information_desa.php';
+      var res = await http.post(
+        Uri.parse(url),
+        body: {"id": id},
+      );
+      var response = jsonDecode(res.body);
+      if (response["success"] == "true") {
+        print("record delete");
+        fetchInformationDesa();
+      } else {
+        print("some issue");
+      }
+    } catch (e) {
+      print("Error: $e");
     }
   }
 
@@ -298,7 +330,8 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
                                   const SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
-                                      // delete infodes
+                                      _deleteInformasiDesa(
+                                          informasiDesa['id_infodes']);
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(6),
@@ -355,5 +388,75 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
       print("Error decoding base64: $e");
       return AssetImage('assets/images/no_image.jpg');
     }
+  }
+
+  void _deleteInformasiDesa(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Konfirmasi Penghapusan',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin menghapus Memo Desa Kedungmulyo ini?',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Batal',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                delInformationDesa(id);
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  'Hapus',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

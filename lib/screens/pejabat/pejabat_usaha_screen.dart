@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 
 class Pejabat_UsahaScreen extends StatefulWidget {
   final String id;
-  const Pejabat_UsahaScreen({Key? key, required this.id}) : super(key: key);
+  const Pejabat_UsahaScreen({super.key, required this.id});
 
   @override
   _Pejabat_UsahaScreenState createState() => _Pejabat_UsahaScreenState();
@@ -18,44 +18,31 @@ class Pejabat_UsahaScreen extends StatefulWidget {
 class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
   bool _isImageVisibleKTP = false;
   bool _isImageVisibleKK = false;
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureUsaha;
 
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
-    fetchData();
+    _futureUsaha = getUsaha();
   }
 
-  void fetchData() async {
+  Future<Map<String, dynamic>?> getUsaha() async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_ad_usaha.php?id_usaha=${widget.id}';
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('usaha')
-          .doc(widget.id)
-          .get();
-
-      if (snapshot.exists) {
-        setState(() {
-          data = snapshot.data() as Map<String, dynamic>?;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
       }
     } catch (e) {
-      print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-      });
+      print("Error: $e");
     }
+    return null;
   }
 
   @override
@@ -80,38 +67,72 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
         elevation: 0,
         backgroundColor: Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _dataPengajuan(),
-                          const SizedBox(height: 8),
-                          _imageKTP(),
-                          const SizedBox(height: 12),
-                          _imageKK(),
-                          const SizedBox(height: 12),
-                          _omset(),
-                          const SizedBox(height: 24),
-                          const Divider(
-                            color: Color(0xffD9D9D9),
-                          ),
-                          const SizedBox(height: 24),
-                          _dataAkun(),
-                          const SizedBox(height: 42),
-                          _konfirmasi(),
-                        ],
-                      ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureUsaha,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var usaha = snapshot.data!;
+          String namaPemohon = usaha["nama"] ?? "Tidak diketahui";
+          String noHpPemohon = usaha["no_hp"] ?? "Tidak diketahui";
+          String emailPemohon = usaha["email"] ?? "Tidak diketahui";
+          String tglUploadPemohon = usaha["us_tgl_upload"] != null
+              ? DateFormat('dd MMMM yyyy - HH:mm:ss').format(
+                  DateTime.parse(usaha["us_tgl_upload"]),
+                )
+              : "Tidak diketahui";
+          String fotoKTP = usaha["us_foto_ktp"] ?? "Tidak diketahui";
+          String fotoKK = usaha["us_foto_kk"] ?? "Tidak diketahui";
+          String omsetBulan = usaha["us_omset"] ?? "Tidak diketahui";
+
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 8),
+                    _imageKTP(fotoKTP),
+                    const SizedBox(height: 12),
+                    _imageKK(fotoKK),
+                    const SizedBox(height: 12),
+                    _omset(omsetBulan),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _dataPemohon(),
+                    const SizedBox(height: 6),
+                    _namaPemohon(namaPemohon),
+                    const SizedBox(height: 12),
+                    _noHpPemohon(noHpPemohon),
+                    const SizedBox(height: 12),
+                    _emailPemohon(emailPemohon),
+                    const SizedBox(height: 12),
+                    _tglUploadPemohon(tglUploadPemohon),
+                    const SizedBox(height: 24),
+                    const Divider(
+                      color: Color(0xffD9D9D9),
+                    ),
+                    const SizedBox(height: 42),
+                    _konfirmasi(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -137,7 +158,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
     );
   }
 
-  Column _imageKTP() {
+  Column _imageKTP(String KTP) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -181,7 +202,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_ktp'] ?? '',
+                              "Foto KTP Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -208,7 +229,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                       setState(() {
                         _isImageVisibleKTP = !_isImageVisibleKTP;
                       });
-                      _showDialogFotoKTP(context);
+                      _showDialogFotoKTP(context, KTP);
                     },
                   ),
                 ],
@@ -220,7 +241,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
     );
   }
 
-  Column _imageKK() {
+  Column _imageKK(String KK) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,7 +285,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              data?['foto_kk'] ?? '',
+                              "Foto Kartu Keluarga Tersedia",
                               style: GoogleFonts.montserrat(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -291,7 +312,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                       setState(() {
                         _isImageVisibleKK = !_isImageVisibleKK;
                       });
-                      _showDialogFotoKK(context);
+                      _showDialogFotoKK(context, KK);
                     },
                   ),
                 ],
@@ -303,7 +324,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
     );
   }
 
-  Column _omset() {
+  Column _omset(String Omset) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -332,7 +353,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['omset'] ?? '',
+                Omset,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -349,13 +370,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
     );
   }
 
-  Column _dataAkun() {
-    String FormatUpload = '';
-    if (data != null && data!['tgl_upload'] != null) {
-      Timestamp timestamp = data!['tgl_upload'];
-      DateTime date = timestamp.toDate();
-      FormatUpload = DateFormat('dd MMMM yyyy - HH:mm').format(date);
-    }
+  Column _dataPemohon() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -372,7 +387,14 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Column _namaPemohon(String nama) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -397,7 +419,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['nama'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -409,7 +431,14 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _noHpPemohon(String noHp) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -435,7 +464,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['no_hp'] ?? '',
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -448,7 +477,14 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _emailPemohon(String email) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -473,7 +509,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                data?['email'] ?? '',
+                email,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -485,7 +521,14 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Column _tglUploadPemohon(String tglUpload) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -511,7 +554,7 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                FormatUpload,
+                tglUpload,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -528,55 +571,56 @@ class _Pejabat_UsahaScreenState extends State<Pejabat_UsahaScreen> {
     );
   }
 
-  void _showDialogFotoKTP(BuildContext context) {
-    if (_isImageVisibleKTP) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_ktp'] ?? '',
-                fit: BoxFit.contain,
-              ),
+  void _showImageDialog(
+      BuildContext context, String foto, VoidCallback onClose) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
+          backgroundColor: Colors.transparent,
+          child: InteractiveViewer(
+            minScale: 0.1,
+            maxScale: 5.0,
+            child: Image(
+              image: _getImageProvider(foto),
+              fit: BoxFit.contain,
             ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKTP = false;
-        });
-      });
+          ),
+        );
+      },
+    ).then((_) {
+      setState(onClose);
+    });
+  }
+
+  void _showDialogFotoKTP(BuildContext context, String foto) {
+    if (_isImageVisibleKTP) {
+      _showImageDialog(context, foto, () => _isImageVisibleKTP = false);
     }
   }
 
-  void _showDialogFotoKK(BuildContext context) {
+  void _showDialogFotoKK(BuildContext context, String foto) {
     if (_isImageVisibleKK) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            insetPadding: const EdgeInsets.symmetric(horizontal: 18.0),
-            backgroundColor: Colors.transparent,
-            child: InteractiveViewer(
-              minScale: 0.1,
-              maxScale: 5.0,
-              child: Image.network(
-                data?['foto_kk'] ?? '',
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        setState(() {
-          _isImageVisibleKK = false;
-        });
-      });
+      _showImageDialog(context, foto, () => _isImageVisibleKK = false);
+    }
+  }
+
+  ImageProvider _getImageProvider(String foto) {
+    if (foto.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
+    }
+
+    if (foto.startsWith('http')) {
+      return NetworkImage(foto);
+    }
+
+    try {
+      Uint8List bytes = base64Decode(foto);
+      return MemoryImage(bytes);
+    } catch (e) {
+      print("Error decoding base64: $e");
+      return AssetImage('assets/images/no_image.jpg');
     }
   }
 

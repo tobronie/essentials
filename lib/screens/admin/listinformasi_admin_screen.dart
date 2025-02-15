@@ -24,6 +24,19 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<dynamic>> futureInformation;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInformation();
+  }
+
+  void fetchInformation() {
+    setState(() {
+      futureInformation = getInformation();
+    });
+  }
 
   Future<List<dynamic>> getInformation() async {
     String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
@@ -37,6 +50,25 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
     } catch (e) {
       print("Error: $e");
       return [];
+    }
+  }
+
+  Future<void> delInformation(String id) async {
+    try {
+      String url = 'http://10.0.2.2:8080/essentials_api/delete_information.php';
+      var res = await http.post(
+        Uri.parse(url),
+        body: {"id": id},
+      );
+      var response = jsonDecode(res.body);
+      if (response["success"] == "true") {
+        print("record delete");
+        fetchInformation();
+      } else {
+        print("some issue");
+      }
+    } catch (e) {
+      print("Error: $e");
     }
   }
 
@@ -368,7 +400,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
                                     const SizedBox(width: 8),
                                     GestureDetector(
                                       onTap: () {
-                                        // _deleteInformasi(informasi.id);
+                                        _deleteInformasi(informasi['id_info']);
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -448,8 +480,8 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
     }
   }
 
-  void _deleteInformasi(String documentId) async {
-    bool? confirm = await showDialog(
+  void _deleteInformasi(String id) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -463,7 +495,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
             ),
           ),
           content: Text(
-            'Apakah Anda yakin ingin menghapus informasi ini?',
+            'Apakah Anda yakin ingin menghapus Informasi ini?',
             style: GoogleFonts.montserrat(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -473,7 +505,7 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false);
+                Navigator.of(context).pop();
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -493,7 +525,8 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true);
+                delInformation(id);
+                Navigator.of(context).pop();
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -515,10 +548,5 @@ class _ListInformasiAdminScreenState extends State<ListInformasiAdminScreen> {
         );
       },
     );
-
-    // if (confirm == true) {
-    //   await DbInformation.deleteInformation(documentId);
-    //   setState(() {});
-    // }
   }
 }

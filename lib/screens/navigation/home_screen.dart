@@ -437,7 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
           return Center(child: Text("Tidak ada data tersedia"));
         }
 
-        List informasiDesaList = snapshot.data!;
+        List<dynamic> informasiDesaList = snapshot.data!;
+        informasiDesaList.sort((a, b) => DateTime.parse(b['tgl_upload_infodes'])
+            .compareTo(DateTime.parse(a['tgl_upload_infodes'])));
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
