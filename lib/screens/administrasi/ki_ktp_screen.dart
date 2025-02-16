@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_ktp_services.dart';
+import 'package:essentials/services/download_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,7 @@ class _KTPScreenState extends State<KTPScreen> {
   File? selectedImageAkte;
   File? selectedImageKK;
   File? selectedImageFormulir;
+  var statusDownload = "";
 
   Future getImageAkte({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -500,11 +502,9 @@ class _KTPScreenState extends State<KTPScreen> {
                   decoration: TextDecoration.underline,
                 ),
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Screen()),
-                    // );
+                  ..onTap = () async {
+                    var downloadService = DownloadServices();
+                    await downloadService.downloadKTP(context);
                   },
               ),
               const TextSpan(text: ', isi, kemudian foto dan unggah kembali'),

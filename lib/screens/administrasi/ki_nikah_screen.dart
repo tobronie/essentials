@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_nikah_services.dart';
+import 'package:essentials/services/download_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,7 @@ class _NikahScreenState extends State<NikahScreen> {
   File? selectedImageNikahAyahWanita;
   File? selectedImageNikahIbuPria;
   File? selectedImageNikahIbuWanita;
+  var statusDownload = "";
 
   Future getImageKTPPria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -1046,11 +1048,9 @@ class _NikahScreenState extends State<NikahScreen> {
                       decoration: TextDecoration.underline,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => Screen()),
-                        // );
+                      ..onTap = () async {
+                        var downloadService = DownloadServices();
+                        await downloadService.downloadNikah(context);
                       },
                   ),
                   const TextSpan(
@@ -1472,7 +1472,8 @@ class _NikahScreenState extends State<NikahScreen> {
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageNikahAyahWanita!,
+                                  child: Image.file(
+                                      selectedImageNikahAyahWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
@@ -1585,7 +1586,8 @@ class _NikahScreenState extends State<NikahScreen> {
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageNikahIbuWanita!,
+                                  child: Image.file(
+                                      selectedImageNikahIbuWanita!,
                                       fit: BoxFit.cover),
                                 ),
                               )
@@ -1782,11 +1784,9 @@ class _NikahScreenState extends State<NikahScreen> {
                       decoration: TextDecoration.underline,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => Screen()),
-                        // );
+                      ..onTap = () async {
+                        var downloadService = DownloadServices();
+                        await downloadService.downloadNikah(context);
                       },
                   ),
                   const TextSpan(
