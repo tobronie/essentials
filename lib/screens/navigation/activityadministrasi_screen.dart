@@ -1,3 +1,4 @@
+import 'package:essentials/services/download_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -180,9 +181,7 @@ class _ActivityAdministrasiScreenState
                 item['us_judul'] ??
                 '-'),
         const SizedBox(height: 12),
-        _buildInfoBox(
-            'Tanggal Pengajuan',
-            formatTanggal(item))
+        _buildInfoBox('Tanggal Pengajuan', formatTanggal(item))
       ],
     );
   }
@@ -259,12 +258,80 @@ class _ActivityAdministrasiScreenState
     );
   }
 
-  Column _document() {
+  Widget _document() {
+    String nama = data?['nama'] ?? '';
+    String id = data?['id'] ?? '';
+
+    if (id.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    String judul = data?['ak_judul'] ??
+        data?['dom_judul'] ??
+        data?['kem_judul'] ??
+        data?['kk_judul'] ??
+        data?['kt_judul'] ??
+        data?['ni_judul'] ??
+        data?['pen_judul'] ??
+        data?['has_judul'] ??
+        data?['sktm_judul'] ??
+        data?['tan_judul'] ??
+        data?['us_judul'] ??
+        'Judul Tidak Ditemukan';
+
+    List<String?> suratKonfirmasiList = [
+      data?['ak_surat_konfirmasi'],
+      data?['dom_surat_konfirmasi'],
+      data?['kem_surat_konfirmasi'],
+      data?['kk_surat_konfirmasi'],
+      data?['kt_surat_konfirmasi'],
+      data?['ni_surat_konfirmasi'],
+      data?['pen_surat_konfirmasi'],
+      data?['has_surat_konfirmasi'],
+      data?['sktm_surat_konfirmasi'],
+      data?['tan_surat_konfirmasi'],
+      data?['us_surat_konfirmasi'],
+    ];
+
+    String? suratKonfirmasi = suratKonfirmasiList.firstWhere(
+      (element) => element != null && element.isNotEmpty,
+      orElse: () => null,
+    );
+
+    if (suratKonfirmasi == null) {
+      return SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () async {},
+          // onTap: () async {
+          //   var downloadService = DownloadServices();
+          //   if (id.startsWith("id_akte")) {
+          //     await downloadService.download_AdministrasiAkte(context);
+          //   } else if (id.startsWith("id_domisili")) {
+          //     await downloadService.download_AdministrasiDomisili(context);
+          //   } else if (id.startsWith("id_kematian")) {
+          //     await downloadService.download_AdministrasiKematian(context);
+          //   } else if (id.startsWith("id_kk")) {
+          //     await downloadService.download_AdministrasiKK(context);
+          //   } else if (id.startsWith("id_ktp")) {
+          //     await downloadService.download_AdministrasiKTP(context);
+          //   } else if (id.startsWith("id_nikah")) {
+          //     await downloadService.download_AdministrasiNikah(context);
+          //   } else if (id.startsWith("id_pendudukan")) {
+          //     await downloadService.download_AdministrasiPendudukan(context);
+          //   } else if (id.startsWith("id_penghasilan")) {
+          //     await downloadService.download_AdministrasiPenghasilan(context);
+          //   } else if (id.startsWith("id_sktm")) {
+          //     await downloadService.download_AdministrasiSKTM(context);
+          //   } else if (id.startsWith("id_tanah")) {
+          //     await downloadService.download_AdministrasiTanah(context);
+          //   } else if (id.startsWith("id_usaha")) {
+          //     await downloadService.download_AdministrasiUsaha(context);
+          //   }
+          // },
           child: DottedBorder(
             color: const Color(0xffD9D9D9),
             strokeWidth: 2,
@@ -282,7 +349,7 @@ class _ActivityAdministrasiScreenState
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 3,
                     spreadRadius: 1,
-                    offset: Offset(0.0, 0.0),
+                    offset: const Offset(0.0, 0.0),
                   ),
                 ],
               ),
@@ -306,17 +373,20 @@ class _ActivityAdministrasiScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Fulan si Fulan - Suat Keterangan Tidak Mampu (SKTM)',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 16,
-                              height: 1.1,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                          RichText(
+                            text: TextSpan(
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                height: 1.1,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                              children: [
+                                TextSpan(text: nama),
+                                TextSpan(text: ' - '),
+                                TextSpan(text: judul),
+                              ],
                             ),
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
                           ),
                           const SizedBox(height: 8),
                           Text(

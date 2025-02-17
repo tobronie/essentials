@@ -30,7 +30,6 @@ class _NikahScreenState extends State<NikahScreen> {
   File? selectedImageNikahAyahWanita;
   File? selectedImageNikahIbuPria;
   File? selectedImageNikahIbuWanita;
-  var statusDownload = "";
 
   Future getImageKTPPria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();

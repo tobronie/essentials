@@ -21,7 +21,6 @@ class _KTPScreenState extends State<KTPScreen> {
   File? selectedImageAkte;
   File? selectedImageKK;
   File? selectedImageFormulir;
-  var statusDownload = "";
 
   Future getImageAkte({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();

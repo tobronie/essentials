@@ -161,8 +161,6 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
                     ),
                     const SizedBox(height: 24),
                     _verifikasiKepalaDesa(),
-                    const SizedBox(height: 12),
-                    _uploadDocument(),
                     const SizedBox(height: 32),
                     _konfirmasi(),
                   ],
@@ -883,131 +881,138 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
     );
   }
 
-  Column _uploadDocument() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 52,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: const Color(0xFFD9D9D9),
-              width: 2,
+  Container _konfirmasi() {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 52,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: const Color(0xFFD9D9D9),
+                width: 2,
+              ),
             ),
-          ),
-          child: Stack(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (selectedDocument != null)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.description,
-                                    color: Colors.black,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      selectedDocument!.path.split('/').last,
+            child: Stack(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (selectedDocument != null)
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const Icon(
+                                      Icons.description,
+                                      color: Colors.black,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        selectedDocument!.path.split('/').last,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (selectedDocument == null)
+                              TextButton(
+                                onPressed: () async {
+                                  await pickDocument();
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      PhosphorIconsRegular.fileArrowUp,
+                                      color: Colors.black,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Unggah Dokumen di sini',
                                       style: GoogleFonts.dmSans(
                                         fontSize: 14,
                                         color: Colors.black,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          if (selectedDocument == null)
-                            TextButton(
-                              onPressed: () async {
-                                await pickDocument();
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    PhosphorIconsRegular.fileArrowUp,
-                                    color: Colors.black,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'Unggah Dokumen di sini',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (selectedDocument != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: IconButton(
-                        icon: const Icon(
-                          PhosphorIconsRegular.trash,
-                          color: Colors.red,
+                          ],
                         ),
-                        onPressed: () {
-                          setState(() {
-                            selectedDocument = null;
-                          });
-                        },
                       ),
                     ),
-                ],
+                    if (selectedDocument != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          icon: const Icon(
+                            PhosphorIconsRegular.trash,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              selectedDocument = null;
+                            });
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: selectedDocument == null
+                    ? Colors.grey
+                    : const Color(0xFF0D0140),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
               ),
-            ],
+              onPressed: selectedDocument == null
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ListVerifikasiAdministrasiAdminScreen(),
+                        ),
+                      );
+                    },
+              child: Text(
+                'Konfirmasi',
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: selectedDocument == null ? Colors.black : Colors.white,
+                ),
+              ),
+            ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Container _konfirmasi() {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D0140),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ListVerifikasiAdministrasiAdminScreen()),
-          );
-        },
-        child: Text(
-          'Konfirmasi',
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
+        ],
       ),
     );
   }
