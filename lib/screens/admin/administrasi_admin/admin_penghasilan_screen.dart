@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/update/update_ad_penghasilan_ortu.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 
 class Admin_PenghasilanScreen extends StatefulWidget {
   final String id;
@@ -20,6 +20,7 @@ class Admin_PenghasilanScreen extends StatefulWidget {
 }
 
 class _Admin_PenghasilanScreenState extends State<Admin_PenghasilanScreen> {
+  final UploadPenghasilanOrtuService _UploadPenghasilanOrtuService = UploadPenghasilanOrtuService();
   File? selectedDocument;
   bool _isImageVisibleKTP = false;
   bool _isImageVisibleKK = false;
@@ -69,6 +70,14 @@ class _Admin_PenghasilanScreenState extends State<Admin_PenghasilanScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> uploadSK() async {
+    await _UploadPenghasilanOrtuService.penghasilan_ortu(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -1207,14 +1216,8 @@ class _Admin_PenghasilanScreenState extends State<Admin_PenghasilanScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

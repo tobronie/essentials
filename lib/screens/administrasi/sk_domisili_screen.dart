@@ -18,6 +18,7 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
   final TextEditingController _judulController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -49,6 +50,7 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Keterangan Domisili";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahDomisili() async {
@@ -66,6 +68,7 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
       selectedImageKTP!.path,
       selectedImageKK!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

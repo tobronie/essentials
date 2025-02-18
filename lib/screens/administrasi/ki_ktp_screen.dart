@@ -21,6 +21,7 @@ class _KTPScreenState extends State<KTPScreen> {
   File? selectedImageAkte;
   File? selectedImageKK;
   File? selectedImageFormulir;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageAkte({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -65,6 +66,7 @@ class _KTPScreenState extends State<KTPScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Pengantar Kartu Tanda Penduduk";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahKTP() async {
@@ -86,6 +88,7 @@ class _KTPScreenState extends State<KTPScreen> {
       selectedImageKK!.path,
       selectedImageFormulir!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

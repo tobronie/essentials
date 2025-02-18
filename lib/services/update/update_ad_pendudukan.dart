@@ -4,12 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
 
 class UploadPendudukanService {
-  Future<void> pendudukan(String selectedDocument, BuildContext context) async {
+  Future<void> pendudukan(String id, String selectedDocument, BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/update_ad_pendudukan.php';
     try {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_pendudukan': id,
           'pen_surat_konfirmasi': selectedDocument,
         },
       );

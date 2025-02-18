@@ -20,6 +20,7 @@ class CreateNikahService {
       String ni_foto_nikah_ayah_wanita,
       String ni_foto_nikah_ibu_wanita,
       String ni_tgl_upload,
+      String ni_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_nikah.php';
 
@@ -222,6 +223,7 @@ class CreateNikahService {
           'ni_foto_nikah_ayah_wanita': base64FotoNikahAyahwanita,
           'ni_foto_nikah_ibu_wanita': base64FotoNikahIbuwanita,
           'ni_tgl_upload': ni_tgl_upload,
+          'ni_konfirmasi': ni_konfirmasi,
         },
       );
 

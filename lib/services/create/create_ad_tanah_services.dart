@@ -11,6 +11,7 @@ class CreateTanahService {
       String tan_foto_kk,
       String tan_foto_sppt_shm,
       String tan_tgl_upload,
+      String tan_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_tanah.php';
 
@@ -69,6 +70,7 @@ class CreateTanahService {
           'tan_foto_kk': base64FotoKK,
           'tan_foto_sppt_shm': base64FotoSPPT_SHM,
           'tan_tgl_upload': tan_tgl_upload,
+          'tan_konfirmasi': tan_konfirmasi,
         },
       );
 

@@ -1,4 +1,4 @@
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
+import 'package:essentials/services/update/update_ad_kk.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
@@ -19,6 +19,7 @@ class Admin_KKScreen extends StatefulWidget {
 }
 
 class _Admin_KKScreenState extends State<Admin_KKScreen> {
+  final UploadKKService _UploadKKService = UploadKKService();
   File? selectedDocument;
   bool _isImageVisibleKKAsli = false;
   bool _isImageVisibleNikahAyah = false;
@@ -30,7 +31,7 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
   Future<void> pickDocument() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
+      allowedExtensions: ['pdf'],
     );
 
     if (result != null && result.files.single.path != null) {
@@ -69,6 +70,14 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+   Future<void> uploadSK() async {
+    await _UploadKKService.kk(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -1042,14 +1051,8 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

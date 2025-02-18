@@ -4,12 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
 
 class UploadSKTMService {
-  Future<void> sktm(String selectedDocument, BuildContext context) async {
+  Future<void> sktm(String id, String selectedDocument, BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/update_ad_sktm.php';
     try {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_sktm' : id,
           'sktm_surat_konfirmasi': selectedDocument,
         },
       );

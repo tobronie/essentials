@@ -20,8 +20,10 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
   final TextEditingController _waktuController = TextEditingController();
   final TextEditingController _lokasiController = TextEditingController();
   final TextEditingController _isiController = TextEditingController();
+  final TextEditingController _konfirmasiController = TextEditingController();
   DateTime? selectedDateTime;
   File? selectedImage;
+  
 
   Future getImage({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -72,6 +74,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
     _waktuController.dispose();
     _lokasiController.dispose();
     _isiController.dispose();
+    _konfirmasiController.dispose();
     super.dispose();
   }
 
@@ -116,6 +119,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
       _isiController.text,
       selectedImage!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }
@@ -133,6 +137,12 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _konfirmasiController.text = "menunggu";
   }
 
   @override

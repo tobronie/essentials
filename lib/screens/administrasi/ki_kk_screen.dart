@@ -21,6 +21,7 @@ class _KKScreenState extends State<KKScreen> {
   File? selectedImageNikahIbu;
   File? selectedImageIjasahKeluarga;
   File? selectedImageAkteKeluarga;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKK({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -91,6 +92,7 @@ class _KKScreenState extends State<KKScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Pengantar Kartu keluarga";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahKK() async {
@@ -124,6 +126,7 @@ class _KKScreenState extends State<KKScreen> {
       selectedImageIjasahKeluarga!.path,
       selectedImageAkteKeluarga!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

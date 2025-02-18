@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
+
 class Pejabat_NikahScreen extends StatefulWidget {
   final String id;
   const Pejabat_NikahScreen({super.key, required this.id});
@@ -60,7 +61,10 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -116,6 +120,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
               nikah["ni_foto_nikah_ayah_wanita"] ?? "Tidak diketahui";
           String fotoNikahIbuWanita =
               nikah["ni_foto_nikah_ibu_wanita"] ?? "Tidak diketahui";
+          String konfirmasiData = nikah["ni_konfirmasi"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -173,8 +178,8 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     const Divider(
                       color: Color(0xffD9D9D9),
                     ),
-                    const SizedBox(height: 42),
-                    _konfirmasi(),
+                    const SizedBox(height: 36),
+                    _konfirmasi(konfirmasiData),
                   ],
                 ),
               ),
@@ -1494,19 +1499,22 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
 
   void _showDialogFotoFormulirPria(BuildContext context, String foto) {
     if (_isImageVisibleFormulirPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleFormulirPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleFormulirPria = false);
     }
   }
 
   void _showDialogFotoNikahAyahPria(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyahPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahAyahPria = false);
     }
   }
 
   void _showDialogFotoNikahIbuPria(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbuPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahIbuPria = false);
     }
   }
 
@@ -1530,19 +1538,22 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
 
   void _showDialogFotoFormulirWanita(BuildContext context, String foto) {
     if (_isImageVisibleFormulirWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleFormulirWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleFormulirWanita = false);
     }
   }
 
   void _showDialogFotoNikahAyahWanita(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyahWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahAyahWanita = false);
     }
   }
 
   void _showDialogFotoNikahIbuWanita(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbuWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahIbuWanita = false);
     }
   }
 
@@ -1564,67 +1575,100 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
     }
   }
 
-  Row _konfirmasi() {
+  Row _konfirmasi(String konfirmasi) {
+    bool isKonfirmasiCompleted = [
+      konfirmasi,
+    ].any((value) => (value == 'sudah' || value == 'tidak'));
+
+    bool isKonfirmasiMenunggu = [
+      konfirmasi,
+    ].any((value) => value == 'menunggu');
+
     return Row(
       children: [
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(right: 6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF0004),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
+        if (isKonfirmasiCompleted)
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              child: Column(
+                children: [
+                  Text(
+                    'Anda ${konfirmasi} menyetujui pengajuan ini',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: konfirmasi == 'sudah'
+                          ? const Color(0xff00AA13)
+                          : const Color(0xffFF0004),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen()),
-                );
-              },
-              child: Text(
-                'Tidak Disetujui',
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+            ),
+          )
+        else if (isKonfirmasiMenunggu) ...[
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF0004),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListVerifikasiPejabatScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Tidak Disetujui',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 6),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff00AA13),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff00AA13),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
                 ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen()),
-                );
-              },
-              child: Text(
-                'Setuju',
-                style: GoogleFonts.montserrat(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListVerifikasiPejabatScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Setuju',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ]
       ],
     );
   }

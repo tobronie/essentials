@@ -10,6 +10,7 @@ class CreateDomisiliService {
       String dom_foto_ktp,
       String dom_foto_kk,
       String dom_tgl_upload,
+      String dom_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_domisili.php';
 
@@ -51,6 +52,7 @@ class CreateDomisiliService {
           'dom_foto_ktp': base64FotoKTP,
           'dom_foto_kk': base64FotoKK,
           'dom_tgl_upload': dom_tgl_upload,
+          'dom_konfirmasi': dom_konfirmasi,
         },
       );
 

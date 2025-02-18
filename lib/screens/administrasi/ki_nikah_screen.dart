@@ -30,6 +30,7 @@ class _NikahScreenState extends State<NikahScreen> {
   File? selectedImageNikahAyahWanita;
   File? selectedImageNikahIbuPria;
   File? selectedImageNikahIbuWanita;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTPPria({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -191,6 +192,7 @@ class _NikahScreenState extends State<NikahScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Pengantar Pernikahan";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahNikah() async {
@@ -269,6 +271,7 @@ class _NikahScreenState extends State<NikahScreen> {
       selectedImageNikahAyahWanita!.path,
       selectedImageNikahIbuWanita!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

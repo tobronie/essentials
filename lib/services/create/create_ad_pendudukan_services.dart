@@ -14,6 +14,7 @@ class CreatePendudukanService {
       String pen_daerah_asal,
       String pen_daerah_tujuan,
       String pen_tgl_upload,
+      String pen_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_pendudukan.php';
 
@@ -91,6 +92,7 @@ class CreatePendudukanService {
           'pen_daerah_asal': pen_daerah_asal,
           'pen_daerah_tujuan': pen_daerah_tujuan,
           'pen_tgl_upload': pen_tgl_upload,
+          'pen_konfirmasi': pen_konfirmasi,
         },
       );
 

@@ -19,6 +19,7 @@ class _TanahScreenState extends State<TanahScreen> {
   File? selectedImageKTP;
   File? selectedImageKK;
   File? selectedImageSPPT_SHM;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -63,6 +64,7 @@ class _TanahScreenState extends State<TanahScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Pengantar Harga Tanah";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahTanah() async {
@@ -87,6 +89,7 @@ class _TanahScreenState extends State<TanahScreen> {
       selectedImageKK!.path,
       selectedImageSPPT_SHM!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

@@ -11,6 +11,7 @@ class CreateKTPService {
       String kt_foto_kk,
       String kt_foto_formulir,
       String kt_tgl_upload,
+      String kt_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_ktp.php';
 
@@ -69,6 +70,7 @@ class CreateKTPService {
           'kt_foto_kk': base64FotoKK,
           'kt_foto_formulir': base64FotoFormulir,
           'kt_tgl_upload': kt_tgl_upload,
+          'kt_konfirmasi': kt_konfirmasi,
         },
       );
 

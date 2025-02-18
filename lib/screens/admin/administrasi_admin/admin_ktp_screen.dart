@@ -1,6 +1,6 @@
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/update/update_ad_ktp.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +19,7 @@ class Admin_KTPScreen extends StatefulWidget {
 }
 
 class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
+  final UploadKTPService _UploadKTPService = UploadKTPService();
   File? selectedDocument;
   bool _isImageVisibleAkte = false;
   bool _isImageVisibleKK = false;
@@ -67,6 +68,14 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> uploadSK() async {
+    await _UploadKTPService.ktp(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -851,14 +860,8 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

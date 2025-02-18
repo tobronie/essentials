@@ -376,6 +376,53 @@ class _ActivityScreenState extends State<ActivityScreen> {
       ];
     }
 
+    if (_selectedProses == "Dalam Proses") {
+      filteredList = filteredList.where((item) {
+        return [
+          'konfirmasi_lapor',
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              value.toString().contains("menunggu");
+        });
+      }).toList();
+    } else if (_selectedProses == "Riwayat") {
+      filteredList = filteredList.where((item) {
+        return [
+          'konfirmasi_lapor',
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              (value.toString().contains("sudah") ||
+                  value.toString().contains("tidak"));
+        });
+      }).toList();
+    }
+
     String query = _searchQuery.toLowerCase();
     filteredList = filteredList.where((item) {
       return [

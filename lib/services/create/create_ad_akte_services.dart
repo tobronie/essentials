@@ -18,6 +18,7 @@ class CreateAkteService {
       String? ak_foto_ijasah_bersangkutan,
       String? ak_foto_akte_saudara,
       String ak_tgl_upload,
+      String ak_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_akte.php';
 
@@ -188,6 +189,7 @@ class CreateAkteService {
           'ak_foto_ijasah_bersangkutan': base64FotoIjasahBersangkutan.isNotEmpty ? base64FotoIjasahBersangkutan : '',
           'ak_foto_akte_saudara': base64FotoAkteSaudara.isNotEmpty ? base64FotoAkteSaudara : '',
           'ak_tgl_upload': ak_tgl_upload,
+          'ak_konfirmasi': ak_konfirmasi,
         },
       );
 

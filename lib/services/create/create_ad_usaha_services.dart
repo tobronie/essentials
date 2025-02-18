@@ -11,6 +11,7 @@ class CreateUsahaService {
       String us_foto_kk,
       String us_omset,
       String us_tgl_upload,
+      String us_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_usaha.php';
 
@@ -53,6 +54,7 @@ class CreateUsahaService {
           'us_foto_kk': base64FotoKK,
           'us_omset': us_omset,
           'us_tgl_upload': us_tgl_upload,
+          'us_konfirmasi': us_konfirmasi,
         },
       );
 

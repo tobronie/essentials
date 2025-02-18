@@ -97,6 +97,8 @@ class _DataVerifikasiLaporanScreenState
               pelaporan["waktu_lapor"] ?? "Tidak diketahui";
           String lokasiPengadu = pelaporan["lokasi_lapor"] ?? "Tidak diketahui";
           String isiPengadu = pelaporan["isi_lapor"] ?? "Tidak diketahui";
+          String konfirmasiData =
+              pelaporan["konfirmasi_lapor"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -120,8 +122,8 @@ class _DataVerifikasiLaporanScreenState
                     _lokasiLapor(lokasiPengadu),
                     const SizedBox(height: 12),
                     _isiLapor(isiPengadu),
-                    const SizedBox(height: 24),
-                    _verification(),
+                    const SizedBox(height: 36),
+                    _verification(konfirmasiData),
                   ],
                 ),
               ),
@@ -508,32 +510,69 @@ class _DataVerifikasiLaporanScreenState
     );
   }
 
-  Container _verification() {
+  Container _verification(String verifikasi) {
+    bool isverifikasiCompleted = [
+      verifikasi,
+    ].any((value) => value == 'sudah');
+
+    bool isverifikasiMenunggu = [
+      verifikasi,
+    ].any((value) => value == 'menunggu');
+
     return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D0140),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ListVerifikasiLaporanAdminScreen()),
-          );
-        },
-        child: Text(
-          'Verifikasi Pengaduan',
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
+      child: Row(
+        children: [
+          if (isverifikasiCompleted)
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  children: [
+                    Text(
+                      'Anda ${verifikasi} memverifikasi pengaduan ini',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff00AA13),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (isverifikasiMenunggu)
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D0140),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ListVerifikasiLaporanAdminScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Verifikasi Pengaduan',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

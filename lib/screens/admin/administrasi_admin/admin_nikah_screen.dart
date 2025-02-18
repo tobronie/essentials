@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/update/update_ad_nikah.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 
 class Admin_NikahScreen extends StatefulWidget {
   final String id;
@@ -19,6 +19,7 @@ class Admin_NikahScreen extends StatefulWidget {
 }
 
 class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
+  final UploadNikahService _UploadNikahService = UploadNikahService();
   File? selectedDocument;
   bool _isImageVisibleKTPPria = false;
   bool _isImageVisibleAktePria = false;
@@ -76,6 +77,14 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> uploadSK() async {
+    await _UploadNikahService.nikah(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -1736,14 +1745,8 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/update/update_ad_usaha.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 
 class Admin_UsahaScreen extends StatefulWidget {
   final String id;
@@ -19,6 +19,7 @@ class Admin_UsahaScreen extends StatefulWidget {
 }
 
 class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
+  final UploadUsahaService _UploadUsahaService = UploadUsahaService();
   File? selectedDocument;
   bool _isImageVisibleKTP = false;
   bool _isImageVisibleKK = false;
@@ -66,6 +67,14 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
       print("Error: $e");
     }
     return null;
+  }
+  
+  Future<void> uploadSK() async {
+    await _UploadUsahaService.usaha(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -792,14 +801,8 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

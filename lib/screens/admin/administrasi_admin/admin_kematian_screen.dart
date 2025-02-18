@@ -1,6 +1,6 @@
-import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/update/update_ad_kematian.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +19,7 @@ class Admin_KematianScreen extends StatefulWidget {
 }
 
 class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
+  final UploadKematianService _UploadKematianService = UploadKematianService();
   File? selectedDocument;
   bool _isImageVisibleKTPAlmarhum = false;
   bool _isImageVisibleKK = false;
@@ -29,7 +30,7 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
   Future<void> pickDocument() async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
+      allowedExtensions: ['pdf'],
     );
 
     if (result != null && result.files.single.path != null) {
@@ -68,6 +69,14 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> uploadSK() async {
+    await _UploadKematianService.kematian(
+      widget.id,
+      selectedDocument!.path,
+      context,
+    );
   }
 
   @override
@@ -993,14 +1002,8 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
               ),
               onPressed: selectedDocument == null
                   ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiAdministrasiAdminScreen(),
-                        ),
-                      );
+                  : () async {
+                      await uploadSK();
                     },
               child: Text(
                 'Konfirmasi',

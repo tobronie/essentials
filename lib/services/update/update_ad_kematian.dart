@@ -4,12 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
 
 class UploadKematianService {
-  Future<void> kematian(String selectedDocument, BuildContext context) async {
+  Future<void> kematian(String id, String selectedDocument, BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/update_ad_kematian.php';
     try {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_kematian' : id,
           'kem_surat_konfirmasi': selectedDocument,
         },
       );

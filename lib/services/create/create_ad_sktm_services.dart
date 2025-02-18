@@ -13,6 +13,7 @@ class CreateSKTMService {
       String sktm_nominal,
       String sktm_rincian,
       String sktm_tgl_upload,
+      String sktm_konfirmai,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_sktm.php';
 
@@ -58,6 +59,7 @@ class CreateSKTMService {
           'sktm_nominal': sktm_nominal,
           'sktm_rincian': sktm_rincian,
           'sktm_tgl_upload': sktm_tgl_upload,
+          'sktm_konfirmai': sktm_konfirmai,
         },
       );
 

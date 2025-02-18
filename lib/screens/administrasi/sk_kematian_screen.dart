@@ -21,6 +21,7 @@ class _KematianScreenState extends State<KematianScreen> {
   File? selectedImageKK;
   File? selectedImageBukti;
   File? selectedImageKTPSaksi;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTPAlmarhum({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -78,6 +79,7 @@ class _KematianScreenState extends State<KematianScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Keterangan Kematian";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahKematian() async {
@@ -111,6 +113,7 @@ class _KematianScreenState extends State<KematianScreen> {
       FotoBukti,
       selectedImageKTPSaksi!.path,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

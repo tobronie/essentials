@@ -12,6 +12,7 @@ class CreateLaporService {
       String isi_lapor,
       String foto_lapor,
       String tgl_upload_lapor,
+      String konfirmasi_lapor,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_pelaporan.php';
 
@@ -40,6 +41,7 @@ class CreateLaporService {
           'isi_lapor': isi_lapor,
           'foto_lapor': base64Image,
           'tgl_upload_lapor': tgl_upload_lapor,
+          'konfirmasi_lapor': konfirmasi_lapor
         },
       );
 
@@ -65,6 +67,7 @@ class CreateLaporService {
         );
       }
     } catch (e) {
+      print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),

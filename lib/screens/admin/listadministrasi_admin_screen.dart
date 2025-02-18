@@ -28,7 +28,7 @@ class ListVerifikasiAdministrasiAdminScreen extends StatefulWidget {
 
 class _ListVerifikasiAdministrasiAdminScreenState
     extends State<ListVerifikasiAdministrasiAdminScreen> {
-  String _selectedText = 'Dalam Proses';
+  String _selectedProses = 'Dalam Proses';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
@@ -230,7 +230,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Dalam Proses';
+                  _selectedProses = 'Dalam Proses';
                 });
               },
               child: Stack(
@@ -241,12 +241,12 @@ class _ListVerifikasiAdministrasiAdminScreenState
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Dalam Proses'
+                      color: _selectedProses == 'Dalam Proses'
                           ? Color(0xFF0D0140)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedText == 'Dalam Proses')
+                  if (_selectedProses == 'Dalam Proses')
                     Container(
                       height: 2,
                       width: 'Dalam Proses'.length * 8.5,
@@ -259,7 +259,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedText = 'Riwayat';
+                  _selectedProses = 'Riwayat';
                 });
               },
               child: Stack(
@@ -270,12 +270,12 @@ class _ListVerifikasiAdministrasiAdminScreenState
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedText == 'Riwayat'
+                      color: _selectedProses == 'Riwayat'
                           ? Color(0xFF0D0140)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedText == 'Riwayat')
+                  if (_selectedProses == 'Riwayat')
                     Container(
                       height: 2,
                       width: 'Riwayat'.length * 8.5,
@@ -315,6 +315,53 @@ class _ListVerifikasiAdministrasiAdminScreenState
       ...tanahList,
       ...usahaList,
     ];
+
+    if (_selectedProses == "Dalam Proses") {
+      combinedList = combinedList.where((item) {
+        return [
+          'konfirmasi_lapor',
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              value.toString().contains("menunggu");
+        });
+      }).toList();
+    } else if (_selectedProses == "Riwayat") {
+      combinedList = combinedList.where((item) {
+        return [
+          'konfirmasi_lapor',
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              (value.toString().contains("sudah") ||
+                  value.toString().contains("tidak"));
+        });
+      }).toList();
+    }
 
     List<dynamic> filteredList = combinedList.where((item) {
       String query = _searchQuery.toLowerCase();

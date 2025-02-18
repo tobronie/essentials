@@ -26,6 +26,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
   File? selectedImageKK;
   File? selectedImageAyah;
   File? selectedImageIbu;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -83,6 +84,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Keterangan Penghasilan Orang Tua";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahPenghasilanOrtu() async {
@@ -130,6 +132,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
       FotoPendapatanAyah,
       FotoPendapatanIbu,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }

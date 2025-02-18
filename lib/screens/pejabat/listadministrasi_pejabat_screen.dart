@@ -30,6 +30,13 @@ class _ListVerifikasiPejabatScreenState
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
+  late Future<List<List<dynamic>>> _futureData;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureData = getAllData();
+  }
 
   Future<List<dynamic>> fetchData(String endpoint) async {
     String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
@@ -120,7 +127,7 @@ class _ListVerifikasiPejabatScreenState
                 _option(context),
                 const SizedBox(height: 18),
                 FutureBuilder<List<List<dynamic>>>(
-                  future: getAllData(),
+                  future: _futureData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -279,6 +286,51 @@ class _ListVerifikasiPejabatScreenState
       ...tanahList,
       ...usahaList,
     ];
+
+    if (_selectedOption == "Belum diverifikasi") {
+      combinedList = combinedList.where((item) {
+        return [
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              value.toString().contains("menunggu");
+        });
+      }).toList();
+    } else if (_selectedOption == "Sudah diverifikasi") {
+      combinedList = combinedList.where((item) {
+        return [
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              (value.toString().contains("sudah") ||
+                  value.toString().contains("tidak"));
+        });
+      }).toList();
+    }
 
     List<dynamic> filteredList = combinedList.where((item) {
       String query = _searchQuery.toLowerCase();

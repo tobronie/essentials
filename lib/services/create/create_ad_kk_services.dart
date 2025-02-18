@@ -13,6 +13,7 @@ class CreateKKService {
       String kk_foto_ijasah_keluarga,
       String kk_foto_akte_keluarga,
       String kk_tgl_upload,
+      String kk_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_kk.php';
 
@@ -103,6 +104,7 @@ class CreateKKService {
           'kk_foto_ijasah_keluarga': base64FotoIjasahKeluarga,
           'kk_foto_akte_keluarga': base64FotoAkteKeluarga,
           'kk_tgl_upload': kk_tgl_upload,
+          'kk_konfirmasi': kk_konfirmasi,
         },
       );
 

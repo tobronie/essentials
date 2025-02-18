@@ -306,32 +306,32 @@ class _ActivityAdministrasiScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          // onTap: () async {
-          //   var downloadService = DownloadServices();
-          //   if (id.startsWith("id_akte")) {
-          //     await downloadService.download_AdministrasiAkte(context);
-          //   } else if (id.startsWith("id_domisili")) {
-          //     await downloadService.download_AdministrasiDomisili(context);
-          //   } else if (id.startsWith("id_kematian")) {
-          //     await downloadService.download_AdministrasiKematian(context);
-          //   } else if (id.startsWith("id_kk")) {
-          //     await downloadService.download_AdministrasiKK(context);
-          //   } else if (id.startsWith("id_ktp")) {
-          //     await downloadService.download_AdministrasiKTP(context);
-          //   } else if (id.startsWith("id_nikah")) {
-          //     await downloadService.download_AdministrasiNikah(context);
-          //   } else if (id.startsWith("id_pendudukan")) {
-          //     await downloadService.download_AdministrasiPendudukan(context);
-          //   } else if (id.startsWith("id_penghasilan")) {
-          //     await downloadService.download_AdministrasiPenghasilan(context);
-          //   } else if (id.startsWith("id_sktm")) {
-          //     await downloadService.download_AdministrasiSKTM(context);
-          //   } else if (id.startsWith("id_tanah")) {
-          //     await downloadService.download_AdministrasiTanah(context);
-          //   } else if (id.startsWith("id_usaha")) {
-          //     await downloadService.download_AdministrasiUsaha(context);
-          //   }
-          // },
+          onTap: () async {
+            var downloadService = DownloadServices();
+            if (id.startsWith("id_akte")) {
+              await downloadService.download_AdministrasiAkte(context);
+            } else if (id.startsWith("id_domisili")) {
+              await downloadService.download_AdministrasiDomisili(context);
+            } else if (id.startsWith("id_kematian")) {
+              await downloadService.download_AdministrasiKematian(context);
+            } else if (id.startsWith("id_kk")) {
+              await downloadService.download_AdministrasiKK(context);
+            } else if (id.startsWith("id_ktp")) {
+              await downloadService.download_AdministrasiKTP(context);
+            } else if (id.startsWith("id_nikah")) {
+              await downloadService.download_AdministrasiNikah(context);
+            } else if (id.startsWith("id_pendudukan")) {
+              await downloadService.download_AdministrasiPendudukan(context);
+            } else if (id.startsWith("id_penghasilan")) {
+              await downloadService.download_AdministrasiPenghasilan(context);
+            } else if (id.startsWith("id_sktm")) {
+              await downloadService.download_AdministrasiSKTM(context);
+            } else if (id.startsWith("id_tanah")) {
+              await downloadService.download_AdministrasiTanah(context);
+            } else if (id.startsWith("id_usaha")) {
+              await downloadService.download_AdministrasiUsaha(context);
+            }
+          },
           child: DottedBorder(
             color: const Color(0xffD9D9D9),
             strokeWidth: 2,

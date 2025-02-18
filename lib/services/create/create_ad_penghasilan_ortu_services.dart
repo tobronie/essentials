@@ -16,6 +16,7 @@ class CreatePenghasilanOrtuService {
       String? has_foto_pendukung_ayah,
       String? has_foto_pendukung_ibu,
       String has_tgl_upload,
+      String has_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_penghasilan_ortu.php';
 
@@ -94,6 +95,7 @@ class CreatePenghasilanOrtuService {
           'has_foto_pendukung_ayah': base64FotoPendukungAyah.isNotEmpty ? base64FotoPendukungAyah : '',
           'has_foto_pendukung_ibu': base64FotoPendukungIbu.isNotEmpty ? base64FotoPendukungIbu : '',
           'has_tgl_upload': has_tgl_upload,
+          'has_konfirmasi': has_konfirmasi,
         },
       );
 

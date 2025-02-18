@@ -209,6 +209,27 @@ class _ListVerifikasiLaporanAdminScreenState
   }
 
   Widget _data(List<dynamic> pelaporanList) {
+    if (_selectedOption == "Belum diverifikasi") {
+      pelaporanList = pelaporanList.where((item) {
+        return ['konfirmasi_lapor'].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              value.toString().contains("menunggu");
+        });
+      }).toList();
+    } else if (_selectedOption == "Sudah diverifikasi") {
+      pelaporanList = pelaporanList.where((item) {
+        return ['konfirmasi_lapor'].any((key) {
+          var value = item[key];
+          return value != null &&
+              value.toString().isNotEmpty &&
+              (value.toString().contains("sudah") ||
+                  value.toString().contains("tidak"));
+        });
+      }).toList();
+    }
+
     List<dynamic> filteredList = pelaporanList.where((lapor) {
       bool matchesSearch = lapor['judul_lapor']
           .toString()

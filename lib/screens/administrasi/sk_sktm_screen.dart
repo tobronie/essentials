@@ -21,6 +21,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
   final TextEditingController _rincianController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
+  final TextEditingController _konfirmasiController = TextEditingController();
 
   Future getImageKTP({bool fromCamera = false}) async {
     final ImagePicker picker = ImagePicker();
@@ -52,6 +53,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
   void initState() {
     super.initState();
     _judulController.text = "Surat Keterangan Tidak Mampu";
+    _konfirmasiController.text = "menunggu";
   }
 
   Future<void> tambahSKTM() async {
@@ -82,6 +84,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
       _nominalController.text,
       _rincianController.text,
       DateTime.now().toString(),
+      _konfirmasiController.text,
       context,
     );
   }
