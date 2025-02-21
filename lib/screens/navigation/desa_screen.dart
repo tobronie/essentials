@@ -1,3 +1,4 @@
+import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
@@ -24,7 +25,10 @@ class _DesaKedungmulyoScreenState extends State<DesaKedungmulyoScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
           },
         ),
         elevation: 0,

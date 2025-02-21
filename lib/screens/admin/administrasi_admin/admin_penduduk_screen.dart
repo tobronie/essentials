@@ -19,7 +19,8 @@ class Admin_PendudukScreen extends StatefulWidget {
 }
 
 class _Admin_PendudukScreenState extends State<Admin_PendudukScreen> {
-  final UploadPendudukanService _UploadPendudukanService = UploadPendudukanService();
+  final UploadPendudukanService _UploadPendudukanService =
+      UploadPendudukanService();
   File? selectedDocument;
   bool _isImageVisibleKTP = false;
   bool _isImageVisibleKK = false;
@@ -126,10 +127,16 @@ class _Admin_PendudukScreenState extends State<Admin_PendudukScreen> {
               : "Tidak diketahui";
           String fotoKTP = pendudukan["pen_foto_ktp"] ?? "Tidak diketahui";
           String fotoKK = pendudukan["pen_foto_kk"] ?? "Tidak diketahui";
-          String fotoNikahPria = pendudukan["pen_foto_nikah_pria"] ?? "Tidak diketahui";
-          String fotoNikahWanita = pendudukan["pen_foto_nikah_wanita"] ?? "Tidak diketahui";
-          String DaerahAsal = pendudukan["pen_daerah_asal"] ?? "Tidak diketahui";
-          String DaerahTujuan = pendudukan["pen_daerah_tujuan"] ?? "Tidak diketahui";
+          String fotoNikahPria =
+              pendudukan["pen_foto_nikah_pria"] ?? "Tidak diketahui";
+          String fotoNikahWanita =
+              pendudukan["pen_foto_nikah_wanita"] ?? "Tidak diketahui";
+          String DaerahAsal =
+              pendudukan["pen_daerah_asal"] ?? "Tidak diketahui";
+          String DaerahTujuan =
+              pendudukan["pen_daerah_tujuan"] ?? "Tidak diketahui";
+          String konfirmasiData =
+              pendudukan["pen_konfirmasi"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -172,9 +179,9 @@ class _Admin_PendudukScreenState extends State<Admin_PendudukScreen> {
                       color: Color(0xffD9D9D9),
                     ),
                     const SizedBox(height: 24),
-                    _verifikasiKepalaDesa(),
-                    const SizedBox(height: 32),
-                    _konfirmasi(),
+                    _verifikasiKepalaDesa(konfirmasiData),
+                    const SizedBox(height: 24),
+                    if (konfirmasiData == "sudah") _konfirmasi(),
                   ],
                 ),
               ),
@@ -916,23 +923,44 @@ class _Admin_PendudukScreenState extends State<Admin_PendudukScreen> {
     }
   }
 
-  Container _verifikasiKepalaDesa() {
+  Container _verifikasiKepalaDesa(String verifikasi) {
+    String statusText = "";
+    Color statusColor = Colors.black;
+
+    switch (verifikasi) {
+      case "menunggu":
+        statusText = "Menunggu disetujui";
+        statusColor = const Color(0xffFF9D00);
+        break;
+      case "sudah":
+        statusText = "Telah disetujui";
+        statusColor = const Color(0xff00AA13);
+        break;
+      case "tidak":
+        statusText = "Tidak disetujui";
+        statusColor = const Color(0xffFF0004);
+        break;
+      default:
+        statusText = "Status tidak diketahui";
+        statusColor = Colors.black;
+    }
+
     return Container(
+      padding: const EdgeInsets.all(8),
       child: Text.rich(
         TextSpan(
           children: [
             TextSpan(
-              text: 'Telah disetujui',
+              text: "$statusText ",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
+                color: statusColor,
               ),
             ),
-            TextSpan(text: ' '),
             TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
+              text: "oleh Kepala Desa Kedungmulyo Bpk. Badrun",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,

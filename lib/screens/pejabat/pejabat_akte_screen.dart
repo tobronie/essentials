@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/services/konfirmasi/konfirmasi_ad_akte.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 
 class Pejabat_AkteScreen extends StatefulWidget {
   final String id;
@@ -17,6 +17,7 @@ class Pejabat_AkteScreen extends StatefulWidget {
 }
 
 class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
+  final KonfirmasiAkteService _KonfirmasiAkteService = KonfirmasiAkteService();
   bool _isImageVisibleKelahiran = false;
   bool _isImageVisibleKK = false;
   bool _isImageVisibleKTPAyah = false;
@@ -52,6 +53,14 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> updateKonfirmasi(String status) async {
+    await _KonfirmasiAkteService.KonfirmasiAkte(
+      widget.id,
+      status,
+      context,
+    );
   }
 
   @override
@@ -1489,14 +1498,9 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen(),
-                    ),
-                  );
-                },
+                onPressed: () async {
+                    await updateKonfirmasi("tidak");
+                  },
                 child: Text(
                   'Tidak Disetujui',
                   style: GoogleFonts.montserrat(
@@ -1519,14 +1523,9 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen(),
-                    ),
-                  );
-                },
+                onPressed: () async {
+                    await updateKonfirmasi("tidak");
+                  },
                 child: Text(
                   'Setuju',
                   style: GoogleFonts.montserrat(

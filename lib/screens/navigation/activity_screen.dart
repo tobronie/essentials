@@ -497,6 +497,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   );
                 },
                 child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
                   width: double.infinity,
                   height: 114,
                   padding: const EdgeInsets.all(8),

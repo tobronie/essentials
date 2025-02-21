@@ -124,6 +124,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
               : "Tidak diketahui";
           String fotoKTP = domisili["dom_foto_ktp"] ?? "Tidak diketahui";
           String fotoKK = domisili["dom_foto_kk"] ?? "Tidak diketahui";
+          String konfirmasiData = domisili["dom_konfirmasi"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -158,9 +159,9 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
                       color: Color(0xffD9D9D9),
                     ),
                     const SizedBox(height: 24),
-                    _verifikasiKepalaDesa(),
-                    const SizedBox(height: 32),
-                    _konfirmasi(),
+                    _verifikasiKepalaDesa(konfirmasiData),
+                    const SizedBox(height: 24),
+                    if (konfirmasiData == "sudah") _konfirmasi(),
                   ],
                 ),
               ),
@@ -612,23 +613,44 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
     }
   }
 
-  Container _verifikasiKepalaDesa() {
+  Container _verifikasiKepalaDesa(String verifikasi) {
+    String statusText = "";
+    Color statusColor = Colors.black;
+
+    switch (verifikasi) {
+      case "menunggu":
+        statusText = "Menunggu disetujui";
+        statusColor = const Color(0xffFF9D00);
+        break;
+      case "sudah":
+        statusText = "Telah disetujui";
+        statusColor = const Color(0xff00AA13);
+        break;
+      case "tidak":
+        statusText = "Tidak disetujui";
+        statusColor = const Color(0xffFF0004);
+        break;
+      default:
+        statusText = "Status tidak diketahui";
+        statusColor = Colors.black;
+    }
+
     return Container(
+      padding: const EdgeInsets.all(8),
       child: Text.rich(
         TextSpan(
           children: [
             TextSpan(
-              text: 'Telah disetujui',
+              text: "$statusText ",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
+                color: statusColor,
               ),
             ),
-            TextSpan(text: ' '),
             TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
+              text: "oleh Kepala Desa Kedungmulyo Bpk. Badrun",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,

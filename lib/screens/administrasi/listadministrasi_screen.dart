@@ -9,6 +9,7 @@ import 'package:essentials/screens/administrasi/sk_penghasilan_screen.dart';
 import 'package:essentials/screens/administrasi/kp_penduduk_screen.dart';
 import 'package:essentials/screens/administrasi/sk_sktm_screen.dart';
 import 'package:essentials/screens/administrasi/sk_usaha_screen.dart';
+import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -28,7 +29,10 @@ class _AdministrasiScreenState extends State<AdministrasiScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
           },
         ),
         title: Text(

@@ -3,6 +3,7 @@ import 'package:essentials/screens/help/problemakun_screen.dart';
 import 'package:essentials/screens/help/problemadministrasi_screen.dart';
 import 'package:essentials/screens/help/probleminformasi_screen.dart';
 import 'package:essentials/screens/help/problempelaporan_screen.dart';
+import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -23,7 +24,10 @@ class _ListProblemScreenState extends State<ListProblemScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
           },
         ),
         title: Text(

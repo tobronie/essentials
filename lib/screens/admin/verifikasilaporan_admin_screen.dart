@@ -1,4 +1,4 @@
-import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
+import 'package:essentials/services/konfirmasi/konfirmasi_pelaporan.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -19,6 +19,8 @@ class DataVerifikasiLaporanScreen extends StatefulWidget {
 
 class _DataVerifikasiLaporanScreenState
     extends State<DataVerifikasiLaporanScreen> {
+  final UpdatePengaduanService _UpdatePengaduanService =
+      UpdatePengaduanService();
   bool _isImageVisible = false;
   bool isLoading = true;
   late Future<Map<String, dynamic>?> _futurePelaporan;
@@ -46,6 +48,14 @@ class _DataVerifikasiLaporanScreenState
       print("Error: $e");
     }
     return null;
+  }
+
+  Future<void> updateKonfirmasi() async {
+    await _UpdatePengaduanService.Pengaduan(
+      widget.id,
+      "sudah",
+      context,
+    );
   }
 
   @override
@@ -553,13 +563,8 @@ class _DataVerifikasiLaporanScreenState
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ListVerifikasiLaporanAdminScreen()),
-                    );
+                  onPressed: () async {
+                    await updateKonfirmasi();
                   },
                   child: Text(
                     'Verifikasi Pengaduan',

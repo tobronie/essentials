@@ -152,6 +152,7 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
               nikah["ni_foto_nikah_ayah_wanita"] ?? "Tidak diketahui";
           String fotoNikahIbuWanita =
               nikah["ni_foto_nikah_ibu_wanita"] ?? "Tidak diketahui";
+          String konfirmasiData = nikah["ni_konfirmasi"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -210,9 +211,9 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
                       color: Color(0xffD9D9D9),
                     ),
                     const SizedBox(height: 24),
-                    _verifikasiKepalaDesa(),
-                    const SizedBox(height: 32),
-                    _konfirmasi(),
+                    _verifikasiKepalaDesa(konfirmasiData),
+                    const SizedBox(height: 24),
+                    if (konfirmasiData == "sudah") _konfirmasi(),
                   ],
                 ),
               ),
@@ -1532,19 +1533,22 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
 
   void _showDialogFotoFormulirPria(BuildContext context, String foto) {
     if (_isImageVisibleFormulirPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleFormulirPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleFormulirPria = false);
     }
   }
 
   void _showDialogFotoNikahAyahPria(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyahPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahAyahPria = false);
     }
   }
 
   void _showDialogFotoNikahIbuPria(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbuPria) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuPria = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahIbuPria = false);
     }
   }
 
@@ -1568,19 +1572,22 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
 
   void _showDialogFotoFormulirWanita(BuildContext context, String foto) {
     if (_isImageVisibleFormulirWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleFormulirWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleFormulirWanita = false);
     }
   }
 
   void _showDialogFotoNikahAyahWanita(BuildContext context, String foto) {
     if (_isImageVisibleNikahAyahWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahAyahWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahAyahWanita = false);
     }
   }
 
   void _showDialogFotoNikahIbuWanita(BuildContext context, String foto) {
     if (_isImageVisibleNikahIbuWanita) {
-      _showImageDialog(context, foto, () => _isImageVisibleNikahIbuWanita = false);
+      _showImageDialog(
+          context, foto, () => _isImageVisibleNikahIbuWanita = false);
     }
   }
 
@@ -1602,23 +1609,44 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
     }
   }
 
-  Container _verifikasiKepalaDesa() {
+  Container _verifikasiKepalaDesa(String verifikasi) {
+    String statusText = "";
+    Color statusColor = Colors.black;
+
+    switch (verifikasi) {
+      case "menunggu":
+        statusText = "Menunggu disetujui";
+        statusColor = const Color(0xffFF9D00);
+        break;
+      case "sudah":
+        statusText = "Telah disetujui";
+        statusColor = const Color(0xff00AA13);
+        break;
+      case "tidak":
+        statusText = "Tidak disetujui";
+        statusColor = const Color(0xffFF0004);
+        break;
+      default:
+        statusText = "Status tidak diketahui";
+        statusColor = Colors.black;
+    }
+
     return Container(
+      padding: const EdgeInsets.all(8),
       child: Text.rich(
         TextSpan(
           children: [
             TextSpan(
-              text: 'Telah disetujui',
+              text: "$statusText ",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
+                color: statusColor,
               ),
             ),
-            TextSpan(text: ' '),
             TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
+              text: "oleh Kepala Desa Kedungmulyo Bpk. Badrun",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,

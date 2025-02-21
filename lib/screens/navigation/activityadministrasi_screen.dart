@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:intl/intl.dart';
 
 class ActivityAdministrasiScreen extends StatefulWidget {
@@ -21,46 +20,32 @@ class ActivityAdministrasiScreen extends StatefulWidget {
 
 class _ActivityAdministrasiScreenState
     extends State<ActivityAdministrasiScreen> {
-  Map<String, dynamic>? data;
-  bool isLoading = true;
+  late Future<Map<String, dynamic>?> _futureData;
 
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-
-  Future<void> fetchData() async {
+  Future<Map<String, dynamic>?> getData() async {
     String endpoint = getEndpoint(widget.idType);
-    if (endpoint.isEmpty) {
-      setState(() {
-        isLoading = false;
-        data = null;
-      });
-      return;
-    }
-
     String url =
         'http://10.0.2.2:8080/essentials_api/$endpoint?${widget.idType}=${widget.id}';
 
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        List<dynamic> responseData = jsonDecode(response.body);
-        setState(() {
-          isLoading = false;
-          data = responseData.isNotEmpty ? responseData.first : null;
-        });
+        List<Map<String, dynamic>> responseData =
+            List<Map<String, dynamic>>.from(jsonDecode(response.body));
+        return responseData.isNotEmpty ? responseData.first : null;
       } else {
         throw Exception('Gagal mengambil data');
       }
     } catch (e) {
       print("Error fetching data: $e");
-      setState(() {
-        isLoading = false;
-        data = null;
-      });
+      return null;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _futureData = getData();
   }
 
   String getEndpoint(String idType) {
@@ -81,18 +66,18 @@ class _ActivityAdministrasiScreenState
     return endpointMap[idType] ?? '';
   }
 
-  String formatTanggal(Map<String, dynamic> item) {
-    String? rawDate = item['ak_tgl_upload'] ??
-        item['dom_tgl_upload'] ??
-        item['kem_tgl_upload'] ??
-        item['kk_tgl_upload'] ??
-        item['kt_tgl_upload'] ??
-        item['ni_tgl_upload'] ??
-        item['pen_tgl_upload'] ??
-        item['has_tgl_upload'] ??
-        item['sktm_tgl_upload'] ??
-        item['tan_tgl_upload'] ??
-        item['us_tgl_upload'];
+  String formatTanggal(Map<String, dynamic> data) {
+    String? rawDate = data['ak_tgl_upload'] ??
+        data['dom_tgl_upload'] ??
+        data['kem_tgl_upload'] ??
+        data['kk_tgl_upload'] ??
+        data['kt_tgl_upload'] ??
+        data['ni_tgl_upload'] ??
+        data['pen_tgl_upload'] ??
+        data['has_tgl_upload'] ??
+        data['sktm_tgl_upload'] ??
+        data['tan_tgl_upload'] ??
+        data['us_tgl_upload'];
 
     if (rawDate != null) {
       try {
@@ -125,125 +110,290 @@ class _ActivityAdministrasiScreenState
         elevation: 0,
         backgroundColor: const Color(0xffF9F9F9),
       ),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : data == null
-                ? const Center(child: Text('Data tidak ditemukan'))
-                : Container(
-                    color: const Color(0xffF9F9F9),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _data(data!),
-                          const SizedBox(height: 52),
-                          _verifikasiKepalaDesa(),
-                          const SizedBox(height: 16),
-                          _document(),
-                        ],
-                      ),
-                    ),
-                  ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _futureData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Data tidak ditemukan"));
+          }
+
+          var data = snapshot.data!;
+
+          String NamaPengaduan = data['nama'] ?? "Tidak diketahui";
+          String JudulPengaduan = data['ak_judul'] ??
+              data['dom_judul'] ??
+              data['kem_judul'] ??
+              data['kk_judul'] ??
+              data['kt_judul'] ??
+              data['ni_judul'] ??
+              data['pen_judul'] ??
+              data['has_judul'] ??
+              data['sktm_judul'] ??
+              data['tan_judul'] ??
+              data['us_judul'] ??
+              "Tidak diketahui";
+          String? tglUploadRaw = data['ak_tgl_upload'] ??
+              data['dom_tgl_upload'] ??
+              data['kem_tgl_upload'] ??
+              data['kk_tgl_upload'] ??
+              data['kt_tgl_upload'] ??
+              data['ni_tgl_upload'] ??
+              data['pen_tgl_upload'] ??
+              data['has_tgl_upload'] ??
+              data['sktm_tgl_upload'] ??
+              data['tan_tgl_upload'] ??
+              data['us_tgl_upload'];
+          String TglUpload = tglUploadRaw != null
+              ? DateFormat('dd MMMM yyyy - HH:mm')
+                  .format(DateTime.parse(tglUploadRaw))
+              : "Tidak diketahui";
+
+          String Verifikasi = data['ak_konfirmasi'] ??
+              data['dom_konfirmasi'] ??
+              data['kem_konfirmasi'] ??
+              data['kk_konfirmasi'] ??
+              data['kt_konfirmasi'] ??
+              data['ni_konfirmasi'] ??
+              data['pen_konfirmasi'] ??
+              data['has_konfirmasi'] ??
+              data['sktm_konfirmasi'] ??
+              data['tan_konfirmasi'] ??
+              data['us_konfirmasi'] ??
+              "Tidak diketahui";
+          return SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 18),
+                    _nama(NamaPengaduan),
+                    const SizedBox(height: 12),
+                    _judul(JudulPengaduan),
+                    const SizedBox(height: 12),
+                    _tglUpload(TglUpload),
+                    const SizedBox(height: 12),
+                    _verifikasiKepalaDesa(Verifikasi),
+                    const SizedBox(height: 16),
+                    // _document(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _data(Map<String, dynamic> item) {
+  Column _nama(String NamaData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Data pengajuan surat Anda:',
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 18),
-        _buildInfoBox('Nama Pemohon', item['nama'] ?? '-'),
-        const SizedBox(height: 12),
-        _buildInfoBox(
-            'Jenis Pengajuan',
-            item['ak_judul'] ??
-                item['dom_judul'] ??
-                item['kem_judul'] ??
-                item['kk_judul'] ??
-                item['kt_judul'] ??
-                item['ni_judul'] ??
-                item['pen_judul'] ??
-                item['has_judul'] ??
-                item['sktm_judul'] ??
-                item['tan_judul'] ??
-                item['us_judul'] ??
-                '-'),
-        const SizedBox(height: 12),
-        _buildInfoBox('Tanggal Pengajuan', formatTanggal(item))
-      ],
-    );
-  }
-
-  Widget _buildInfoBox(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.montserrat(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 42,
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: const Color(0xffD9D9D9),
-              width: 2,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jenis Pengaduan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            value,
-            style: GoogleFonts.montserrat(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                NamaData,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
+          ],
         ),
       ],
     );
   }
 
-  Container _verifikasiKepalaDesa() {
+  Column _judul(String JudulData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jenis Pengaduan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                JudulData,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column _tglUpload(String tglUploadData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Waktu Upload Pengajuan',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                tglUploadData,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column _dataPengajuan() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Data Pengaduan Anda:',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Container _verifikasiKepalaDesa(String verifikasi) {
+    String statusText = "";
+    Color statusColor = Colors.black;
+
+    switch (verifikasi) {
+      case "menunggu":
+        statusText = "Menunggu disetujui";
+        statusColor = const Color(0xffFF9D00);
+        break;
+      case "sudah":
+        statusText = "Telah disetujui";
+        statusColor = const Color(0xff00AA13);
+        break;
+      case "tidak":
+        statusText = "Tidak disetujui";
+        statusColor = const Color(0xffFF0004);
+        break;
+      default:
+        statusText = "Status tidak diketahui";
+        statusColor = Colors.black;
+    }
+
     return Container(
+      padding: const EdgeInsets.all(8),
       child: Text.rich(
         TextSpan(
           children: [
             TextSpan(
-              text: 'Telah disetujui',
+              text: "$statusText ",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff00AA13),
+                color: statusColor,
               ),
             ),
-            TextSpan(text: ' '),
             TextSpan(
-              text: 'Kepala Desa Bpk. Hj. Ahmad Fulan, S.H, M.Sos',
+              text: "oleh Kepala Desa Kedungmulyo Bpk. Badrun",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
@@ -258,155 +408,155 @@ class _ActivityAdministrasiScreenState
     );
   }
 
-  Widget _document() {
-    String nama = data?['nama'] ?? '';
-    String id = data?['id'] ?? '';
+  // Widget _document() {
+  //   String nama = data?['nama'] ?? '';
+  //   String id = data?['id'] ?? '';
 
-    if (id.isEmpty) {
-      return SizedBox.shrink();
-    }
+  //   if (id.isEmpty) {
+  //     return SizedBox.shrink();
+  //   }
 
-    String judul = data?['ak_judul'] ??
-        data?['dom_judul'] ??
-        data?['kem_judul'] ??
-        data?['kk_judul'] ??
-        data?['kt_judul'] ??
-        data?['ni_judul'] ??
-        data?['pen_judul'] ??
-        data?['has_judul'] ??
-        data?['sktm_judul'] ??
-        data?['tan_judul'] ??
-        data?['us_judul'] ??
-        'Judul Tidak Ditemukan';
+  //   String judul = data?['ak_judul'] ??
+  //       data?['dom_judul'] ??
+  //       data?['kem_judul'] ??
+  //       data?['kk_judul'] ??
+  //       data?['kt_judul'] ??
+  //       data?['ni_judul'] ??
+  //       data?['pen_judul'] ??
+  //       data?['has_judul'] ??
+  //       data?['sktm_judul'] ??
+  //       data?['tan_judul'] ??
+  //       data?['us_judul'] ??
+  //       'Judul Tidak Ditemukan';
 
-    List<String?> suratKonfirmasiList = [
-      data?['ak_surat_konfirmasi'],
-      data?['dom_surat_konfirmasi'],
-      data?['kem_surat_konfirmasi'],
-      data?['kk_surat_konfirmasi'],
-      data?['kt_surat_konfirmasi'],
-      data?['ni_surat_konfirmasi'],
-      data?['pen_surat_konfirmasi'],
-      data?['has_surat_konfirmasi'],
-      data?['sktm_surat_konfirmasi'],
-      data?['tan_surat_konfirmasi'],
-      data?['us_surat_konfirmasi'],
-    ];
+  //   List<String?> suratKonfirmasiList = [
+  //     data?['ak_surat_konfirmasi'],
+  //     data?['dom_surat_konfirmasi'],
+  //     data?['kem_surat_konfirmasi'],
+  //     data?['kk_surat_konfirmasi'],
+  //     data?['kt_surat_konfirmasi'],
+  //     data?['ni_surat_konfirmasi'],
+  //     data?['pen_surat_konfirmasi'],
+  //     data?['has_surat_konfirmasi'],
+  //     data?['sktm_surat_konfirmasi'],
+  //     data?['tan_surat_konfirmasi'],
+  //     data?['us_surat_konfirmasi'],
+  //   ];
 
-    String? suratKonfirmasi = suratKonfirmasiList.firstWhere(
-      (element) => element != null && element.isNotEmpty,
-      orElse: () => null,
-    );
+  //   String? suratKonfirmasi = suratKonfirmasiList.firstWhere(
+  //     (element) => element != null && element.isNotEmpty,
+  //     orElse: () => null,
+  //   );
 
-    if (suratKonfirmasi == null) {
-      return SizedBox.shrink();
-    }
+  //   if (suratKonfirmasi == null) {
+  //     return SizedBox.shrink();
+  //   }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () async {
-            var downloadService = DownloadServices();
-            if (id.startsWith("id_akte")) {
-              await downloadService.download_AdministrasiAkte(context);
-            } else if (id.startsWith("id_domisili")) {
-              await downloadService.download_AdministrasiDomisili(context);
-            } else if (id.startsWith("id_kematian")) {
-              await downloadService.download_AdministrasiKematian(context);
-            } else if (id.startsWith("id_kk")) {
-              await downloadService.download_AdministrasiKK(context);
-            } else if (id.startsWith("id_ktp")) {
-              await downloadService.download_AdministrasiKTP(context);
-            } else if (id.startsWith("id_nikah")) {
-              await downloadService.download_AdministrasiNikah(context);
-            } else if (id.startsWith("id_pendudukan")) {
-              await downloadService.download_AdministrasiPendudukan(context);
-            } else if (id.startsWith("id_penghasilan")) {
-              await downloadService.download_AdministrasiPenghasilan(context);
-            } else if (id.startsWith("id_sktm")) {
-              await downloadService.download_AdministrasiSKTM(context);
-            } else if (id.startsWith("id_tanah")) {
-              await downloadService.download_AdministrasiTanah(context);
-            } else if (id.startsWith("id_usaha")) {
-              await downloadService.download_AdministrasiUsaha(context);
-            }
-          },
-          child: DottedBorder(
-            color: const Color(0xffD9D9D9),
-            strokeWidth: 2,
-            borderType: BorderType.RRect,
-            radius: Radius.circular(10),
-            child: Container(
-              width: double.infinity,
-              height: 108,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 3,
-                    spreadRadius: 1,
-                    offset: const Offset(0.0, 0.0),
-                  ),
-                ],
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        'assets/images/pdf-icon.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 18, right: 14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              style: GoogleFonts.montserrat(
-                                fontSize: 16,
-                                height: 1.1,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                              children: [
-                                TextSpan(text: nama),
-                                TextSpan(text: ' - '),
-                                TextSpan(text: judul),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '210 kb',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       GestureDetector(
+  //         onTap: () async {
+  //           var downloadService = DownloadServices();
+  //           if (id.startsWith("id_akte")) {
+  //             await downloadService.download_AdministrasiAkte(context);
+  //           } else if (id.startsWith("id_domisili")) {
+  //             await downloadService.download_AdministrasiDomisili(context);
+  //           } else if (id.startsWith("id_kematian")) {
+  //             await downloadService.download_AdministrasiKematian(context);
+  //           } else if (id.startsWith("id_kk")) {
+  //             await downloadService.download_AdministrasiKK(context);
+  //           } else if (id.startsWith("id_ktp")) {
+  //             await downloadService.download_AdministrasiKTP(context);
+  //           } else if (id.startsWith("id_nikah")) {
+  //             await downloadService.download_AdministrasiNikah(context);
+  //           } else if (id.startsWith("id_pendudukan")) {
+  //             await downloadService.download_AdministrasiPendudukan(context);
+  //           } else if (id.startsWith("id_penghasilan")) {
+  //             await downloadService.download_AdministrasiPenghasilan(context);
+  //           } else if (id.startsWith("id_sktm")) {
+  //             await downloadService.download_AdministrasiSKTM(context);
+  //           } else if (id.startsWith("id_tanah")) {
+  //             await downloadService.download_AdministrasiTanah(context);
+  //           } else if (id.startsWith("id_usaha")) {
+  //             await downloadService.download_AdministrasiUsaha(context);
+  //           }
+  //         },
+  //         child: DottedBorder(
+  //           color: const Color(0xffD9D9D9),
+  //           strokeWidth: 2,
+  //           borderType: BorderType.RRect,
+  //           radius: Radius.circular(10),
+  //           child: Container(
+  //             width: double.infinity,
+  //             height: 108,
+  //             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.circular(10),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.black.withOpacity(0.1),
+  //                   blurRadius: 3,
+  //                   spreadRadius: 1,
+  //                   offset: const Offset(0.0, 0.0),
+  //                 ),
+  //               ],
+  //             ),
+  //             child: Row(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Container(
+  //                   width: 80,
+  //                   height: 80,
+  //                   child: ClipRRect(
+  //                     borderRadius: BorderRadius.circular(15),
+  //                     child: Image.asset(
+  //                       'assets/images/pdf-icon.png',
+  //                       fit: BoxFit.cover,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Expanded(
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.only(left: 18, right: 14),
+  //                     child: Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         RichText(
+  //                           text: TextSpan(
+  //                             style: GoogleFonts.montserrat(
+  //                               fontSize: 16,
+  //                               height: 1.1,
+  //                               fontWeight: FontWeight.w500,
+  //                               color: Colors.black,
+  //                             ),
+  //                             children: [
+  //                               TextSpan(text: nama),
+  //                               TextSpan(text: ' - '),
+  //                               TextSpan(text: judul),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                         const SizedBox(height: 8),
+  //                         Text(
+  //                           '210 kb',
+  //                           style: GoogleFonts.montserrat(
+  //                             fontSize: 12,
+  //                             fontWeight: FontWeight.w500,
+  //                             color: Colors.black,
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

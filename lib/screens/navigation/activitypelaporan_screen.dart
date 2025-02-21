@@ -94,6 +94,8 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
               pelaporan["waktu_lapor"] ?? "Tidak diketahui";
           String lokasiPengadu = pelaporan["lokasi_lapor"] ?? "Tidak diketahui";
           String isiPengadu = pelaporan["isi_lapor"] ?? "Tidak diketahui";
+          String konfirmasiData =
+              pelaporan["konfirmasi_lapor"] ?? "Tidak diketahui";
 
           return SafeArea(
             child: Container(
@@ -104,6 +106,8 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    _dataPengajuan(),
+                    const SizedBox(height: 18),
                     _tglUploadLapor(tglUploadPengadu),
                     const SizedBox(height: 12),
                     _fotoLapor(fotoPengadu),
@@ -116,7 +120,7 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
                     const SizedBox(height: 12),
                     _isiLapor(isiPengadu),
                     const SizedBox(height: 24),
-                    _verification(),
+                    _verification(konfirmasiData),
                   ],
                 ),
               ),
@@ -124,6 +128,27 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
           );
         },
       ),
+    );
+  }
+
+  Column _dataPengajuan() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Data Pengaduan Anda:',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -461,23 +486,40 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
     );
   }
 
-  Container _verification() {
+  Container _verification(String konfirmasi) {
+    String statusText = "";
+    Color statusColor = Colors.black;
+
+    switch (konfirmasi) {
+      case "menunggu":
+        statusText = "Menunggu diverifikasi";
+        statusColor = const Color(0xffFF9D00);
+        break;
+      case "sudah":
+        statusText = "Telah diverifikasi";
+        statusColor = const Color(0xff00AA13);
+        break;
+      default:
+        statusText = "Status tidak diketahui";
+        statusColor = Colors.black;
+    }
+
     return Container(
-      // child: Text(
-      //   'Menunggu Verifikasi',
-      //   style: GoogleFonts.montserrat(
-      //     fontSize: 16,
-      //     fontWeight: FontWeight.w600,
-      //     color: Color(0xFFFF9D00),
-      //   ),
-      //   textAlign: TextAlign.center,
-      // ),
-      child: Text(
-        'Sudah Verifikasi',
-        style: GoogleFonts.montserrat(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Color(0xff00AA13),
+      margin: const EdgeInsets.only(bottom: 24),
+      alignment: Alignment.center,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: "$statusText ",
+              style: GoogleFonts.montserrat(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+                color: statusColor,
+              ),
+            ),
+          ],
         ),
         textAlign: TextAlign.center,
       ),

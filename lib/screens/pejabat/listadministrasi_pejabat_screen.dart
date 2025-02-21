@@ -1,3 +1,4 @@
+import 'package:essentials/screens/navigation/profile_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_akte_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_domisili_screen.dart';
 import 'package:essentials/screens/pejabat/pejabat_kematian_screen.dart';
@@ -100,7 +101,10 @@ class _ListVerifikasiPejabatScreenState
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black,),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
           },
         ),
         title: Text(

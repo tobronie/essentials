@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/services/create/create_pelaporan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -156,7 +157,10 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
             color: Colors.black,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
           },
         ),
         title: Text(

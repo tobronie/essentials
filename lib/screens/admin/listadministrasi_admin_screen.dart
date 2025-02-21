@@ -28,7 +28,7 @@ class ListVerifikasiAdministrasiAdminScreen extends StatefulWidget {
 
 class _ListVerifikasiAdministrasiAdminScreenState
     extends State<ListVerifikasiAdministrasiAdminScreen> {
-  String _selectedProses = 'Dalam Proses';
+  String _selectedProses = 'Dalam Verifikasi';
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   FocusNode _searchFocusNode = FocusNode();
@@ -230,26 +230,55 @@ class _ListVerifikasiAdministrasiAdminScreenState
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedProses = 'Dalam Proses';
+                  _selectedProses = 'Dalam Verifikasi';
                 });
               },
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
                   Text(
-                    'Dalam Proses',
+                    'Dalam Verifikasi',
                     style: GoogleFonts.montserrat(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _selectedProses == 'Dalam Proses'
+                      color: _selectedProses == 'Dalam Verifikasi'
                           ? Color(0xFF0D0140)
                           : Colors.black,
                     ),
                   ),
-                  if (_selectedProses == 'Dalam Proses')
+                  if (_selectedProses == 'Dalam Verifikasi')
                     Container(
                       height: 2,
-                      width: 'Dalam Proses'.length * 8.5,
+                      width: 'Dalam Verifikasi'.length * 7.5,
+                      color: Color(0xFF0D0140),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedProses = 'Terverifikasi';
+                });
+              },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Text(
+                    'Terverifikasi',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedProses == 'Terverifikasi'
+                          ? Color(0xFF0D0140)
+                          : Colors.black,
+                    ),
+                  ),
+                  if (_selectedProses == 'Terverifikasi')
+                    Container(
+                      height: 2,
+                      width: 'Terverifikasi'.length * 6.7,
                       color: Color(0xFF0D0140),
                     ),
                 ],
@@ -316,7 +345,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
       ...usahaList,
     ];
 
-    if (_selectedProses == "Dalam Proses") {
+    if (_selectedProses == "Dalam Verifikasi") {
       combinedList = combinedList.where((item) {
         return [
           'konfirmasi_lapor',
@@ -338,7 +367,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
               value.toString().contains("menunggu");
         });
       }).toList();
-    } else if (_selectedProses == "Riwayat") {
+    } else if (_selectedProses == "Terverifikasi") {
       combinedList = combinedList.where((item) {
         return [
           'konfirmasi_lapor',
@@ -357,9 +386,46 @@ class _ListVerifikasiAdministrasiAdminScreenState
           var value = item[key];
           return value != null &&
               value.toString().isNotEmpty &&
-              (value.toString().contains("sudah") ||
-                  value.toString().contains("tidak"));
+              value.toString().contains("sudah");
         });
+      }).toList();
+    } else if (_selectedProses == "Riwayat") {
+      combinedList = combinedList.where((item) {
+        return [
+              'konfirmasi_lapor',
+              'ak_konfirmasi',
+              'dom_konfirmasi',
+              'kem_konfirmasi',
+              'kk_konfirmasi',
+              'kt_konfirmasi',
+              'ni_konfirmasi',
+              'pen_konfirmasi',
+              'has_konfirmasi',
+              'sktm_konfirmasi',
+              'tan_konfirmasi',
+              'us_konfirmasi'
+            ].any((key) {
+              var value = item[key];
+              return value != null &&
+                  value.toString().isNotEmpty &&
+                  value.toString().contains("tidak");
+            }) ||
+            [
+              'ak_surat_konfirmasi',
+              'dom_surat_konfirmasi',
+              'kem_surat_konfirmasi',
+              'kk_surat_konfirmasi',
+              'kt_surat_konfirmasi',
+              'ni_surat_konfirmasi',
+              'pen_surat_konfirmasi',
+              'has_surat_konfirmasi',
+              'sktm_surat_konfirmasi',
+              'tan_surat_konfirmasi',
+              'us_surat_konfirmasi'
+            ].any((key) {
+              var value = item[key];
+              return value != null && value.toString().isNotEmpty;
+            });
       }).toList();
     }
 

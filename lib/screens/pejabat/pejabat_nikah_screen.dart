@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'package:essentials/services/konfirmasi/konfirmasi_ad_nikah.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
 
 class Pejabat_NikahScreen extends StatefulWidget {
   final String id;
@@ -29,6 +29,15 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
   bool _isImageVisibleNikahIbuWanita = false;
   bool _isImageVisibleFormulirWanita = false;
   late Future<Map<String, dynamic>?> _futureNikah;
+  final KonfirmasiNikahService _KonfirmasiNikahService = KonfirmasiNikahService();
+
+  Future<void> updateKonfirmasi(String status) async {
+    await _KonfirmasiNikahService.KonfirmasiNikah(
+      widget.id,
+      status,
+      context,
+    );
+  }
 
   @override
   void initState() {
@@ -1619,14 +1628,9 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen(),
-                    ),
-                  );
-                },
+                onPressed: () async {
+                    await updateKonfirmasi("tidak");
+                  },
                 child: Text(
                   'Tidak Disetujui',
                   style: GoogleFonts.montserrat(
@@ -1649,14 +1653,9 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListVerifikasiPejabatScreen(),
-                    ),
-                  );
-                },
+                onPressed: () async {
+                    await updateKonfirmasi("sudah");
+                  },
                 child: Text(
                   'Setuju',
                   style: GoogleFonts.montserrat(
