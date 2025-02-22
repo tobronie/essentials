@@ -73,9 +73,20 @@ class _Admin_PendudukScreenState extends State<Admin_PendudukScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadPendudukanService.pendudukan(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

@@ -10,6 +10,7 @@ class CreateKTPService {
       String? kt_foto_akte,
       String kt_foto_kk,
       String kt_foto_formulir,
+      String kt_surat_konfirmasi,
       String kt_tgl_upload,
       String kt_konfirmasi,
       BuildContext context) async {
@@ -69,6 +70,7 @@ class CreateKTPService {
           'kt_foto_akte': base64FotoAkte.isNotEmpty ? base64FotoAkte : '',
           'kt_foto_kk': base64FotoKK,
           'kt_foto_formulir': base64FotoFormulir,
+          'kt_surat_konfirmasi': kt_surat_konfirmasi,
           'kt_tgl_upload': kt_tgl_upload,
           'kt_konfirmasi': kt_konfirmasi,
         },

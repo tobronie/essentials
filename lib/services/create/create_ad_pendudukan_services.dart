@@ -13,6 +13,7 @@ class CreatePendudukanService {
       String? pen_foto_nikah_wanita,
       String pen_daerah_asal,
       String pen_daerah_tujuan,
+      String pen_surat_konfirmasi,
       String pen_tgl_upload,
       String pen_konfirmasi,
       BuildContext context) async {
@@ -91,6 +92,7 @@ class CreatePendudukanService {
           'pen_foto_nikah_wanita': base64FotoNikahWanita.isNotEmpty ? base64FotoNikahWanita : '',
           'pen_daerah_asal': pen_daerah_asal,
           'pen_daerah_tujuan': pen_daerah_tujuan,
+          'pen_surat_konfirmasi': pen_surat_konfirmasi,
           'pen_tgl_upload': pen_tgl_upload,
           'pen_konfirmasi': pen_konfirmasi,
         },

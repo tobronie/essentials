@@ -12,6 +12,7 @@ class CreateSKTMService {
       String sktm_nama_wali,
       String sktm_nominal,
       String sktm_rincian,
+      String sktm_surat_konfirmai,
       String sktm_tgl_upload,
       String sktm_konfirmai,
       BuildContext context) async {
@@ -58,6 +59,7 @@ class CreateSKTMService {
           'sktm_nama_wali': sktm_nama_wali,
           'sktm_nominal': sktm_nominal,
           'sktm_rincian': sktm_rincian,
+          'sktm_surat_konfirmai': sktm_surat_konfirmai,
           'sktm_tgl_upload': sktm_tgl_upload,
           'sktm_konfirmai': sktm_konfirmai,
         },

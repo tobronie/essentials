@@ -12,6 +12,7 @@ class CreateKematianService {
       String kem_foto_kk,
       String? kem_foto_surat_kematian,
       String kem_foto_ktp_saksi,
+      String kem_surat_konfirmasi,
       String kem_tgl_upload,
       String kem_konfirmasi,
       BuildContext context) async {
@@ -88,6 +89,7 @@ class CreateKematianService {
           'kem_foto_kk': base64FotoKK,
           'kem_foto_surat_kematian': base64FotoSuratKematian.isNotEmpty ? base64FotoSuratKematian : '',
           'kem_foto_ktp_saksi': base64FotoKTPsaksi,
+          'kem_surat_konfirmasi': kem_surat_konfirmasi,
           'kem_tgl_upload': kem_tgl_upload,
           'kem_konfirmasi': kem_konfirmasi,
         },

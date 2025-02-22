@@ -10,6 +10,7 @@ class CreateUsahaService {
       String us_foto_ktp,
       String us_foto_kk,
       String us_omset,
+      String us_surat_konfirmasi,
       String us_tgl_upload,
       String us_konfirmasi,
       BuildContext context) async {
@@ -53,6 +54,7 @@ class CreateUsahaService {
           'us_foto_ktp': base64FotoKTP,
           'us_foto_kk': base64FotoKK,
           'us_omset': us_omset,
+          'us_surat_konfirmasi': us_surat_konfirmasi,
           'us_tgl_upload': us_tgl_upload,
           'us_konfirmasi': us_konfirmasi,
         },

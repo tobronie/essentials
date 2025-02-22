@@ -70,9 +70,20 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
   }
   
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadUsahaService.usaha(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

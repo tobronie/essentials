@@ -70,9 +70,20 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadDomisiliService.domisili(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

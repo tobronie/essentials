@@ -16,6 +16,7 @@ class UsahaScreen extends StatefulWidget {
 class _UsahaScreenState extends State<UsahaScreen> {
   final CreateUsahaService _CreateUsahaService = CreateUsahaService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   String? selectedPendapatan;
@@ -52,6 +53,7 @@ class _UsahaScreenState extends State<UsahaScreen> {
     super.initState();
     _judulController.text = "Surat Keterangan Usaha";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahUsaha() async {
@@ -74,6 +76,7 @@ class _UsahaScreenState extends State<UsahaScreen> {
       selectedImageKTP!.path,
       selectedImageKK!.path,
       selectedPendapatan ?? "",
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

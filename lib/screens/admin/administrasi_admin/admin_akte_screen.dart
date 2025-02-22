@@ -78,9 +78,20 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadAkteService.akte(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

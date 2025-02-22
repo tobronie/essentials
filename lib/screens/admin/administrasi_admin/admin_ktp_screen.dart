@@ -71,9 +71,20 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadKTPService.ktp(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

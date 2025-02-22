@@ -1,10 +1,11 @@
-import 'package:essentials/services/download_services.dart';
+import 'package:essentials/services/download/download_ad_akte.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
 
 class ActivityAdministrasiScreen extends StatefulWidget {
   final String id;
@@ -164,6 +165,19 @@ class _ActivityAdministrasiScreenState
               data['tan_konfirmasi'] ??
               data['us_konfirmasi'] ??
               "Tidak diketahui";
+
+          String SuratKonfirmasi = data['ak_surat_konfirmasi'] ??
+              data['dom_surat_konfirmasi'] ??
+              data['kem_surat_konfirmasi'] ??
+              data['kk_surat_konfirmasi'] ??
+              data['kt_surat_konfirmasi'] ??
+              data['ni_surat_konfirmasi'] ??
+              data['pen_surat_konfirmasi'] ??
+              data['has_surat_konfirmasi'] ??
+              data['sktm_surat_konfirmasi'] ??
+              data['tan_surat_konfirmasi'] ??
+              data['us_surat_konfirmasi'] ??
+              "Tidak diketahui";
           return SafeArea(
             child: Container(
               color: const Color(0xffF9F9F9),
@@ -182,8 +196,10 @@ class _ActivityAdministrasiScreenState
                     _tglUpload(TglUpload),
                     const SizedBox(height: 12),
                     _verifikasiKepalaDesa(Verifikasi),
-                    const SizedBox(height: 16),
-                    // _document(),
+                    const SizedBox(height: 24),
+                    if (SuratKonfirmasi.isNotEmpty)
+                      _document(SuratKonfirmasi, NamaPengaduan, JudulPengaduan,
+                          context),
                   ],
                 ),
               ),
@@ -408,155 +424,93 @@ class _ActivityAdministrasiScreenState
     );
   }
 
-  // Widget _document() {
-  //   String nama = data?['nama'] ?? '';
-  //   String id = data?['id'] ?? '';
+  Widget _document(
+      String filePDF, String Nama, String Judul, BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        print("Dokumen diklik!");
 
-  //   if (id.isEmpty) {
-  //     return SizedBox.shrink();
-  //   }
+        DownloadServices downloadServices = DownloadServices();
+        String? filePath =
+            await downloadServices.downloadAdministrasiAkte(context, filePDF);
 
-  //   String judul = data?['ak_judul'] ??
-  //       data?['dom_judul'] ??
-  //       data?['kem_judul'] ??
-  //       data?['kk_judul'] ??
-  //       data?['kt_judul'] ??
-  //       data?['ni_judul'] ??
-  //       data?['pen_judul'] ??
-  //       data?['has_judul'] ??
-  //       data?['sktm_judul'] ??
-  //       data?['tan_judul'] ??
-  //       data?['us_judul'] ??
-  //       'Judul Tidak Ditemukan';
-
-  //   List<String?> suratKonfirmasiList = [
-  //     data?['ak_surat_konfirmasi'],
-  //     data?['dom_surat_konfirmasi'],
-  //     data?['kem_surat_konfirmasi'],
-  //     data?['kk_surat_konfirmasi'],
-  //     data?['kt_surat_konfirmasi'],
-  //     data?['ni_surat_konfirmasi'],
-  //     data?['pen_surat_konfirmasi'],
-  //     data?['has_surat_konfirmasi'],
-  //     data?['sktm_surat_konfirmasi'],
-  //     data?['tan_surat_konfirmasi'],
-  //     data?['us_surat_konfirmasi'],
-  //   ];
-
-  //   String? suratKonfirmasi = suratKonfirmasiList.firstWhere(
-  //     (element) => element != null && element.isNotEmpty,
-  //     orElse: () => null,
-  //   );
-
-  //   if (suratKonfirmasi == null) {
-  //     return SizedBox.shrink();
-  //   }
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       GestureDetector(
-  //         onTap: () async {
-  //           var downloadService = DownloadServices();
-  //           if (id.startsWith("id_akte")) {
-  //             await downloadService.download_AdministrasiAkte(context);
-  //           } else if (id.startsWith("id_domisili")) {
-  //             await downloadService.download_AdministrasiDomisili(context);
-  //           } else if (id.startsWith("id_kematian")) {
-  //             await downloadService.download_AdministrasiKematian(context);
-  //           } else if (id.startsWith("id_kk")) {
-  //             await downloadService.download_AdministrasiKK(context);
-  //           } else if (id.startsWith("id_ktp")) {
-  //             await downloadService.download_AdministrasiKTP(context);
-  //           } else if (id.startsWith("id_nikah")) {
-  //             await downloadService.download_AdministrasiNikah(context);
-  //           } else if (id.startsWith("id_pendudukan")) {
-  //             await downloadService.download_AdministrasiPendudukan(context);
-  //           } else if (id.startsWith("id_penghasilan")) {
-  //             await downloadService.download_AdministrasiPenghasilan(context);
-  //           } else if (id.startsWith("id_sktm")) {
-  //             await downloadService.download_AdministrasiSKTM(context);
-  //           } else if (id.startsWith("id_tanah")) {
-  //             await downloadService.download_AdministrasiTanah(context);
-  //           } else if (id.startsWith("id_usaha")) {
-  //             await downloadService.download_AdministrasiUsaha(context);
-  //           }
-  //         },
-  //         child: DottedBorder(
-  //           color: const Color(0xffD9D9D9),
-  //           strokeWidth: 2,
-  //           borderType: BorderType.RRect,
-  //           radius: Radius.circular(10),
-  //           child: Container(
-  //             width: double.infinity,
-  //             height: 108,
-  //             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-  //             decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.circular(10),
-  //               boxShadow: [
-  //                 BoxShadow(
-  //                   color: Colors.black.withOpacity(0.1),
-  //                   blurRadius: 3,
-  //                   spreadRadius: 1,
-  //                   offset: const Offset(0.0, 0.0),
-  //                 ),
-  //               ],
-  //             ),
-  //             child: Row(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Container(
-  //                   width: 80,
-  //                   height: 80,
-  //                   child: ClipRRect(
-  //                     borderRadius: BorderRadius.circular(15),
-  //                     child: Image.asset(
-  //                       'assets/images/pdf-icon.png',
-  //                       fit: BoxFit.cover,
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Expanded(
-  //                   child: Padding(
-  //                     padding: const EdgeInsets.only(left: 18, right: 14),
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         RichText(
-  //                           text: TextSpan(
-  //                             style: GoogleFonts.montserrat(
-  //                               fontSize: 16,
-  //                               height: 1.1,
-  //                               fontWeight: FontWeight.w500,
-  //                               color: Colors.black,
-  //                             ),
-  //                             children: [
-  //                               TextSpan(text: nama),
-  //                               TextSpan(text: ' - '),
-  //                               TextSpan(text: judul),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                         const SizedBox(height: 8),
-  //                         Text(
-  //                           '210 kb',
-  //                           style: GoogleFonts.montserrat(
-  //                             fontSize: 12,
-  //                             fontWeight: FontWeight.w500,
-  //                             color: Colors.black,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+        if (filePath != null) {
+          OpenFile.open(filePath);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Gagal mengunduh atau membuka file"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: DottedBorder(
+        color: const Color(0xffD9D9D9),
+        strokeWidth: 2,
+        borderType: BorderType.RRect,
+        radius: Radius.circular(10),
+        child: Container(
+          width: double.infinity,
+          height: 108,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 3,
+                spreadRadius: 1,
+                offset: const Offset(0.0, 0.0),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.asset(
+                    'assets/images/pdf-icon.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18, right: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            height: 1.1,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(text: Nama),
+                            TextSpan(text: ' - '),
+                            TextSpan(text: Judul),
+                          ],
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

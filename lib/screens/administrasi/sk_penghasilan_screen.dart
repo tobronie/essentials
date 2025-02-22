@@ -17,6 +17,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
   final CreatePenghasilanOrtuService _CreatePenghasilanOrtuService =
       CreatePenghasilanOrtuService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   final TextEditingController _pekerjaanAyahController =
       TextEditingController();
   final TextEditingController _pekerjaanIbuController = TextEditingController();
@@ -85,6 +86,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
     super.initState();
     _judulController.text = "Surat Keterangan Penghasilan Orang Tua";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahPenghasilanOrtu() async {
@@ -131,6 +133,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
       selectedImageKK!.path,
       FotoPendapatanAyah,
       FotoPendapatanIbu,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

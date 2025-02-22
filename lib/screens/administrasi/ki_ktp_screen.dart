@@ -18,6 +18,7 @@ class KTPScreen extends StatefulWidget {
 class _KTPScreenState extends State<KTPScreen> {
   final CreateKTPService _CreateKTPService = CreateKTPService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageAkte;
   File? selectedImageKK;
   File? selectedImageFormulir;
@@ -67,6 +68,7 @@ class _KTPScreenState extends State<KTPScreen> {
     super.initState();
     _judulController.text = "Surat Pengantar Kartu Tanda Penduduk";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahKTP() async {
@@ -87,6 +89,7 @@ class _KTPScreenState extends State<KTPScreen> {
       FotoAkte,
       selectedImageKK!.path,
       selectedImageFormulir!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

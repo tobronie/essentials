@@ -1,21 +1,27 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:essentials/screens/admin/listadministrasi_admin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
+import 'package:http_parser/http_parser.dart';
 
 class UploadPendudukanService {
-  Future<void> pendudukan(String id, String selectedDocument, BuildContext context) async {
+  Future<void> pendudukan(String id, File selectedDocument, BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/update_ad_pendudukan.php';
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_pendudukan': id,
-          'pen_surat_konfirmasi': selectedDocument,
-        },
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_pendudukan'] = id;
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'pen_surat_konfirmasi',
+          selectedDocument.path,
+          contentType: MediaType('application', 'pdf'),
+        ),
       );
 
-      var data = jsonDecode(response.body);
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      var data = jsonDecode(responseData);
 
       if (response.statusCode == 200 && data['success'] == 'true') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -26,12 +32,12 @@ class UploadPendudukanService {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ListInformasiAdminScreen()),
+          MaterialPageRoute(builder: (context) => ListVerifikasiAdministrasiAdminScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data['message'] ?? 'Gagal mengupload Surat Konfirmasi'),
+          const SnackBar(
+            content: Text('Gagal mengupload Surat Konfirmasi'),
             backgroundColor: Colors.red,
           ),
         );

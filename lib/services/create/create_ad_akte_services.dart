@@ -17,6 +17,7 @@ class CreateAkteService {
       String ak_foto_ktp_saksi_dua,
       String? ak_foto_ijasah_bersangkutan,
       String? ak_foto_akte_saudara,
+      String ak_surat_konfirmasi,
       String ak_tgl_upload,
       String ak_konfirmasi,
       BuildContext context) async {
@@ -189,6 +190,7 @@ class CreateAkteService {
           'ak_foto_ijasah_bersangkutan': base64FotoIjasahBersangkutan.isNotEmpty ? base64FotoIjasahBersangkutan : '',
           'ak_foto_akte_saudara': base64FotoAkteSaudara.isNotEmpty ? base64FotoAkteSaudara : '',
           'ak_tgl_upload': ak_tgl_upload,
+          'ak_surat_konfirmasi': ak_surat_konfirmasi,
           'ak_konfirmasi': ak_konfirmasi,
         },
       );

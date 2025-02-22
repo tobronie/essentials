@@ -378,8 +378,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     if (_selectedProses == "Dalam Proses") {
       filteredList = filteredList.where((item) {
-        return [
-          'konfirmasi_lapor',
+        if (item['konfirmasi_lapor']?.toString().trim() == "sudah") {
+          return false;
+        }
+        if (item['konfirmasi_lapor']?.toString().trim() == "menunggu") {
+          return true;
+        }
+
+        bool hasPendingStatus = [
           'ak_konfirmasi',
           'dom_konfirmasi',
           'kem_konfirmasi',
@@ -392,16 +398,39 @@ class _ActivityScreenState extends State<ActivityScreen> {
           'tan_konfirmasi',
           'us_konfirmasi'
         ].any((key) {
-          var value = item[key];
-          return value != null &&
-              value.toString().isNotEmpty &&
-              value.toString().contains("menunggu");
+          var value = item[key]?.toString().trim();
+          return value == "menunggu";
         });
+
+        bool allSuratEmpty = [
+          'ak_surat_konfirmasi',
+          'dom_surat_konfirmasi',
+          'kem_surat_konfirmasi',
+          'kk_surat_konfirmasi',
+          'kt_surat_konfirmasi',
+          'ni_surat_konfirmasi',
+          'pen_surat_konfirmasi',
+          'has_surat_konfirmasi',
+          'sktm_surat_konfirmasi',
+          'tan_surat_konfirmasi',
+          'us_surat_konfirmasi'
+        ].every((key) {
+          var surat = item[key];
+          return surat == null || surat.toString().trim().isEmpty;
+        });
+
+        return hasPendingStatus || allSuratEmpty;
       }).toList();
     } else if (_selectedProses == "Riwayat") {
       filteredList = filteredList.where((item) {
-        return [
-          'konfirmasi_lapor',
+        if (item['konfirmasi_lapor']?.toString().trim() == "menunggu") {
+          return false;
+        }
+        if (item['konfirmasi_lapor']?.toString().trim() == "sudah") {
+          return true;
+        }
+
+        bool hasCompletedStatus = [
           'ak_konfirmasi',
           'dom_konfirmasi',
           'kem_konfirmasi',
@@ -414,12 +443,45 @@ class _ActivityScreenState extends State<ActivityScreen> {
           'tan_konfirmasi',
           'us_konfirmasi'
         ].any((key) {
-          var value = item[key];
-          return value != null &&
-              value.toString().isNotEmpty &&
-              (value.toString().contains("sudah") ||
-                  value.toString().contains("tidak"));
+          var value = item[key]?.toString().trim();
+          return value == "sudah" || value == "tidak";
         });
+
+        bool anySuratNotEmpty = [
+          'ak_surat_konfirmasi',
+          'dom_surat_konfirmasi',
+          'kem_surat_konfirmasi',
+          'kk_surat_konfirmasi',
+          'kt_surat_konfirmasi',
+          'ni_surat_konfirmasi',
+          'pen_surat_konfirmasi',
+          'has_surat_konfirmasi',
+          'sktm_surat_konfirmasi',
+          'tan_surat_konfirmasi',
+          'us_surat_konfirmasi'
+        ].any((key) {
+          var surat = item[key];
+          return surat != null && surat.toString().trim().isNotEmpty;
+        });
+
+        return hasCompletedStatus &&
+            (anySuratNotEmpty ||
+                [
+                  'ak_konfirmasi',
+                  'dom_konfirmasi',
+                  'kem_konfirmasi',
+                  'kk_konfirmasi',
+                  'kt_konfirmasi',
+                  'ni_konfirmasi',
+                  'pen_konfirmasi',
+                  'has_konfirmasi',
+                  'sktm_konfirmasi',
+                  'tan_konfirmasi',
+                  'us_konfirmasi'
+                ].any((key) {
+                  var value = item[key]?.toString().trim();
+                  return value == "tidak";
+                }));
       }).toList();
     }
 

@@ -18,6 +18,7 @@ class NikahScreen extends StatefulWidget {
 class _NikahScreenState extends State<NikahScreen> {
   final CreateNikahService _CreateNikahService = CreateNikahService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTPPria;
   File? selectedImageKTPWanita;
   File? selectedImageKKPria;
@@ -193,6 +194,7 @@ class _NikahScreenState extends State<NikahScreen> {
     super.initState();
     _judulController.text = "Surat Pengantar Pernikahan";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahNikah() async {
@@ -270,6 +272,7 @@ class _NikahScreenState extends State<NikahScreen> {
       selectedImageFormulirWanita!.path,
       selectedImageNikahAyahWanita!.path,
       selectedImageNikahIbuWanita!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

@@ -16,6 +16,7 @@ class AkteScreen extends StatefulWidget {
 class _AkteScreenState extends State<AkteScreen> {
   final CreateAkteService _CreateAkteService = CreateAkteService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageSuratKelahiran;
   File? selectedImageKK;
   File? selectedImageKTPAyah;
@@ -163,6 +164,7 @@ class _AkteScreenState extends State<AkteScreen> {
     super.initState();
     _judulController.text = "Surat Pengantar Akte Kelahiran";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahAkte() async {
@@ -221,6 +223,7 @@ class _AkteScreenState extends State<AkteScreen> {
       selectedImageKTPSaksiDua!.path,
       FotoIjasahBersangkutan,
       FotoAkteSaudara,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

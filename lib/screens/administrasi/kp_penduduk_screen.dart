@@ -19,6 +19,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _daerahAsalController = TextEditingController();
   final TextEditingController _daerahTujuanController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   File? selectedImageNikahPria;
@@ -82,6 +83,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
     super.initState();
     _judulController.text = "Surat Kependudukan";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahPendudukan() async {
@@ -116,6 +118,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
       FotoNikahWanita,
       _daerahAsalController.text,
       _daerahTujuanController.text,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

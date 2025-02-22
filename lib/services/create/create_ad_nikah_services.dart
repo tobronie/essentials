@@ -19,6 +19,7 @@ class CreateNikahService {
       String ni_foto_formulir_wanita,
       String ni_foto_nikah_ayah_wanita,
       String ni_foto_nikah_ibu_wanita,
+      String ni_surat_konfirmasi,
       String ni_tgl_upload,
       String ni_konfirmasi,
       BuildContext context) async {
@@ -222,6 +223,7 @@ class CreateNikahService {
           'ni_foto_formulir_wanita': base64FotoFormulirwanita,
           'ni_foto_nikah_ayah_wanita': base64FotoNikahAyahwanita,
           'ni_foto_nikah_ibu_wanita': base64FotoNikahIbuwanita,
+          'ni_surat_konfirmasi': ni_surat_konfirmasi,
           'ni_tgl_upload': ni_tgl_upload,
           'ni_konfirmasi': ni_konfirmasi,
         },

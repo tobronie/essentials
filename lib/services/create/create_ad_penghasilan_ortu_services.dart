@@ -15,6 +15,7 @@ class CreatePenghasilanOrtuService {
       String has_foto_kk,
       String? has_foto_pendukung_ayah,
       String? has_foto_pendukung_ibu,
+      String has_surat_konfirmasi,
       String has_tgl_upload,
       String has_konfirmasi,
       BuildContext context) async {
@@ -94,6 +95,7 @@ class CreatePenghasilanOrtuService {
           'has_foto_kk': base64FotoKK,
           'has_foto_pendukung_ayah': base64FotoPendukungAyah.isNotEmpty ? base64FotoPendukungAyah : '',
           'has_foto_pendukung_ibu': base64FotoPendukungIbu.isNotEmpty ? base64FotoPendukungIbu : '',
+          'has_surat_konfirmasi': has_surat_konfirmasi,
           'has_tgl_upload': has_tgl_upload,
           'has_konfirmasi': has_konfirmasi,
         },

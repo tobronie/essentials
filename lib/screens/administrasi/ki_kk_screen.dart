@@ -16,6 +16,7 @@ class KKScreen extends StatefulWidget {
 class _KKScreenState extends State<KKScreen> {
   final CreateKKService _CreateKKService = CreateKKService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKK;
   File? selectedImageNikahAyah;
   File? selectedImageNikahIbu;
@@ -93,6 +94,7 @@ class _KKScreenState extends State<KKScreen> {
     super.initState();
     _judulController.text = "Surat Pengantar Kartu keluarga";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahKK() async {
@@ -125,6 +127,7 @@ class _KKScreenState extends State<KKScreen> {
       selectedImageNikahIbu!.path,
       selectedImageIjasahKeluarga!.path,
       selectedImageAkteKeluarga!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

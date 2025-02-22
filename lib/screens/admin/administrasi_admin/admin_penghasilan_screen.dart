@@ -73,9 +73,20 @@ class _Admin_PenghasilanScreenState extends State<Admin_PenghasilanScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadPenghasilanOrtuService.penghasilan_ortu(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

@@ -17,6 +17,7 @@ class _KematianScreenState extends State<KematianScreen> {
   final CreateKematianService _CreateKematianService = CreateKematianService();
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _namaAlmarhumController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTPAlmarhum;
   File? selectedImageKK;
   File? selectedImageBukti;
@@ -80,6 +81,7 @@ class _KematianScreenState extends State<KematianScreen> {
     super.initState();
     _judulController.text = "Surat Keterangan Kematian";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahKematian() async {
@@ -112,6 +114,7 @@ class _KematianScreenState extends State<KematianScreen> {
       selectedImageKK!.path,
       FotoBukti,
       selectedImageKTPSaksi!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

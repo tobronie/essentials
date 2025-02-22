@@ -16,6 +16,7 @@ class SKTMScreen extends StatefulWidget {
 class _SKTMScreenState extends State<SKTMScreen> {
   final CreateSKTMService _CreateSKTMService = CreateSKTMService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   final TextEditingController _namaWaliController = TextEditingController();
   final TextEditingController _nominalController = TextEditingController();
   final TextEditingController _rincianController = TextEditingController();
@@ -54,6 +55,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
     super.initState();
     _judulController.text = "Surat Keterangan Tidak Mampu";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahSKTM() async {
@@ -83,6 +85,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
       _namaWaliController.text,
       _nominalController.text,
       _rincianController.text,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

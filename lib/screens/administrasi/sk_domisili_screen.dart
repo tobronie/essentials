@@ -16,6 +16,7 @@ class DomisiliScreen extends StatefulWidget {
 class _DomisiliScreenState extends State<DomisiliScreen> {
   final CreateDomisiliService _CreateDomisiliService = CreateDomisiliService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   final TextEditingController _konfirmasiController = TextEditingController();
@@ -51,6 +52,7 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
     super.initState();
     _judulController.text = "Surat Keterangan Domisili";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahDomisili() async {
@@ -67,6 +69,7 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
       _judulController.text,
       selectedImageKTP!.path,
       selectedImageKK!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

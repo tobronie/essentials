@@ -9,6 +9,7 @@ class CreateDomisiliService {
       String dom_judul,
       String dom_foto_ktp,
       String dom_foto_kk,
+      String dom_surat_konfirmasi,
       String dom_tgl_upload,
       String dom_konfirmasi,
       BuildContext context) async {
@@ -51,6 +52,7 @@ class CreateDomisiliService {
           'dom_judul': dom_judul,
           'dom_foto_ktp': base64FotoKTP,
           'dom_foto_kk': base64FotoKK,
+          'dom_surat_konfirmasi': dom_surat_konfirmasi,
           'dom_tgl_upload': dom_tgl_upload,
           'dom_konfirmasi': dom_konfirmasi,
         },

@@ -73,9 +73,20 @@ class _Admin_KKScreenState extends State<Admin_KKScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadKKService.kk(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }

@@ -16,6 +16,7 @@ class TanahScreen extends StatefulWidget {
 class _TanahScreenState extends State<TanahScreen> {
   final CreateTanahService _CreateTanahService = CreateTanahService();
   final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _SKController = TextEditingController();
   File? selectedImageKTP;
   File? selectedImageKK;
   File? selectedImageSPPT_SHM;
@@ -65,6 +66,7 @@ class _TanahScreenState extends State<TanahScreen> {
     super.initState();
     _judulController.text = "Surat Pengantar Harga Tanah";
     _konfirmasiController.text = "menunggu";
+    _SKController.text = "";
   }
 
   Future<void> tambahTanah() async {
@@ -88,6 +90,7 @@ class _TanahScreenState extends State<TanahScreen> {
       selectedImageKTP!.path,
       selectedImageKK!.path,
       selectedImageSPPT_SHM!.path,
+      _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,

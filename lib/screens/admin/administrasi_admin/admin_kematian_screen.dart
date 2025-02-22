@@ -72,13 +72,23 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
   }
 
   Future<void> uploadSK() async {
+    print("Mengirim ID: ${widget.id}");
+    if (selectedDocument == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih file terlebih dahulu sebelum mengupload!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     await _UploadKematianService.kematian(
       widget.id,
-      selectedDocument!.path,
+      selectedDocument!,
       context,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
