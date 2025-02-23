@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:essentials/services/download/download_ad_usaha.dart';
 import 'package:essentials/services/update/update_ad_usaha.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -133,6 +135,9 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
           String fotoKTP = usaha["us_foto_ktp"] ?? "Tidak diketahui";
           String fotoKK = usaha["us_foto_kk"] ?? "Tidak diketahui";
           String omsetBulan = usaha["us_omset"] ?? "Tidak diketahui";
+          String JudulPengaduan = usaha["us_judul"] ?? "Tidak diketahui";
+          String suratKonfirmasiData =
+              usaha["us_surat_konfirmasi"] ?? "Tidak diketahui";
           String konfirmasiData = usaha["us_konfirmasi"] ?? "Tidak diketahui";
 
           return SafeArea(
@@ -172,7 +177,11 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
                     const SizedBox(height: 24),
                     _verifikasiKepalaDesa(konfirmasiData),
                     const SizedBox(height: 24),
-                    if (konfirmasiData == "sudah") _konfirmasi(),
+                    if (suratKonfirmasiData.isNotEmpty)
+                      _document(namaPemohon, JudulPengaduan,
+                          suratKonfirmasiData, context)
+                    else if (konfirmasiData == "sudah")
+                      _konfirmasi(),
                   ],
                 ),
               ),
@@ -848,6 +857,123 @@ class _Admin_UsahaScreenState extends State<Admin_UsahaScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _document(
+      String filePDF, String Nama, String Judul, BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        print("Dokumen diklik, mulai mengunduh...");
+        print("ID Usaha yang dikirim: ${widget.id}");
+        if (widget.id.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("ID Usaha tidak valid"),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        DownloadServicesUsaha downloadServicesUsaha = DownloadServicesUsaha();
+        String? filePath = await downloadServicesUsaha.downloadAdministrasiUsaha(
+            context, widget.id);
+
+        if (filePath != null) {
+          print("File berhasil diunduh: $filePath");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("File berhasil diunduh!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          print("Gagal mengunduh file.");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Gagal mengunduh file."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: DottedBorder(
+        color: const Color(0xffD9D9D9),
+        strokeWidth: 2,
+        borderType: BorderType.RRect,
+        radius: Radius.circular(10),
+        child: Container(
+          width: double.infinity,
+          height: 108,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 3,
+                spreadRadius: 1,
+                offset: const Offset(0.0, 0.0),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.asset(
+                    'assets/images/pdf-icon.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18, right: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            height: 1.1,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(text: Nama),
+                            TextSpan(text: ' - '),
+                            TextSpan(text: Judul),
+                          ],
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "klik untuk mendownload file",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          height: 1.1,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

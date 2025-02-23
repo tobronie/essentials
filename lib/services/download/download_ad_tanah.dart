@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-class DownloadServicesAkte {
-  Future<String?> downloadAdministrasiAkte(
-      BuildContext context, String idAkte) async {
+class DownloadServicesTanah {
+  Future<String?> downloadAdministrasiTanah(
+      BuildContext context, String idTanah) async {
     try {
-      print("ID Akte yang dikirim: $idAkte");
+      print("ID Tanah yang dikirim: $idTanah");
       String url =
-          'http://10.0.2.2:8080/essentials_api/download_ad_akte.php?id_akte=$idAkte';
+          'http://10.0.2.2:8080/essentials_api/download_ad_tanah.php?id_tanah=$idTanah';
       print("Mengunduh dari URL: $url");
 
       Directory? dir = await getExternalStorageDirectory();
@@ -18,7 +18,7 @@ class DownloadServicesAkte {
         return null;
       }
 
-      String filePath = "${dir.path}/$idAkte-Surat_Konfirmasi_Akte_Kelahiran.pdf";
+      String filePath = "${dir.path}/$idTanah-Surat_Konfirmasi_Tanah.pdf";
 
       Dio dio = Dio();
       Response response = await dio.get(
