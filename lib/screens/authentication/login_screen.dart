@@ -1,10 +1,12 @@
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/services/login_services.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,9 +29,55 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Email belum diisi',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Password belum diisi',
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              height: 1.2,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    String? id_user = await _loginServices.login(
+      _emailController.text,
+      _passwordController.text,
+      context,
+    );
+
+    if (id_user != null) {
+      Provider.of<UserSession>(context, listen: false).saveUser(id_user);
+    }
+
+    _emailController.clear();
+    _passwordController.clear();
   }
 
   @override
@@ -184,43 +232,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
-                          onPressed: () {
-                            if (_emailController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Email belum diisi',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              );
-                              return;
-                            } else if (_passwordController.text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Password belum diisi',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              );
-                              return;
-                            }
-                            _loginServices.login(
-                              _emailController.text,
-                              _passwordController.text,
-                              context,
-                            );
-                            _emailController.clear();
-                            _passwordController.clear();
+                          onPressed: () async {
+                            print("berhasil di klik");
+                            await _handleLogin();
                           },
                           child: Text(
                             'Lanjut',

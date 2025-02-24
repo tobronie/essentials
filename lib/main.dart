@@ -5,11 +5,20 @@ import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials/screens/spalsh_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:essentials/user_session.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  final userSession = UserSession();
+  await userSession.loadUserData();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => userSession,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -50,20 +59,17 @@ class _CheckUserState extends State<CheckUser> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero).then((_) {
-      checkLoginStatus();
-    });
+    Future.delayed(Duration.zero, checkLoginStatus);
   }
 
-  Future<void> checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  void checkLoginStatus() {
+    final userSession = Provider.of<UserSession>(context, listen: false);
 
-    Navigator.pushReplacementNamed(
-      context,
-      '/splash',
-      arguments: isLoggedIn ? '/home' : '/onboarding',
-    );
+    if (userSession.isLoggedIn) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/onboarding');
+    }
   }
 
   @override

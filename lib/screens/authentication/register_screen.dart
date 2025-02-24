@@ -1,9 +1,11 @@
 import 'package:essentials/screens/help/listproblem_screen.dart';
 import 'package:essentials/services/create/register_services.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -293,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_namaController.text.isEmpty) {
                               _showSnackbar(
                                 'Nama tidak boleh kosong',
@@ -337,7 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                               return;
                             }
-                            _registerService.register(
+                            String? id_user = await _registerService.register(
                               _namaController.text,
                               _nikController.text,
                               _noHpController.text,
@@ -345,6 +347,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _passwordController.text,
                               context,
                             );
+
+                            if (id_user != null) {
+                              Provider.of<UserSession>(context, listen: false)
+                                  .saveUser(id_user);
+                            }
 
                             _namaController.clear();
                             _nikController.clear();

@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class RegisterService {
-  Future<void> register(String nama, String nik, String no_hp, String email, String password,
-      BuildContext context) async {
+  Future<String?> register(String nama, String nik, String no_hp, String email,
+      String password, BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/register.php';
 
     try {
@@ -19,9 +21,16 @@ class RegisterService {
         },
       );
 
+      if (response.statusCode != 200 || response.body.isEmpty) {
+        throw Exception('Server tidak merespons dengan benar');
+      }
+
       var data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['success'] == 'true') {
+        String id_user = data['id_user'].toString();
+        await Provider.of<UserSession>(context, listen: false)
+            .saveUser(id_user);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil Membuat Akun'),
@@ -29,6 +38,7 @@ class RegisterService {
           ),
         );
         Navigator.pushNamed(context, '/home');
+        return id_user;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -36,14 +46,16 @@ class RegisterService {
             backgroundColor: Colors.red,
           ),
         );
+        return null;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('Terjadi kesalahan: $e'),
           backgroundColor: Colors.red,
         ),
       );
+      return null;
     }
   }
 }

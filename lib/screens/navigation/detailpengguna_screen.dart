@@ -1,18 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class DetailPenggunaScreen extends StatefulWidget {
-  final Map<String, dynamic> updateUser;
-  final String documentId;
-
-  const DetailPenggunaScreen({
-    required this.updateUser,
-    required this.documentId,
-  });
+  const DetailPenggunaScreen({super.key});
 
   @override
   _DetailPenggunaScreenState createState() => _DetailPenggunaScreenState();
@@ -21,7 +17,6 @@ class DetailPenggunaScreen extends StatefulWidget {
 class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
   final TextEditingController _noKKController = TextEditingController();
   final TextEditingController _pekerjaanController = TextEditingController();
-  final TextEditingController _noHpController = TextEditingController();
   String selectedDusun = "Belum Memilih";
   String selectedRt = "Belum Memilih";
   String selectedRw = "Belum Memilih";
@@ -29,158 +24,111 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     super.initState();
-    _getUserData();
   }
 
-  Future<void> _getUserData() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      userId = user?.uid ?? '';
-
-      if (userId.isEmpty) {
-        _showSnackbar('Pengguna belum login');
-        return;
-      }
-
-      var userDoc = await FirebaseFirestore.instance
-          .collection('user')
-          .doc(userId)
-          .get();
-
-      if (!userDoc.exists) {
-        _showSnackbar('Pengguna tidak ditemukan');
-        return;
-      }
-
-      var userData = userDoc.data();
-      setState(() {
-        _noKKController.text = userData?['kk'] ?? '';
-        _pekerjaanController.text = userData?['pekerjaan'] ?? '';
-        _noHpController.text = userData?['no_hp'] ?? '';
-        selectedDusun = userData?['dusun'] ?? 'Belum Memilih';
-        selectedRt = userData?['rt'] ?? 'Belum Memilih';
-        selectedRw = userData?['rw'] ?? 'Belum Memilih';
-      });
-    } catch (e) {
-      print("Gagal mengambil data pengguna: $e");
-      _showSnackbar('Terjadi kesalahan saat mengambil data pengguna');
-    }
-  }
-
-  Future<void> updateUser() async {
-    if (_noKKController.text.isEmpty) {
-      _showSnackbar('No KK tidak boleh kosong');
-      return;
-    }
-
-    if (_pekerjaanController.text.isEmpty) {
-      _showSnackbar('Pekerjaan tidak boleh kosong');
-      return;
-    }
-
-    if (selectedDusun == "Belum Memilih") {
-      _showSnackbar('Dusun tidak boleh kosong');
-      return;
-    }
-
-    if (selectedRt == "Belum Memilih") {
-      _showSnackbar('RT tidak boleh kosong');
-      return;
-    }
-
-    if (selectedRw == "Belum Memilih") {
-      _showSnackbar('RW tidak boleh kosong');
-      return;
-    }
-
-    if (_noHpController.text.isEmpty) {
-      _showSnackbar('No Hp tidak boleh kosong');
-      return;
-    }
+  Future<Map<String, dynamic>?> getUser(String id_user) async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
 
     try {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(userId) // Use userId here for the current user document
-          .update({
-        'kk': _noKKController.text,
-        'pekerjaan': _pekerjaanController.text,
-        'dusun': selectedDusun,
-        'rt': selectedRt,
-        'rw': selectedRw,
-        'no_hp': _noHpController.text,
-      });
+      var response = await http.get(Uri.parse(url));
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
-      _showSnackbar('Akun berhasil diperbarui');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-    } on FirebaseException catch (e) {
-      print("Gagal memperbarui akun: ${e.message}");
-      _showSnackbar('Terjadi kesalahan saat memperbarui akun: ${e.message}');
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print("Parsed Data: $data");
+
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        } else {
+          throw Exception("Format data tidak valid");
+        }
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
     } catch (e) {
-      print("Terjadi kesalahan: $e");
-      _showSnackbar('Terjadi kesalahan: $e');
+      print("Error: $e");
+      return null;
     }
-  }
-
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: GoogleFonts.montserrat(
-            fontSize: 12,
-            height: 1.2,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffF9F9F9),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text(
-          'Detail Pengguna',
-          style: GoogleFonts.montserrat(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
+    final userSession = Provider.of<UserSession>(context, listen: false);
+
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: getUser(userSession.id_user ?? ""),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError || snapshot.data == null) {
+          return Scaffold(
+            body: Center(child: Text("Pengguna Tidak Ditemukan")),
+          );
+        }
+        print(userSession.id_user);
+        String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
+        String userNIK = snapshot.data?["nik"]?.toString() ?? "NIK Pengguna";
+        String userEmail = snapshot.data?["email"]?.toString() ?? "Email Pengguna";
+        String userNoHP = snapshot.data?["no_hp"]?.toString() ?? "No Handphone Pengguna";
+        String userpassword = snapshot.data?["password"]?.toString() ?? "password Pengguna";
+        return Scaffold(
+          backgroundColor: Color(0xffF9F9F9),
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+            ),
+            title: Text(
+              'Detail Pengguna',
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+              ),
+            ),
+            elevation: 0,
+            backgroundColor: Color(0xffF9F9F9),
           ),
-        ),
-        elevation: 0,
-        backgroundColor: Color(0xffF9F9F9),
-      ),
-      body: SafeArea(
-        child: Container(
-          color: const Color(0xffF9F9F9),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _text(),
-                const SizedBox(height: 24),
-                _data(),
-                const SizedBox(height: 42),
-                _saveButton(),
-              ],
+          body: SafeArea(
+            child: Container(
+              color: const Color(0xffF9F9F9),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _text(),
+                    const SizedBox(height: 24),
+                    _data(userName, userNIK, userEmail, userNoHP, userpassword),
+                    const SizedBox(height: 42),
+                    _saveButton(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -202,7 +150,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
     );
   }
 
-  Column _data() {
+  Column _data(String nama, nik, email, noHp, password) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -231,7 +179,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                widget.updateUser['name'] ?? '',
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -270,7 +218,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                widget.updateUser['nik'] ?? '',
+                nik,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -647,32 +595,19 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Text(
-                  'No Handphone',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '*',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
+            Text(
+              'No handphone',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 4),
             Container(
               height: 42,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
@@ -681,28 +616,16 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: TextField(
-                controller: _noHpController,
-                keyboardType: TextInputType.number,
+              child: Text(
+                noHp,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                 ),
-                decoration: InputDecoration(
-                  hintText: "Masukkan no hp dengan benar ...",
-                  hintStyle: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(14),
-                ],
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
@@ -733,7 +656,46 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                widget.updateUser['email'] ?? '',
+                email,
+                style: GoogleFonts.montserrat(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Password',
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 42,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: const Color(0xffD9D9D9),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                password,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -784,7 +746,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
           ),
         ),
         onPressed: () {
-          updateUser();
+          
         },
         child: Text(
           'Simpan',

@@ -6,12 +6,14 @@ import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/informasi/listinformasi_screen.dart';
 import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,9 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     futureInformation = getInformation();
     futureInformationDesa = getMemo();
+    super.initState();
   }
 
   Future<List<dynamic>> getInformation() async {
@@ -70,56 +76,103 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<Map<String, dynamic>?> getUser(String id_user) async {
+    String url =
+        'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
+
+    try {
+      var response = await http.get(Uri.parse(url));
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print("Parsed Data: $data");
+
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        } else {
+          throw Exception("Format data tidak valid");
+        }
+      } else {
+        throw Exception('Gagal mengambil data');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffF9F9F9),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              height: 382,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xff00AA13).withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+    final userSession = Provider.of<UserSession>(context, listen: false);
+
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: getUser(userSession.id_user ?? ""),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError || snapshot.data == null) {
+          return Scaffold(
+            body: Center(child: Text("Pengguna Tidak Ditemukan")),
+          );
+        }
+        print(userSession.id_user);
+        String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
+        return Scaffold(
+          backgroundColor: Color(0xffF9F9F9),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  height: 382,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xff00AA13).withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SingleChildScrollView(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 4),
-                    _appBar(),
-                    const SizedBox(height: 18),
-                    _welcomeBanner(),
-                    const SizedBox(height: 18),
-                    _homeMenu(context),
-                    const SizedBox(height: 18),
-                    _homeInformasi(),
-                    const SizedBox(height: 18),
-                    _homeDesa(),
-                  ],
+                SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 4),
+                        _appBar(userName),
+                        const SizedBox(height: 18),
+                        _welcomeBanner(),
+                        const SizedBox(height: 18),
+                        _homeMenu(context),
+                        const SizedBox(height: 18),
+                        _homeInformasi(),
+                        const SizedBox(height: 18),
+                        _homeDesa(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: CustomNavigationBar(selectedIndex: 0),
+          ),
+          bottomNavigationBar: CustomNavigationBar(selectedIndex: 0),
+        );
+      },
     );
   }
 
-  Widget _appBar() {
+  Widget _appBar(String nama) {
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,13 +191,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Text(
-                "Warga Kedungmulyo",
+                nama,
                 style: GoogleFonts.montserrat(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                   height: 1.2,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
