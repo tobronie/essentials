@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreatePenghasilanOrtuService {
   Future<void> penghasilanOrtu(
@@ -20,6 +21,19 @@ class CreatePenghasilanOrtuService {
       String has_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_penghasilan_ortu.php';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id_user = prefs.getString('id_user');
+
+    if (id_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengirim laporan: User tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     String base64FotoKTP = '';
     String base64FotoKK = '';
@@ -86,6 +100,7 @@ class CreatePenghasilanOrtuService {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_user': id_user,
           'has_judul': has_judul,
           'has_pekerjaan_ayah': has_pekerjaan_ayah,
           'has_pendapatan_ayah': has_pendapatan_ayah,
@@ -100,6 +115,8 @@ class CreatePenghasilanOrtuService {
           'has_konfirmasi': has_konfirmasi,
         },
       );
+      print("ID User terkirim: $id_user");
+      print("Response Body: ${response.body}");
 
       var data = jsonDecode(response.body);
 

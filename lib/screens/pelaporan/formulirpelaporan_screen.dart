@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/services/create/create_pelaporan_services.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class PelaporanScreen extends StatefulWidget {
   const PelaporanScreen({super.key});
@@ -142,8 +144,12 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _konfirmasiController.text = "menunggu";
+    super.initState();
   }
 
   @override

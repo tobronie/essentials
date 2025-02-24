@@ -9,12 +9,14 @@ import 'package:essentials/services/download/download_ad_penghasilan_ortu.dart';
 import 'package:essentials/services/download/download_ad_sktm.dart';
 import 'package:essentials/services/download/download_ad_tanah.dart';
 import 'package:essentials/services/download/download_ad_usaha.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ActivityAdministrasiScreen extends StatefulWidget {
   final String id;
@@ -54,8 +56,12 @@ class _ActivityAdministrasiScreenState
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _futureData = getData();
+    super.initState();
   }
 
   String getEndpoint(String idType) {

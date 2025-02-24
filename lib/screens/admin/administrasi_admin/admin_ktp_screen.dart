@@ -1018,7 +1018,7 @@ class _Admin_KTPScreenState extends State<Admin_KTPScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "Anda telah mengunggah file",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

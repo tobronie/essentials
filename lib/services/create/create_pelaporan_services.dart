@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateLaporService {
   Future<void> pelaporan(
@@ -15,6 +16,19 @@ class CreateLaporService {
       String konfirmasi_lapor,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_pelaporan.php';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id_user = prefs.getString('id_user');
+
+    if (id_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengirim laporan: User tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     String base64Image = '';
     if (foto_lapor.isNotEmpty) {
@@ -35,6 +49,7 @@ class CreateLaporService {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_user': id_user,
           'judul_lapor': judul_lapor,
           'waktu_lapor': waktu_lapor,
           'lokasi_lapor': lokasi_lapor,
@@ -44,6 +59,8 @@ class CreateLaporService {
           'konfirmasi_lapor': konfirmasi_lapor
         },
       );
+      print("ID User terkirim: $id_user");
+      print("Response Body: ${response.body}");
 
       var data = jsonDecode(response.body);
 

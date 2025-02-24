@@ -121,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
             body: Center(child: Text("Pengguna Tidak Ditemukan")),
           );
         }
-        print(userSession.id_user);
         String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
         return Scaffold(
           backgroundColor: Color(0xffF9F9F9),

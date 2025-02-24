@@ -1,5 +1,6 @@
 import 'package:essentials/screens/navigation/activityadministrasi_screen.dart';
 import 'package:essentials/screens/navigation/activitypelaporan_screen.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -26,12 +28,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _futureData = getAllData();
+    super.initState();
   }
 
-  Future<List<dynamic>> fetchData(String endpoint) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
+  Future<List<dynamic>> fetchData(String endpoint, id_user) async {
+    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint?id_user=$id_user';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -46,19 +52,25 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   Future<List<List<dynamic>>> getAllData() async {
+    final userSession = Provider.of<UserSession>(context, listen: false);
+    final String? id_user = userSession.id_user;
+
+    if (id_user == null) {
+      return [];
+    }
     return await Future.wait([
-      fetchData('view_pelaporan.php'),
-      fetchData('view_ad_akte.php'),
-      fetchData('view_ad_domisili.php'),
-      fetchData('view_ad_kematian.php'),
-      fetchData('view_ad_kk.php'),
-      fetchData('view_ad_ktp.php'),
-      fetchData('view_ad_nikah.php'),
-      fetchData('view_ad_pendudukan.php'),
-      fetchData('view_ad_penghasilan_ortu.php'),
-      fetchData('view_ad_sktm.php'),
-      fetchData('view_ad_tanah.php'),
-      fetchData('view_ad_usaha.php'),
+      fetchData('view_pelaporan.php', id_user),
+      fetchData('view_ad_akte.php', id_user),
+      fetchData('view_ad_domisili.php', id_user),
+      fetchData('view_ad_kematian.php', id_user),
+      fetchData('view_ad_kk.php', id_user),
+      fetchData('view_ad_ktp.php', id_user),
+      fetchData('view_ad_nikah.php', id_user),
+      fetchData('view_ad_pendudukan.php', id_user),
+      fetchData('view_ad_penghasilan_ortu.php', id_user),
+      fetchData('view_ad_sktm.php', id_user),
+      fetchData('view_ad_tanah.php', id_user),
+      fetchData('view_ad_usaha.php', id_user),
     ]);
   }
 

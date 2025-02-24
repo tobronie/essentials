@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateKTPService {
   Future<void> ktp(
@@ -15,6 +16,19 @@ class CreateKTPService {
       String kt_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_ktp.php';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id_user = prefs.getString('id_user');
+
+    if (id_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengirim laporan: User tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     String base64FotoAkte = '';
     String base64FotoKK = '';
@@ -66,6 +80,7 @@ class CreateKTPService {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_user': id_user,
           'kt_judul': kt_judul,
           'kt_foto_akte': base64FotoAkte.isNotEmpty ? base64FotoAkte : '',
           'kt_foto_kk': base64FotoKK,
@@ -75,6 +90,8 @@ class CreateKTPService {
           'kt_konfirmasi': kt_konfirmasi,
         },
       );
+      print("ID User terkirim: $id_user");
+      print("Response Body: ${response.body}");
 
       var data = jsonDecode(response.body);
 

@@ -913,7 +913,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "Anda telah mengunggah file",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

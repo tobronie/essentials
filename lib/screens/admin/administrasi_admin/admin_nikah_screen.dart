@@ -1909,7 +1909,7 @@ class _Admin_NikahScreenState extends State<Admin_NikahScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "Anda telah mengunggah file",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

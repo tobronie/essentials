@@ -32,7 +32,7 @@ class _ListVerifikasiLaporanAdminScreenState
   }
 
   Future<List<dynamic>> getPelaporan() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_pelaporan.php';
+    String url = 'http://10.0.2.2:8080/essentials_api/khusus_view_pelaporan.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

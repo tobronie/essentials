@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -12,13 +13,11 @@ class NotifikasiScreen extends StatefulWidget {
 class _NotifikasiScreenState extends State<NotifikasiScreen> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print("User ID: ${user.uid}");
-    } else {
-      print("No user is currently logged in.");
-    }
   }
   
   @override

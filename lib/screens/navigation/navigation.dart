@@ -1,8 +1,10 @@
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
+import 'package:provider/provider.dart';
 
 class CustomNavigationBar extends StatefulWidget {
   final int selectedIndex;
@@ -17,8 +19,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     selectedIndex = widget.selectedIndex;
+    super.initState();
   }
 
   @override

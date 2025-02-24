@@ -1378,7 +1378,7 @@ class _Admin_PenghasilanScreenState extends State<Admin_PenghasilanScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "Anda telah mengunggah file",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

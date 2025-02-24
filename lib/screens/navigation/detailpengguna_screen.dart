@@ -76,7 +76,6 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
             body: Center(child: Text("Pengguna Tidak Ditemukan")),
           );
         }
-        print(userSession.id_user);
         String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
         String userNIK = snapshot.data?["nik"]?.toString() ?? "NIK Pengguna";
         String userEmail = snapshot.data?["email"]?.toString() ?? "Email Pengguna";

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:essentials/user_session.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ActivityPelaporanScreen extends StatefulWidget {
   final String id;
@@ -23,8 +25,12 @@ class _ActivityPelaporanScreenState extends State<ActivityPelaporanScreen> {
 
   @override
   void initState() {
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _futurePelaporan = getPelaporan();
+    super.initState();
   }
 
   Future<Map<String, dynamic>?> getPelaporan() async {

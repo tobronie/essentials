@@ -1,7 +1,9 @@
 import 'package:essentials/screens/navigation/profile_screen.dart';
+import 'package:essentials/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DesaKedungmulyoScreen extends StatefulWidget {
@@ -14,6 +16,10 @@ class DesaKedungmulyoScreen extends StatefulWidget {
 class _DesaKedungmulyoScreenState extends State<DesaKedungmulyoScreen> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     super.initState();
   }
 

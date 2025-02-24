@@ -56,17 +56,17 @@ class _ListVerifikasiPejabatScreenState
 
   Future<List<List<dynamic>>> getAllData() async {
     return await Future.wait([
-      fetchData('view_ad_akte.php'),
-      fetchData('view_ad_domisili.php'),
-      fetchData('view_ad_kematian.php'),
-      fetchData('view_ad_kk.php'),
-      fetchData('view_ad_ktp.php'),
-      fetchData('view_ad_nikah.php'),
-      fetchData('view_ad_pendudukan.php'),
-      fetchData('view_ad_penghasilan_ortu.php'),
-      fetchData('view_ad_sktm.php'),
-      fetchData('view_ad_tanah.php'),
-      fetchData('view_ad_usaha.php'),
+      fetchData('khusus_view_ad_akte.php'),
+      fetchData('khusus_view_ad_domisili.php'),
+      fetchData('khusus_view_ad_kematian.php'),
+      fetchData('khusus_view_ad_kk.php'),
+      fetchData('khusus_view_ad_ktp.php'),
+      fetchData('khusus_view_ad_nikah.php'),
+      fetchData('khusus_view_ad_pendudukan.php'),
+      fetchData('khusus_view_ad_penghasilan_ortu.php'),
+      fetchData('khusus_view_ad_sktm.php'),
+      fetchData('khusus_view_ad_tanah.php'),
+      fetchData('khusus_view_ad_usaha.php'),
     ]);
   }
 

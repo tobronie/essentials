@@ -1159,7 +1159,7 @@ class _Admin_KematianScreenState extends State<Admin_KematianScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "Anda telah mengunggah file",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

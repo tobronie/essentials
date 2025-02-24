@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateNikahService {
   Future<void> nikah(
@@ -24,6 +25,19 @@ class CreateNikahService {
       String ni_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_nikah.php';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id_user = prefs.getString('id_user');
+
+    if (id_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengirim laporan: User tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     String base64FotoKTPpria = '';
     String base64FotoKKpria = '';
@@ -210,6 +224,7 @@ class CreateNikahService {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_user': id_user,
           'ni_judul': ni_judul,
           'ni_foto_ktp_pria': base64FotoKTPpria,
           'ni_foto_kk_pria': base64FotoKKpria,
@@ -228,6 +243,8 @@ class CreateNikahService {
           'ni_konfirmasi': ni_konfirmasi,
         },
       );
+      print("ID User terkirim: $id_user");
+      print("Response Body: ${response.body}");
 
       var data = jsonDecode(response.body);
 

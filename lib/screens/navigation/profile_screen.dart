@@ -17,6 +17,7 @@ import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -52,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<Map<String, dynamic>?> getUser(String id_user) async {
     String url =
         'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
-
     try {
       var response = await http.get(Uri.parse(url));
       print("Response Status Code: ${response.statusCode}");
@@ -78,6 +78,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<Map<String, dynamic>?> getAdmin() async {
+    String url = 'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=1';
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0];
+        } else if (data is Map<String, dynamic>) {
+          return data;
+        }
+      }
+      throw Exception("Gagal mengambil data admin");
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userSession = Provider.of<UserSession>(context, listen: false);
@@ -94,45 +113,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
             body: Center(child: Text("Pengguna Tidak Ditemukan")),
           );
         }
-        print(userSession.id_user);
         String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
         String userNIK = snapshot.data?["nik"]?.toString() ?? "NIK Pengguna";
-        return Scaffold(
-          backgroundColor: Color(0xffF9F9F9),
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                'Profile',
-                style: GoogleFonts.montserrat(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
+
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: getAdmin(),
+          builder: (context, adminSnapshot) {
+            String phoneNumberAdmin =
+                adminSnapshot.data?["no_hp"]?.toString() ?? "Tidak Ditemukan";
+            String namaAdmin =
+                adminSnapshot.data?["nama"]?.toString() ?? "Tidak Ditemukan";
+            return Scaffold(
+              backgroundColor: Color(0xffF9F9F9),
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    'Profile',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                elevation: 0,
+                backgroundColor: Color(0xffF9F9F9),
+              ),
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  child: Container(
+                    color: const Color(0xffF9F9F9),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _profile(userName, userNIK),
+                        const SizedBox(height: 22),
+                        _settingAccount(phoneNumberAdmin, namaAdmin),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-            elevation: 0,
-            backgroundColor: Color(0xffF9F9F9),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                color: const Color(0xffF9F9F9),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _profile(userName, userNIK),
-                    const SizedBox(height: 22),
-                    _settingAccount(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          bottomNavigationBar: CustomNavigationBar(selectedIndex: 2),
+              bottomNavigationBar: CustomNavigationBar(selectedIndex: 2),
+            );
+          },
         );
       },
     );
@@ -210,7 +238,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _settingAccount() {
+  Widget _settingAccount(String phone, nama) {
+    final userSession = Provider.of<UserSession>(context, listen: false);
+    String? id_user = userSession.id_user;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -223,132 +254,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () async {
+        _buildSettingOption(
+          icon: PhosphorIconsRegular.userCircleCheck,
+          text: 'Detail Pengguna',
+          onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => DetailPenggunaScreen()),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.userCircleCheck,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Detail Pengguna',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
         ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        GestureDetector(
+        _buildSettingOption(
+          icon: PhosphorIconsRegular.bookmarkSimple,
+          text: 'Informasi Tersimpan',
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => ListProblemScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => SaveInformasiScreen()),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.question,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Pusat Bantuan',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
         ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        // hanya untuk pengguna dan pejabat (mode simpan informasi)
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SaveInformasiScreen(),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.bookmarkSimple,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Informasi Tersimpan',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        GestureDetector(
+        _buildSettingOption(
+          icon: PhosphorIconsRegular.info,
+          text: 'Desa Kedungmulyo',
           onTap: () {
             Navigator.push(
               context,
@@ -357,167 +285,152 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.info,
-                  size: 28,
-                  color: Colors.black,
+        ),
+        // hanya admin yang dapat mengelola
+        if (id_user == "1")
+          _buildSettingOption(
+            icon: PhosphorIconsRegular.note,
+            text: 'Memo Desa',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MemoDesaAdminScreen(),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Desa Kedungmulyo',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
+              );
+            },
           ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        // hanya untuk admin (memo desa)
-        GestureDetector(
+        if (id_user == "1")
+          _buildSettingOption(
+            icon: PhosphorIconsRegular.sealCheck,
+            text: 'Verifikasi Admin',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListVerifikasiLaporanAdminScreen(),
+                ),
+              );
+            },
+          ),
+        // hanya kepala desa (pejabat desa) yang mengelola
+        if (id_user == "2")
+          _buildSettingOption(
+            icon: PhosphorIconsRegular.sealCheck,
+            text: 'Verifikasi Kepala Desa',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListVerifikasiPejabatScreen(),
+                ),
+              );
+            },
+          ),
+        _buildSettingOption(
+          icon: PhosphorIconsRegular.question,
+          text: 'Pentunjuk Aplikasi',
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => MemoDesaAdminScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => ListProblemScreen()),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.note,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Memo Desa',
+        ),
+        _buildSettingOption(
+          icon: PhosphorIconsRegular.headset,
+          text: 'Pusat Bantuan',
+          onTap: () async {
+            bool? confirm = await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: Colors.white,
+                  title: Text(
+                    'Pusat Bantuan',
                     style: GoogleFonts.montserrat(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        // hanya untuk admin (mode admin)
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListVerifikasiLaporanAdminScreen(),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.sealCheck,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Verifikasi Admin',
+                  content: Text(
+                    'Apakah Anda mengalami masalah dengan aplikasi Essentials Desa Kedungmulyo?\n\nHub: $phone\nAn: $nama',
                     style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
                   ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
-        ),
-        // hanya untuk pejabat desa (mode pejabat)
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListVerifikasiPejabatScreen(),
-              ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          'Batal',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xff00AA13),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          'Iya',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.sealCheck,
-                  size: 28,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Verifikasi Pejabat desa',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+
+            if (confirm == true) {
+              String phoneNumber = phone;
+              String url = "https://wa.me/$phoneNumber";
+
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Tidak dapat membuka WhatsApp.',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
-                ),
-                Icon(
-                  PhosphorIconsRegular.caretRight,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const Divider(
-          color: Color(0xffD9D9D9),
+                );
+              }
+            }
+          },
         ),
         GestureDetector(
           onTap: () {
@@ -557,6 +470,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const Divider(
           color: Color(0xffD9D9D9),
         ),
+      ],
+    );
+  }
+
+  Widget _buildSettingOption({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, size: 28, color: Colors.black),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Icon(PhosphorIconsRegular.caretRight,
+                    size: 20, color: Colors.black),
+              ],
+            ),
+          ),
+        ),
+        const Divider(color: Color(0xffD9D9D9)),
       ],
     );
   }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateKematianService {
   Future<void> kematian(
@@ -17,6 +18,19 @@ class CreateKematianService {
       String kem_konfirmasi,
       BuildContext context) async {
     String url = 'http://10.0.2.2:8080/essentials_api/create_ad_kematian.php';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id_user = prefs.getString('id_user');
+
+    if (id_user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengirim laporan: User tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     String base64FotoKTPalmarhum = '';
     String base64FotoKK = '';
@@ -83,6 +97,7 @@ class CreateKematianService {
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'id_user': id_user,
           'kem_judul': kem_judul,
           'kem_nama_almarhum': kem_nama_almarhum,
           'kem_foto_ktp_almarhum': base64FotoKTPalmarhum,
@@ -94,6 +109,8 @@ class CreateKematianService {
           'kem_konfirmasi': kem_konfirmasi,
         },
       );
+      print("ID User terkirim: $id_user");
+      print("Response Body: ${response.body}");
 
       var data = jsonDecode(response.body);
 
