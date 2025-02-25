@@ -56,7 +56,7 @@ class _TambahMemoScreenState extends State<TambahMemoScreen> {
     await _CreateInfodesService.information_desa(
       _judulController.text,
       _isiController.text,
-      selectedImage!.path,
+      File(selectedImage!.path),
       DateTime.now().toString(),
       context,
     );
@@ -246,7 +246,7 @@ class _TambahMemoScreenState extends State<TambahMemoScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
+              height: 46,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(

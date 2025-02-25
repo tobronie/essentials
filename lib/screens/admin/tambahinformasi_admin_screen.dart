@@ -66,8 +66,8 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
       _judulController.text,
       selectedKategori ?? "",
       _isiController.text,
-      selectedImage!.path,
-      DateTime.now().toString(),
+      File(selectedImage!.path),
+      DateTime.now().toIso8601String(),
       context,
     );
   }
@@ -256,7 +256,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
+              height: 46,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
@@ -320,7 +320,7 @@ class _TambahInformasiScreenState extends State<TambahInformasiScreen> {
             const SizedBox(height: 4),
             GestureDetector(
               child: Container(
-                height: 42,
+                height: 46,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(

@@ -1,7 +1,10 @@
+import 'package:essentials/services/save_information.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -26,6 +29,11 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
   void initState() {
     super.initState();
     _futureInformation = getInformation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
+    Provider.of<BookmarkProvider>(context, listen: false).loadBookmarks();
   }
 
   Future<List<dynamic>> getInformation() async {
@@ -67,6 +75,10 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userSession = Provider.of<UserSession>(context);
+    final bookmarkProvider = Provider.of<BookmarkProvider>(context);
+    bool isBookmarked =
+        bookmarkProvider.isBookmarked(userSession.id_user ?? '', widget.id);
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
@@ -93,11 +105,31 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 6),
             child: IconButton(
-              icon: const Icon(
-                PhosphorIconsRegular.bookmarkSimple,
-                color: Colors.black,
+              icon: Icon(
+                isBookmarked
+                    ? Icons.bookmark
+                    : PhosphorIconsRegular.bookmarkSimple,
+                color: isBookmarked ? Color(0xff00AA13) : Colors.black,
               ),
-              onPressed: () {},
+              onPressed: () {
+                bool isAlreadyBookmarked = bookmarkProvider.isBookmarked(
+                    userSession.id_user ?? '', widget.id);
+
+                if (isAlreadyBookmarked) {
+                  print('Data sudah ada di bookmark. Menghapus bookmark...');
+                  bookmarkProvider.removeBookmark(
+                      userSession.id_user ?? '', widget.id);
+                } else {
+                  print('Data belum ada di bookmark. Menambahkan bookmark...');
+                  bookmarkProvider.addBookmark(
+                      userSession.id_user ?? '', widget.id);
+                }
+                setState(() {
+                  isBookmarked = !isBookmarked;
+                });
+                print(
+                    'Status bookmark setelah aksi: ${bookmarkProvider.isBookmarked(userSession.id_user ?? '', widget.id)}');
+              },
             ),
           ),
         ],
@@ -127,8 +159,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
                   height: 240,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: _getImageProvider_info(
-                          information['foto_info'] ?? ''),
+                      image: _getImageProvider(information['foto_info'] ?? ''),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -226,19 +257,16 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
     );
   }
 
-  ImageProvider _getImageProvider_info(String fotoInfo) {
+  ImageProvider _getImageProvider(String fotoInfo) {
     if (fotoInfo.isEmpty) {
-      return const AssetImage('assets/images/no_image.jpg');
+      return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);
     }
-    try {
-      Uint8List bytes = base64Decode(fotoInfo);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return const AssetImage('assets/images/no_image.jpg');
-    }
+
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

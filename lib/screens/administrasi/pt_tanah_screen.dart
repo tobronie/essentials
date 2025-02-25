@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_tanah_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class TanahScreen extends StatefulWidget {
   const TanahScreen({super.key});
@@ -64,12 +66,23 @@ class _TanahScreenState extends State<TanahScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Pengantar Harga Tanah";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahTanah() async {
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null) fileMap['tan_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['tan_foto_kk'] = selectedImageKK!;
+    if (selectedImageSPPT_SHM != null)
+      fileMap['tan_foto_sppt_shm'] = selectedImageSPPT_SHM!;
+
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
       return;
@@ -79,7 +92,7 @@ class _TanahScreenState extends State<TanahScreen> {
       _showSnackbar('Foto KK tidak boleh kosong');
       return;
     }
-    
+
     if (selectedImageSPPT_SHM == null) {
       _showSnackbar('Foto SPPT atau SHM tidak boleh kosong');
       return;
@@ -87,9 +100,7 @@ class _TanahScreenState extends State<TanahScreen> {
 
     await _CreateTanahService.tanah(
       _judulController.text,
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
-      selectedImageSPPT_SHM!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

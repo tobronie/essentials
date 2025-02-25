@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_penghasilan_ortu_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class PenghasilanScreen extends StatefulWidget {
   const PenghasilanScreen({super.key});
@@ -84,14 +86,30 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Keterangan Penghasilan Orang Tua";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahPenghasilanOrtu() async {
-    String FotoPendapatanAyah = selectedImageAyah?.path ?? '';
-    String FotoPendapatanIbu = selectedImageIbu?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null) fileMap['has_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['has_foto_kk'] = selectedImageKK!;
+    if (selectedImageAyah != null) {
+      fileMap['has_foto_ayah'] = selectedImageAyah!;
+    } else {
+      fileMap['has_foto_ayah'] = File("");
+    }
+    if (selectedImageIbu != null) {
+      fileMap['has_foto_ibu'] = selectedImageIbu!;
+    } else {
+      fileMap['has_foto_ibu'] = File("");
+    }
 
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
@@ -104,7 +122,7 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
     }
 
     if (_pekerjaanAyahController.text.isEmpty) {
-      _showSnackbar('pekerjaan Ayah tidak boleh kosong');
+      _showSnackbar('Pekerjaan Ayah tidak boleh kosong');
       return;
     }
 
@@ -126,13 +144,10 @@ class _PenghasilanScreenState extends State<PenghasilanScreen> {
     await _CreatePenghasilanOrtuService.penghasilanOrtu(
       _judulController.text,
       _pekerjaanAyahController.text,
-      selectedPendapatanAyah ?? "",
+      selectedPendapatanAyah!,
       _pekerjaanIbuController.text,
-      selectedPendapatanIbu ?? "",
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
-      FotoPendapatanAyah,
-      FotoPendapatanIbu,
+      selectedPendapatanIbu!,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

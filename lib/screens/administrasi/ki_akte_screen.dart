@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_akte_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class AkteScreen extends StatefulWidget {
   const AkteScreen({super.key});
@@ -162,50 +164,72 @@ class _AkteScreenState extends State<AkteScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Pengantar Akte Kelahiran";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahAkte() async {
-    String FotoIjasahBersangkutan = selectedImageIjasahBersangkutan?.path ?? '';
-    String FotoAkteSaudara = selectedImageAkteSaudara?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageSuratKelahiran != null)
+      fileMap['ak_foto_surat_kelahiran'] = selectedImageSuratKelahiran!;
+    if (selectedImageKK != null) fileMap['ak_foto_kk'] = selectedImageKK!;
+    if (selectedImageKTPAyah != null)
+      fileMap['ak_foto_ktp_ayah'] = selectedImageKTPAyah!;
+    if (selectedImageNikahAyah != null)
+      fileMap['ak_foto_nikah_ayah'] = selectedImageNikahAyah!;
+    if (selectedImageKTPIbu != null)
+      fileMap['ak_foto_ktp_ibu'] = selectedImageKTPIbu!;
+    if (selectedImageNikahIbu != null)
+      fileMap['ak_foto_nikah_ibu'] = selectedImageNikahIbu!;
+    if (selectedImageKTPSaksiSatu != null)
+      fileMap['ak_foto_ktp_saksi_satu'] = selectedImageKTPSaksiSatu!;
+    if (selectedImageKTPSaksiDua != null)
+      fileMap['ak_foto_ktp_saksi_dua'] = selectedImageKTPSaksiDua!;
+    if (selectedImageAkteSaudara != null) {
+      fileMap['ak_foto_akte_saudara'] = selectedImageAkteSaudara!;
+    } else {
+      fileMap['ak_foto_akte_saudara'] = File("");
+    }
+    if (selectedImageIjasahBersangkutan != null) {
+      fileMap['ak_foto_ijasah_bersangkutan'] = selectedImageIjasahBersangkutan!;
+    } else {
+      fileMap['ak_foto_ijasah_bersangkutan'] = File("");
+    }
 
     if (selectedImageSuratKelahiran == null) {
       _showSnackbar('Foto Surat Kelahiran tidak boleh kosong');
       return;
     }
-
     if (selectedImageKK == null) {
       _showSnackbar('Foto Kartu Keluarga tidak boleh kosong');
       return;
     }
-
     if (selectedImageKTPAyah == null) {
       _showSnackbar('Foto KTP Ayah tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahAyah == null) {
       _showSnackbar('Foto Buku Nikah Ayah tidak boleh kosong');
       return;
     }
-
     if (selectedImageKTPIbu == null) {
       _showSnackbar('Foto KTP Ibu tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahIbu == null) {
       _showSnackbar('Foto Buku Nikah Ibu tidak boleh kosong');
       return;
     }
-
     if (selectedImageKTPSaksiSatu == null) {
       _showSnackbar('Foto KTP Saksi Satu tidak boleh kosong');
       return;
     }
-
     if (selectedImageKTPSaksiDua == null) {
       _showSnackbar('Foto KTP Saksi Dua tidak boleh kosong');
       return;
@@ -213,16 +237,7 @@ class _AkteScreenState extends State<AkteScreen> {
 
     await _CreateAkteService.akte(
       _judulController.text,
-      selectedImageSuratKelahiran!.path,
-      selectedImageKK!.path,
-      selectedImageKTPAyah!.path,
-      selectedImageNikahAyah!.path,
-      selectedImageKTPIbu!.path,
-      selectedImageNikahIbu!.path,
-      selectedImageKTPSaksiSatu!.path,
-      selectedImageKTPSaksiDua!.path,
-      FotoIjasahBersangkutan,
-      FotoAkteSaudara,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
@@ -1342,21 +1357,21 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageIjasahBersangkutan != null
+                        selectedImageAkteSaudara != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageIjasahBersangkutan!,
+                                  child: Image.file(selectedImageAkteSaudara!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageIjasahBersangkutan == null)
+                        if (selectedImageAkteSaudara == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageIjasahBersangkutan();
+                              await getImageAkteSaudara();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1379,7 +1394,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageIjasahBersangkutan != null)
+                  if (selectedImageAkteSaudara != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1388,7 +1403,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageIjasahBersangkutan = null;
+                              selectedImageAkteSaudara = null;
                             });
                           },
                           child: Container(
@@ -1452,21 +1467,22 @@ class _AkteScreenState extends State<AkteScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        selectedImageAkteSaudara != null
+                        selectedImageIjasahBersangkutan != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: SizedBox(
                                   height: 74,
                                   width: MediaQuery.of(context).size.width,
-                                  child: Image.file(selectedImageAkteSaudara!,
+                                  child: Image.file(
+                                      selectedImageIjasahBersangkutan!,
                                       fit: BoxFit.cover),
                                 ),
                               )
                             : Container(),
-                        if (selectedImageAkteSaudara == null)
+                        if (selectedImageIjasahBersangkutan == null)
                           TextButton(
                             onPressed: () async {
-                              await getImageAkteSaudara();
+                              await getImageIjasahBersangkutan();
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1489,7 +1505,7 @@ class _AkteScreenState extends State<AkteScreen> {
                       ],
                     ),
                   ),
-                  if (selectedImageAkteSaudara != null)
+                  if (selectedImageIjasahBersangkutan != null)
                     Positioned(
                       bottom: 6,
                       left: 0,
@@ -1498,7 +1514,7 @@ class _AkteScreenState extends State<AkteScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImageAkteSaudara = null;
+                              selectedImageIjasahBersangkutan = null;
                             });
                           },
                           child: Container(

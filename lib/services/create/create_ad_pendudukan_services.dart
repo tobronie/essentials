@@ -1,17 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreatePendudukanService {
   Future<void> pendudukan(
       String pen_judul,
-      String pen_foto_ktp,
-      String pen_foto_kk,
-      String? pen_foto_nikah_pria,
-      String? pen_foto_nikah_wanita,
+      Map<String, File> fileMap,
       String pen_daerah_asal,
       String pen_daerah_tujuan,
       String pen_surat_konfirmasi,
@@ -33,91 +31,35 @@ class CreatePendudukanService {
       return;
     }
 
-    String base64FotoKTP = '';
-    String base64FotoKK = '';
-    String base64FotoNikahPria = '';
-    String base64FotoNikahWanita = '';
-
-    if (pen_foto_ktp.isNotEmpty) {
-      try {
-        base64FotoKTP = base64Encode(File(pen_foto_ktp).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar ktp: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (pen_foto_kk.isNotEmpty) {
-      try {
-        base64FotoKK = base64Encode(File(pen_foto_kk).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar kk: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (pen_foto_nikah_pria?.isNotEmpty ?? false) {
-      try {
-        base64FotoNikahPria = base64Encode(File(pen_foto_nikah_pria!).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Nikah Pria: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (pen_foto_nikah_wanita?.isNotEmpty ?? false) {
-      try {
-        base64FotoNikahWanita = base64Encode(File(pen_foto_nikah_wanita!).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Nikah Wanita: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_user': id_user,
-          'pen_judul': pen_judul,
-          'pen_foto_ktp': base64FotoKTP,
-          'pen_foto_kk': base64FotoKK,
-          'pen_foto_nikah_pria': base64FotoNikahPria.isNotEmpty ? base64FotoNikahPria : '',
-          'pen_foto_nikah_wanita': base64FotoNikahWanita.isNotEmpty ? base64FotoNikahWanita : '',
-          'pen_daerah_asal': pen_daerah_asal,
-          'pen_daerah_tujuan': pen_daerah_tujuan,
-          'pen_surat_konfirmasi': pen_surat_konfirmasi,
-          'pen_tgl_upload': pen_tgl_upload,
-          'pen_konfirmasi': pen_konfirmasi,
-        },
-      );
-      print("ID User terkirim: $id_user");
-      print("Response Body: ${response.body}");
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_user'] = id_user;
+      request.fields['pen_judul'] = pen_judul;
+      request.fields['pen_daerah_asal'] = pen_daerah_asal;
+      request.fields['pen_daerah_tujuan'] = pen_daerah_tujuan;
+      request.fields['pen_surat_konfirmasi'] = pen_surat_konfirmasi;
+      request.fields['pen_tgl_upload'] = pen_tgl_upload;
+      request.fields['pen_konfirmasi'] = pen_konfirmasi;
 
-      var data = jsonDecode(response.body);
+      for (var entry in fileMap.entries) {
+        if (entry.value.existsSync()) {
+          var mimeType = lookupMimeType(entry.value.path);
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key,
+              entry.value.path,
+              contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+            ),
+          );
+        }
+      }
 
-      if (response.statusCode == 200 && data['success'] == 'true') {
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Data: $responseData");
+
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil Pengajuan Surat'),
@@ -131,7 +73,7 @@ class CreatePendudukanService {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal Pengajuan Surat'),
+            content: Text('Gagal Pengajuan Surat: $responseData'),
             backgroundColor: Colors.red,
           ),
         );

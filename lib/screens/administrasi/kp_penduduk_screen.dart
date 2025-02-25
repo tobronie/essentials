@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_pendudukan_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class PendudukScreen extends StatefulWidget {
   const PendudukScreen({super.key});
@@ -81,14 +83,30 @@ class _PendudukScreenState extends State<PendudukScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Kependudukan";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahPendudukan() async {
-    String FotoNikahPria = selectedImageNikahPria?.path ?? '';
-    String FotoNikahWanita = selectedImageNikahWanita?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null) fileMap['pen_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['pen_foto_kk'] = selectedImageKK!;
+    if (selectedImageNikahPria != null) {
+      fileMap['pen_foto_nikah_pria'] = selectedImageNikahPria!;
+    } else {
+      fileMap['pen_foto_nikah_pria'] = File("");
+    }
+    if (selectedImageNikahWanita != null) {
+      fileMap['pen_foto_nikah_wanita'] = selectedImageNikahWanita!;
+    } else {
+      fileMap['pen_foto_nikah_wanita'] = File("");
+    }
 
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
@@ -112,10 +130,7 @@ class _PendudukScreenState extends State<PendudukScreen> {
 
     await _CreatePendudukanService.pendudukan(
       _judulController.text,
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
-      FotoNikahPria,
-      FotoNikahWanita,
+      fileMap,
       _daerahAsalController.text,
       _daerahTujuanController.text,
       _SKController.text,

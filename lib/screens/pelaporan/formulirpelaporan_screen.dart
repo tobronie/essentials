@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/services/create/create_pelaporan_services.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -120,7 +120,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
       _waktuController.text,
       _lokasiController.text,
       _isiController.text,
-      selectedImage!.path,
+      File(selectedImage!.path),
       DateTime.now().toString(),
       _konfirmasiController.text,
       context,
@@ -430,7 +430,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
+              height: 46,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
@@ -495,7 +495,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
             GestureDetector(
               onTap: () => _selectDateTime(context),
               child: Container(
-                height: 42,
+                height: 46,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
@@ -561,7 +561,7 @@ class _PelaporanScreenState extends State<PelaporanScreen> {
             ),
             const SizedBox(height: 4),
             Container(
-              height: 42,
+              height: 46,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(

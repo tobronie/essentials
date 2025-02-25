@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/detailpengguna_screen.dart';
+import 'package:essentials/services/update/update_profil.dart';
 import 'package:http/http.dart' as http;
 import 'package:essentials/screens/admin/listlaporan_admin_screen.dart';
 import 'package:essentials/screens/admin/listmemo_desa_admin_screen.dart';
@@ -9,7 +10,7 @@ import 'package:essentials/screens/informasi/informasitersimpan_screen.dart';
 import 'package:essentials/screens/navigation/desa_screen.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
 import 'package:essentials/screens/pejabat/listadministrasi_pejabat_screen.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,16 +29,24 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? selectedImage;
-  Future getImage({bool fromCamera = false}) async {
-    final ImagePicker picker = ImagePicker();
+  String profileImage = '';
+  final UpdateProfilService _updateProfilService = UpdateProfilService();
 
+  Future<void> getImage({bool fromCamera = false}) async {
+    final ImagePicker picker = ImagePicker();
     final XFile? imagePicked = await picker.pickImage(
-      source: ImageSource.camera,
+      source: fromCamera ? ImageSource.camera : ImageSource.gallery,
     );
 
     if (imagePicked != null) {
-      selectedImage = File(imagePicked.path);
-      setState(() {});
+      setState(() {
+        selectedImage = File(imagePicked.path);
+      });
+
+      List<int> imageBytes = await selectedImage!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      await _updateProfilService.userProfil(base64Image, context);
     }
   }
 
@@ -113,6 +122,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             body: Center(child: Text("Pengguna Tidak Ditemukan")),
           );
         }
+        profileImage = snapshot.data?["profil"]?.toString() ?? "";
+        if (profileImage.isNotEmpty && !profileImage.startsWith("http")) {
+          profileImage = "http://10.0.2.2:8080/essentials_api/$profileImage";
+        }
         String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
         String userNIK = snapshot.data?["nik"]?.toString() ?? "NIK Pengguna";
 
@@ -174,12 +187,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           alignment: Alignment.bottomRight,
           children: [
             ClipOval(
-              child: Image.asset(
-                'assets/images/avatar.png',
-                width: 72,
-                height: 72,
-                fit: BoxFit.cover,
-              ),
+              child: selectedImage != null
+                  ? Image.file(
+                      selectedImage!,
+                      width: 72,
+                      height: 72,
+                      fit: BoxFit.cover,
+                    )
+                  : (profileImage.isNotEmpty
+                      ? Image.network(
+                          profileImage,
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              "assets/images/avatar.png",
+                              width: 72,
+                              height: 72,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          "assets/images/avatar.png",
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.cover,
+                        )),
             ),
             Container(
               width: 28,
@@ -191,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: IconButton(
                 onPressed: () async {
-                  await getImage();
+                  await getImage(fromCamera: true);
                 },
                 icon: const Icon(
                   PhosphorIconsRegular.camera,

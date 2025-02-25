@@ -1,46 +1,52 @@
 import 'dart:convert';
-import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:essentials/services/user_session.dart';
 
-class LoginService {
-  Future<String?> login(
-      String email, String password, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/login.php';
+class UpdateProfilService {
+  Future<void> userProfil(String base64Image, BuildContext context) async {
+    final userSession = Provider.of<UserSession>(context, listen: false);
+    String id_user = userSession.id_user ?? "";
+
+    if (id_user.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal: ID pengguna tidak ditemukan'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    String url = 'http://10.0.2.2:8080/essentials_api/update_profil.php';
 
     try {
       var response = await http.post(
         Uri.parse(url),
         body: {
-          'email': email,
-          'password': password,
+          'id_user': id_user,
+          'profil': base64Image,
         },
       );
 
       var data = jsonDecode(response.body);
-      print("Response dari API Register: $data");
 
       if (response.statusCode == 200 && data['success'] == 'true') {
-        String id_user = data['id_user'].toString();
-        print("ID User yang diterima setelah register: $id_user");
-        await Provider.of<UserSession>(context, listen: false).saveUser(id_user);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Berhasil Masuk'),
+            content: Text('Berhasil memperbarui foto profil!'),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pushNamed(context, '/home');
-        return id_user;
+        Navigator.pushReplacementNamed(context, '/profile');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal Masuk'),
+            content: Text(data['message'] ?? 'Gagal memperbarui foto profil'),
             backgroundColor: Colors.red,
           ),
         );
-        return null;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +55,6 @@ class LoginService {
           backgroundColor: Colors.red,
         ),
       );
-      return null;
     }
   }
 }

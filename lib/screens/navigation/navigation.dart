@@ -1,4 +1,4 @@
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';

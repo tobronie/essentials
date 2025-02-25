@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_domisili_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class DomisiliScreen extends StatefulWidget {
   const DomisiliScreen({super.key});
@@ -50,12 +52,22 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Keterangan Domisili";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahDomisili() async {
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null)
+      fileMap['dom_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['dom_foto_kk'] = selectedImageKK!;
+    
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
       return;
@@ -64,11 +76,10 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
       _showSnackbar('Foto KK tidak boleh kosong');
       return;
     }
-  
+
     await _CreateDomisiliService.domisili(
       _judulController.text,
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
@@ -97,7 +108,10 @@ class _DomisiliScreenState extends State<DomisiliScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },

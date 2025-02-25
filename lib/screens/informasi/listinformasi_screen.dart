@@ -1,12 +1,14 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';
+import 'package:essentials/services/save_information.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class InformasiScreen extends StatefulWidget {
   @override
@@ -24,6 +26,11 @@ class _InformasiScreenState extends State<InformasiScreen> {
   void initState() {
     super.initState();
     futureInformation = getInformation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
+    Provider.of<BookmarkProvider>(context, listen: false).loadBookmarks();
   }
 
   Future<List<dynamic>> getInformation() async {
@@ -214,6 +221,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
   }
 
   Widget _data(List<dynamic> informasiList) {
+    final userSession = Provider.of<UserSession>(context, listen: false);
+    String id_user = userSession.id_user ?? '';
     List<dynamic> filteredList = informasiList.where((info) {
       bool matchesCategory = _selectedOption == 'Semua' ||
           info['kategori_info'] == _selectedOption;
@@ -239,6 +248,8 @@ class _InformasiScreenState extends State<InformasiScreen> {
       shrinkWrap: true,
       itemBuilder: (context, index) {
         var informasi = filteredList[index];
+        bool isBookmarked =
+            checkIfBookmarked(context, id_user, informasi['id_info']);
 
         return Column(
           children: [
@@ -277,18 +288,38 @@ class _InformasiScreenState extends State<InformasiScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            informasi['tgl_upload_info'] != null
-                                ? DateFormat('dd MMM yyyy').format(
-                                    DateTime.parse(
-                                        informasi['tgl_upload_info']),
-                                  )
-                                : 'Tanggal tidak tersedia',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                informasi['tgl_upload_info'] != null
+                                    ? DateFormat('dd MMM yyyy').format(
+                                        DateTime.parse(
+                                            informasi['tgl_upload_info']),
+                                      )
+                                    : 'Tanggal tidak tersedia',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              if (isBookmarked)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 6),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xff00AA13).withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    PhosphorIcons.bookmarkSimple(),
+                                    color: Color(0xff00AA13),
+                                    size: 20,
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),
@@ -328,21 +359,22 @@ class _InformasiScreenState extends State<InformasiScreen> {
     );
   }
 
+  bool checkIfBookmarked(BuildContext context, String id_user, String id_info) {
+    var bookmarkProvider =
+        Provider.of<BookmarkProvider>(context, listen: false);
+    return bookmarkProvider.isBookmarked(id_user, id_info);
+  }
+
   ImageProvider _getImageProvider(String fotoInfo) {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(fotoInfo);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

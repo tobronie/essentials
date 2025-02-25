@@ -9,7 +9,7 @@ import 'package:essentials/services/download/download_ad_penghasilan_ortu.dart';
 import 'package:essentials/services/download/download_ad_sktm.dart';
 import 'package:essentials/services/download/download_ad_tanah.dart';
 import 'package:essentials/services/download/download_ad_usaha.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dotted_border/dotted_border.dart';

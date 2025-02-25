@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';

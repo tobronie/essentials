@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class CreateLaporService {
   Future<void> pelaporan(
@@ -11,7 +12,7 @@ class CreateLaporService {
       String waktu_lapor,
       String lokasi_lapor,
       String isi_lapor,
-      String foto_lapor,
+      File? foto_lapor,
       String tgl_upload_lapor,
       String konfirmasi_lapor,
       BuildContext context) async {
@@ -30,61 +31,51 @@ class CreateLaporService {
       return;
     }
 
-    String base64Image = '';
-    if (foto_lapor.isNotEmpty) {
-      try {
-        base64Image = base64Encode(File(foto_lapor).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar: $e'),
-            backgroundColor: Colors.red,
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_user'] = id_user;
+      request.fields['judul_lapor'] = judul_lapor;
+      request.fields['waktu_lapor'] = waktu_lapor;
+      request.fields['lokasi_lapor'] = lokasi_lapor;
+      request.fields['isi_lapor'] = isi_lapor;
+      request.fields['tgl_upload_lapor'] = tgl_upload_lapor;
+      request.fields['konfirmasi_lapor'] = konfirmasi_lapor;
+
+      if (foto_lapor != null && foto_lapor.existsSync()) {
+        var mimeType = lookupMimeType(foto_lapor.path);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'foto_lapor',
+            foto_lapor.path,
+            contentType: mimeType != null ? MediaType.parse(mimeType) : null,
           ),
         );
-        return;
       }
-    }
 
-    try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_user': id_user,
-          'judul_lapor': judul_lapor,
-          'waktu_lapor': waktu_lapor,
-          'lokasi_lapor': lokasi_lapor,
-          'isi_lapor': isi_lapor,
-          'foto_lapor': base64Image,
-          'tgl_upload_lapor': tgl_upload_lapor,
-          'konfirmasi_lapor': konfirmasi_lapor
-        },
-      );
-      print("ID User terkirim: $id_user");
-      print("Response Body: ${response.body}");
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print("Response Data: $responseData");
 
-      var data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['success'] == 'true') {
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil membuat Pengaduan'),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => ActivityScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal membuat Pengaduan'),
+            content: Text('Gagal membuat Pengaduan: $responseData'),
             backgroundColor: Colors.red,
           ),
         );
       }
     } catch (e) {
-      print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),

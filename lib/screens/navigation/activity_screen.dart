@@ -1,13 +1,12 @@
 import 'package:essentials/screens/navigation/activityadministrasi_screen.dart';
 import 'package:essentials/screens/navigation/activitypelaporan_screen.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -744,21 +743,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  ImageProvider _getImageProvider(String foto) {
-    if (foto.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (foto.startsWith('http')) {
-      return NetworkImage(foto);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(foto);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

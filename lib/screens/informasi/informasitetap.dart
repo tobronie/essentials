@@ -89,16 +89,6 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: IconButton(
-              icon: const Icon(
-                PhosphorIconsRegular.bookmarkSimple,
-                color: Colors.black,
-              ),
-              onPressed: () {},
-            ),
-          ),
         ],
         elevation: 0,
         backgroundColor: const Color(0xffF9F9F9),
@@ -126,7 +116,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                   height: 240,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: _getImageProvider_infodes(
+                      image: _getImageProvider(
                           informationDesa['foto_infodes'] ?? ''),
                       fit: BoxFit.cover,
                     ),
@@ -172,20 +162,19 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
                         ),
                         Align(
                           alignment: AlignmentDirectional.centerStart,
-                          child: 
-                            Text(
-                              informationDesa['tgl_upload_infodes'] != null
-                                  ? DateFormat('dd MMMM yyyy').format(
-                                      DateTime.parse(
-                                          informationDesa['tgl_upload_infodes']),
-                                    )
-                                  : 'Tanggal tidak tersedia',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
+                          child: Text(
+                            informationDesa['tgl_upload_infodes'] != null
+                                ? DateFormat('dd MMMM yyyy').format(
+                                    DateTime.parse(
+                                        informationDesa['tgl_upload_infodes']),
+                                  )
+                                : 'Tanggal tidak tersedia',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
                             ),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Align(
@@ -213,19 +202,16 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
     );
   }
 
-  ImageProvider _getImageProvider_infodes(String fotoInfoDesa) {
-    if (fotoInfoDesa.isEmpty) {
-      return const AssetImage('assets/images/no_image.jpg');
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
+      return AssetImage('assets/images/no_image.jpg');
     }
-    if (fotoInfoDesa.startsWith('http')) {
-      return NetworkImage(fotoInfoDesa);
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
-    try {
-      Uint8List bytes = base64Decode(fotoInfoDesa);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return const AssetImage('assets/images/no_image.jpg');
-    }
+
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

@@ -2,7 +2,6 @@ import 'package:essentials/services/konfirmasi/konfirmasi_pelaporan.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -338,22 +337,17 @@ class _DataVerifikasiLaporanScreenState
     }
   }
 
-  ImageProvider _getImageProvider(String fotoLapor) {
-    if (fotoLapor.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (fotoLapor.startsWith('http')) {
-      return NetworkImage(fotoLapor);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(fotoLapor);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 
   Column _judulLapor(String judul) {

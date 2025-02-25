@@ -1,5 +1,5 @@
 import 'package:essentials/screens/navigation/profile_screen.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';

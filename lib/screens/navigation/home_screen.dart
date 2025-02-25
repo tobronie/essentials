@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:essentials/screens/administrasi/listadministrasi_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/informasi/listinformasi_screen.dart';
 import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -624,21 +623,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ImageProvider _getImageProvider(String foto) {
-    if (foto.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (foto.startsWith('http')) {
-      return NetworkImage(foto);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(foto);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

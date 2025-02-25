@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_kematian_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class KematianScreen extends StatefulWidget {
   const KematianScreen({super.key});
@@ -79,13 +81,28 @@ class _KematianScreenState extends State<KematianScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Keterangan Kematian";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahKematian() async {
-    String FotoBukti = selectedImageBukti?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTPAlmarhum != null)
+      fileMap['kem_foto_ktp_almarhum'] = selectedImageKTPAlmarhum!;
+    if (selectedImageKK != null) fileMap['kem_foto_kk'] = selectedImageKK!;
+    if (selectedImageBukti != null) {
+      fileMap['kem_foto_bukti'] = selectedImageBukti!;
+    } else {
+      fileMap['kem_foto_bukti'] = File("");
+    }
+    if (selectedImageKTPSaksi != null)
+      fileMap['kem_foto_ktp_saksi'] = selectedImageKTPSaksi!;
 
     if (_namaAlmarhumController.text.isEmpty) {
       _showSnackbar('Nama Almarhum tidak boleh kosong');
@@ -103,17 +120,14 @@ class _KematianScreenState extends State<KematianScreen> {
     }
 
     if (selectedImageKTPSaksi == null) {
-      _showSnackbar('Foto KTP tidak boleh kosong');
+      _showSnackbar('Foto KTP Saksi tidak boleh kosong');
       return;
     }
 
     await _CreateKematianService.kematian(
       _judulController.text,
       _namaAlmarhumController.text,
-      selectedImageKTPAlmarhum!.path,
-      selectedImageKK!.path,
-      FotoBukti,
-      selectedImageKTPSaksi!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,
@@ -142,7 +156,10 @@ class _KematianScreenState extends State<KematianScreen> {
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -298,8 +315,8 @@ class _KematianScreenState extends State<KematianScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKTPAlmarhum!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKTPAlmarhum!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -413,8 +430,8 @@ class _KematianScreenState extends State<KematianScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKK!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKK!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -528,8 +545,8 @@ class _KematianScreenState extends State<KematianScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageKTPSaksi!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageKTPSaksi!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),
@@ -630,8 +647,8 @@ class _KematianScreenState extends State<KematianScreen> {
                             child: SizedBox(
                               height: 74,
                               width: MediaQuery.of(context).size.width,
-                              child:
-                                  Image.file(selectedImageBukti!, fit: BoxFit.cover),
+                              child: Image.file(selectedImageBukti!,
+                                  fit: BoxFit.cover),
                             ),
                           )
                         : Container(),

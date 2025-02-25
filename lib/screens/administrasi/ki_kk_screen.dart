@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_kk_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class KKScreen extends StatefulWidget {
   const KKScreen({super.key});
@@ -92,29 +94,44 @@ class _KKScreenState extends State<KKScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Pengantar Kartu keluarga";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahKK() async {
-    String FotoKKbefore = selectedImageKK?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKK != null) {
+      fileMap['kk_foto_kk'] = selectedImageKK!;
+    } else {
+      fileMap['kk_foto_kk'] = File("");
+    }
+    if (selectedImageNikahAyah != null)
+      fileMap['kk_foto_nikah_ayah'] = selectedImageNikahAyah!;
+    if (selectedImageNikahIbu != null)
+      fileMap['kk_foto_nikah_ibu'] = selectedImageNikahIbu!;
+    if (selectedImageIjasahKeluarga != null)
+      fileMap['kk_foto_ijasah_keluarga'] = selectedImageIjasahKeluarga!;
+    if (selectedImageAkteKeluarga != null)
+      fileMap['kk_foto_akte_keluarga'] = selectedImageAkteKeluarga!;
 
     if (selectedImageNikahAyah == null) {
       _showSnackbar('Foto Buku Nikah Ayah tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahIbu == null) {
       _showSnackbar('Foto Buku Nikah Ibu tidak boleh kosong');
       return;
     }
-
     if (selectedImageIjasahKeluarga == null) {
       _showSnackbar('Foto Ijasah Terakhir Keluarga tidak boleh kosong');
       return;
     }
-
     if (selectedImageAkteKeluarga == null) {
       _showSnackbar('Foto Akte Keluarga tidak boleh kosong');
       return;
@@ -122,11 +139,7 @@ class _KKScreenState extends State<KKScreen> {
 
     await _CreateKKService.kk(
       _judulController.text,
-      FotoKKbefore,
-      selectedImageNikahAyah!.path,
-      selectedImageNikahIbu!.path,
-      selectedImageIjasahKeluarga!.path,
-      selectedImageAkteKeluarga!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

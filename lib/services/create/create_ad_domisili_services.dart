@@ -1,15 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateDomisiliService {
   Future<void> domisili(
       String dom_judul,
-      String dom_foto_ktp,
-      String dom_foto_kk,
+      Map<String, File> fileMap,
       String dom_surat_konfirmasi,
       String dom_tgl_upload,
       String dom_konfirmasi,
@@ -29,55 +29,33 @@ class CreateDomisiliService {
       return;
     }
 
-    String base64FotoKTP = '';
-    String base64FotoKK = '';
-    if (dom_foto_ktp.isNotEmpty) {
-      try {
-        base64FotoKTP = base64Encode(File(dom_foto_ktp).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar ktp: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (dom_foto_kk.isNotEmpty) {
-      try {
-        base64FotoKK = base64Encode(File(dom_foto_kk).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar kk: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_user': id_user,
-          'dom_judul': dom_judul,
-          'dom_foto_ktp': base64FotoKTP,
-          'dom_foto_kk': base64FotoKK,
-          'dom_surat_konfirmasi': dom_surat_konfirmasi,
-          'dom_tgl_upload': dom_tgl_upload,
-          'dom_konfirmasi': dom_konfirmasi,
-        },
-      );
-      print("ID User terkirim: $id_user");
-      print("Response Body: ${response.body}");
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_user'] = id_user;
+      request.fields['dom_judul'] = dom_judul;
+      request.fields['dom_surat_konfirmasi'] = dom_surat_konfirmasi;
+      request.fields['dom_tgl_upload'] = dom_tgl_upload;
+      request.fields['dom_konfirmasi'] = dom_konfirmasi;
 
-      var data = jsonDecode(response.body);
+      for (var entry in fileMap.entries) {
+        if (entry.value.existsSync()) {
+          var mimeType = lookupMimeType(entry.value.path);
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key,
+              entry.value.path,
+              contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+            ),
+          );
+        }
+      }
 
-      if (response.statusCode == 200 && data['success'] == 'true') {
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Data: $responseData");
+
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil Pengajuan Surat'),
@@ -91,7 +69,7 @@ class CreateDomisiliService {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal Pengajuan Surat'),
+            content: Text('Gagal Pengajuan Surat: $responseData'),
             backgroundColor: Colors.red,
           ),
         );

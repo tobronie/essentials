@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:essentials/screens/admin/editmemo_admin_screen.dart';
 import 'package:essentials/screens/admin/tambahmemo_admin_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
@@ -386,18 +385,13 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(fotoInfo);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 
   void _deleteInformasiDesa(String id) {

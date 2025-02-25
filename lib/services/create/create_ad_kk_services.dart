@@ -1,18 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateKKService {
   Future<void> kk(
       String kk_judul,
-      String? kk_foto_kk,
-      String kk_foto_nikah_ayah,
-      String kk_foto_nikah_ibu,
-      String kk_foto_ijasah_keluarga,
-      String kk_foto_akte_keluarga,
+      Map<String, File> fileMap,
       String kk_surat_konfirmasi,
       String kk_tgl_upload,
       String kk_konfirmasi,
@@ -32,104 +29,33 @@ class CreateKKService {
       return;
     }
 
-    String base64FotoKK = '';
-    String base64FotoNikahAyah = '';
-    String base64FotoNikahIbu = '';
-    String base64FotoIjasahKeluarga = '';
-    String base64FotoAkteKeluarga = '';
-
-    if (kk_foto_kk?.isNotEmpty ?? false) {
-      try {
-        base64FotoKK = base64Encode(File(kk_foto_kk!).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Kartu Keluarga: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kk_foto_nikah_ayah.isNotEmpty) {
-      try {
-        base64FotoNikahAyah = base64Encode(File(kk_foto_nikah_ayah).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Nikah Ayah: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kk_foto_nikah_ibu.isNotEmpty) {
-      try {
-        base64FotoNikahIbu = base64Encode(File(kk_foto_nikah_ibu).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Nikah Ibu: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kk_foto_ijasah_keluarga.isNotEmpty) {
-      try {
-        base64FotoIjasahKeluarga = base64Encode(File(kk_foto_ijasah_keluarga).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Ijasah Keluarga: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kk_foto_akte_keluarga.isNotEmpty) {
-      try {
-        base64FotoAkteKeluarga = base64Encode(File(kk_foto_akte_keluarga).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Akte Keluarga: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_user': id_user,
-          'kk_judul': kk_judul,
-          'kk_foto_kk': base64FotoKK.isNotEmpty ? base64FotoKK : '',
-          'kk_foto_nikah_ayah': base64FotoNikahAyah,
-          'kk_foto_nikah_ibu': base64FotoNikahIbu,
-          'kk_foto_ijasah_keluarga': base64FotoIjasahKeluarga,
-          'kk_foto_akte_keluarga': base64FotoAkteKeluarga,
-          'kk_surat_konfirmasi': kk_surat_konfirmasi,
-          'kk_tgl_upload': kk_tgl_upload,
-          'kk_konfirmasi': kk_konfirmasi,
-        },
-      );
-      print("ID User terkirim: $id_user");
-      print("Response Body: ${response.body}");
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_user'] = id_user;
+      request.fields['kk_judul'] = kk_judul;
+      request.fields['kk_surat_konfirmasi'] = kk_surat_konfirmasi;
+      request.fields['kk_tgl_upload'] = kk_tgl_upload;
+      request.fields['kk_konfirmasi'] = kk_konfirmasi;
 
-      var data = jsonDecode(response.body);
+      for (var entry in fileMap.entries) {
+        if (entry.value.existsSync()) {
+          var mimeType = lookupMimeType(entry.value.path);
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key,
+              entry.value.path,
+              contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+            ),
+          );
+        }
+      }
 
-      if (response.statusCode == 200 && data['success'] == 'true') {
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Data: $responseData");
+
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil Pengajuan Surat'),
@@ -143,7 +69,7 @@ class CreateKKService {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal Pengajuan Surat'),
+            content: Text('Gagal Pengajuan Surat: $responseData'),
             backgroundColor: Colors.red,
           ),
         );

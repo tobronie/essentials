@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:essentials/services/download/download_ad_akte.dart';
 import 'package:essentials/services/update/update_ad_akte.dart';
@@ -155,10 +154,10 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
               akte["ak_foto_ktp_saksi_satu"] ?? "Tidak diketahui";
           String fotoKTPSaksiDua =
               akte["ak_foto_ktp_saksi_dua"] ?? "Tidak diketahui";
-          String fotoIjasahBersangkutan =
-              akte["ak_foto_ijasah_bersangkutan"] ?? "Tidak diketahui";
           String fotoAkteSaudara =
               akte["ak_foto_akte_saudara"] ?? "Tidak diketahui";
+          String fotoIjasahBersangkutan =
+              akte["ak_foto_ijasah_bersangkutan"] ?? "Tidak diketahui";
           String JudulPengaduan = akte["ak_judul"] ?? "Tidak diketahui";
           String suratKonfirmasiData =
               akte["ak_surat_konfirmasi"] ?? "Tidak diketahui";
@@ -199,9 +198,9 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
                     const SizedBox(height: 24),
                     _dataPendukung(),
                     const SizedBox(height: 6),
-                    _ijasahBersangkutan(fotoIjasahBersangkutan),
-                    const SizedBox(height: 12),
                     _akteSaudara(fotoAkteSaudara),
+                    const SizedBox(height: 12),
+                    _ijasahBersangkutan(fotoIjasahBersangkutan),
                     const SizedBox(height: 24),
                     const Divider(
                       color: Color(0xffD9D9D9),
@@ -1480,22 +1479,17 @@ class _Admin_AkteScreenState extends State<Admin_AkteScreen> {
     }
   }
 
-  ImageProvider _getImageProvider(String foto) {
-    if (foto.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (foto.startsWith('http')) {
-      return NetworkImage(foto);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(foto);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 
   Container _verifikasiKepalaDesa(String verifikasi) {

@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_sktm_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class SKTMScreen extends StatefulWidget {
   const SKTMScreen({super.key});
@@ -53,16 +55,26 @@ class _SKTMScreenState extends State<SKTMScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Keterangan Tidak Mampu";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahSKTM() async {
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null) fileMap['sktm_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['sktm_foto_kk'] = selectedImageKK!;
+
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
       return;
     }
+
     if (selectedImageKK == null) {
       _showSnackbar('Foto KK tidak boleh kosong');
       return;
@@ -80,8 +92,7 @@ class _SKTMScreenState extends State<SKTMScreen> {
 
     await _CreateSKTMService.sktm(
       _judulController.text,
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
+      fileMap,
       _namaWaliController.text,
       _nominalController.text,
       _rincianController.text,

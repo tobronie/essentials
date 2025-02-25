@@ -3,10 +3,11 @@ import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
+import 'package:essentials/services/save_information.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials/screens/spalsh_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:essentials/user_session.dart';
+import 'package:essentials/services/user_session.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +15,11 @@ Future<void> main() async {
   await userSession.loadUserData();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => userSession,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => userSession),
+        ChangeNotifierProvider(create: (context) => BookmarkProvider()),
+      ],
       child: const MyApp(),
     ),
   );

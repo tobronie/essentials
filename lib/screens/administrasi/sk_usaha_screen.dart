@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_usaha_services.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class UsahaScreen extends StatefulWidget {
   const UsahaScreen({super.key});
@@ -51,12 +53,21 @@ class _UsahaScreenState extends State<UsahaScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Keterangan Usaha";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahUsaha() async {
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTP != null) fileMap['us_foto_ktp'] = selectedImageKTP!;
+    if (selectedImageKK != null) fileMap['us_foto_kk'] = selectedImageKK!;
+
     if (selectedImageKTP == null) {
       _showSnackbar('Foto KTP tidak boleh kosong');
       return;
@@ -65,7 +76,6 @@ class _UsahaScreenState extends State<UsahaScreen> {
       _showSnackbar('Foto KK tidak boleh kosong');
       return;
     }
-
     if (selectedPendapatan == null) {
       _showSnackbar('Pendapatan tidak boleh kosong');
       return;
@@ -73,9 +83,8 @@ class _UsahaScreenState extends State<UsahaScreen> {
 
     await _CreateUsahaService.usaha(
       _judulController.text,
-      selectedImageKTP!.path,
-      selectedImageKK!.path,
-      selectedPendapatan ?? "",
+      fileMap,
+      selectedPendapatan!,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

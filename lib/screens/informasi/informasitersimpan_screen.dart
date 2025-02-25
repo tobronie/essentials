@@ -1,12 +1,14 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/navigation/profile_screen.dart';
+import 'package:essentials/services/save_information.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class SaveInformasiScreen extends StatefulWidget {
   const SaveInformasiScreen({super.key});
@@ -26,6 +28,11 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
   void initState() {
     super.initState();
     futureInformation = getInformation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
+    Provider.of<BookmarkProvider>(context, listen: false).loadBookmarks();
   }
 
   Future<List<dynamic>> getInformation() async {
@@ -216,136 +223,147 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
   }
 
   Widget _data(List<dynamic> informasiList) {
-    List<dynamic> filteredList = informasiList.where((info) {
-      bool matchesCategory = _selectedOption == 'Semua' ||
-          info['kategori_info'] == _selectedOption;
-      bool matchesSearch = info['judul_info']
-          .toString()
-          .toLowerCase()
-          .contains(_searchQuery.toLowerCase());
+    return Consumer<BookmarkProvider>(
+      builder: (context, bookmarkProvider, child) {
+        final userSession = Provider.of<UserSession>(context);
+        List<dynamic> filteredList = informasiList.where((info) {
+          bool matchesCategory = _selectedOption == 'Semua' ||
+              info['kategori_info'] == _selectedOption;
+          bool matchesSearch = info['judul_info']
+              .toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase());
 
-      return matchesCategory && matchesSearch;
-    }).toList();
+          bool isBookmarked = bookmarkProvider.isBookmarked(
+            userSession.id_user ?? 'id_user',
+            info['id_info'],
+          );
 
-    filteredList.sort((a, b) {
-      DateTime dateA =
-          DateTime.tryParse(a['tgl_upload_info'] ?? '') ?? DateTime(1970);
-      DateTime dateB =
-          DateTime.tryParse(b['tgl_upload_info'] ?? '') ?? DateTime(1970);
-      return dateB.compareTo(dateA);
-    });
+          return matchesCategory && matchesSearch && isBookmarked;
+        }).toList();
 
-    return ListView.builder(
-      itemCount: filteredList.length,
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        var informasi = filteredList[index];
+        filteredList.sort((a, b) {
+          DateTime dateA =
+              DateTime.tryParse(a['tgl_upload_info'] ?? '') ?? DateTime(1970);
+          DateTime dateB =
+              DateTime.tryParse(b['tgl_upload_info'] ?? '') ?? DateTime(1970);
+          return dateB.compareTo(dateA);
+        });
 
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => InformasiDetailScreen(
-                      id: informasi['id_info'].toString(),
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                height: 92,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            informasi['judul_info'] ?? '',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 16,
-                              height: 1.1,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return ListView.builder(
+          itemCount: filteredList.length,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            var informasi = filteredList[index];
+
+            return Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InformasiDetailScreen(
+                          id: informasi['id_info'].toString(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 92,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                informasi['tgl_upload_info'] != null
-                                    ? DateFormat('dd MMM yyyy').format(
-                                        DateTime.parse(
-                                            informasi['tgl_upload_info']),
-                                      )
-                                    : 'Tanggal tidak tersedia',
+                                informasi['judul_info'] ?? '',
                                 style: GoogleFonts.montserrat(
-                                  fontSize: 10,
+                                  fontSize: 16,
+                                  height: 1.1,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black,
                                 ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              GestureDetector(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 6),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff00AA13).withOpacity(0.25),
-                                    borderRadius: BorderRadius.circular(50),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    informasi['tgl_upload_info'] != null
+                                        ? DateFormat('dd MMM yyyy').format(
+                                            DateTime.parse(
+                                                informasi['tgl_upload_info']),
+                                          )
+                                        : 'Tanggal tidak tersedia',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                  alignment: Alignment.center,
-                                  child: Icon(
-                                    PhosphorIcons.bookmarkSimple(),
-                                    color: Color(0xff00AA13),
-                                    size: 20,
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 6),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Color(0xff00AA13).withOpacity(0.25),
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      PhosphorIcons.bookmarkSimple(),
+                                      color: Color(0xff00AA13),
+                                      size: 20,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 76,
-                          height: 76,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: _getImageProvider(
-                                  informasi['foto_info'] ?? ''),
-                              fit: BoxFit.cover,
+                        ),
+                        const SizedBox(width: 12),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 76,
+                              height: 76,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: _getImageProvider(
+                                      informasi['foto_info'] ?? ''),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(height: 2),
-            SizedBox(
-              height: 1,
-              child: Container(
-                color: Color(0xffD9D9D9),
-              ),
-            ),
-          ],
+                SizedBox(height: 2),
+                SizedBox(
+                  height: 1,
+                  child: Container(
+                    color: Color(0xffD9D9D9),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -355,17 +373,12 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(fotoInfo);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 }

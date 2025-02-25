@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:essentials/services/konfirmasi/konfirmasi_ad_akte.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -161,9 +160,9 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                     const SizedBox(height: 24),
                     _dataPendukung(),
                     const SizedBox(height: 6),
-                    _ijasahBersangkutan(fotoIjasahBersangkutan),
-                    const SizedBox(height: 12),
                     _akteSaudara(fotoAkteSaudara),
+                    const SizedBox(height: 12),
+                    _ijasahBersangkutan(fotoIjasahBersangkutan),
                     const SizedBox(height: 24),
                     const Divider(
                       color: Color(0xffD9D9D9),
@@ -1436,22 +1435,17 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
     }
   }
 
-  ImageProvider _getImageProvider(String foto) {
-    if (foto.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (foto.startsWith('http')) {
-      return NetworkImage(foto);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(foto);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 
   Row _konfirmasi(String konfirmasi) {
@@ -1499,8 +1493,8 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                   ),
                 ),
                 onPressed: () async {
-                    await updateKonfirmasi("tidak");
-                  },
+                  await updateKonfirmasi("tidak");
+                },
                 child: Text(
                   'Tidak Disetujui',
                   style: GoogleFonts.montserrat(
@@ -1524,8 +1518,8 @@ class _Pejabat_AkteScreenState extends State<Pejabat_AkteScreen> {
                   ),
                 ),
                 onPressed: () async {
-                    await updateKonfirmasi("tidak");
-                  },
+                  await updateKonfirmasi("tidak");
+                },
                 child: Text(
                   'Setuju',
                   style: GoogleFonts.montserrat(

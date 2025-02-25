@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_ktp_services.dart';
 import 'package:essentials/services/download_formulir.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class KTPScreen extends StatefulWidget {
   const KTPScreen({super.key});
@@ -66,19 +68,31 @@ class _KTPScreenState extends State<KTPScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Pengantar Kartu Tanda Penduduk";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahKTP() async {
-    String FotoAkte = selectedImageAkte?.path ?? '';
+    Map<String, File> fileMap = {};
+
+    if (selectedImageAkte != null) {
+      fileMap['kt_foto_akte'] = selectedImageAkte!;
+    } else {
+      fileMap['kt_foto_akte'] = File("");
+    }
+    if (selectedImageKK != null) fileMap['kt_foto_kk'] = selectedImageKK!;
+    if (selectedImageFormulir != null)
+      fileMap['kt_foto_formulir'] = selectedImageFormulir!;
 
     if (selectedImageKK == null) {
       _showSnackbar('Foto KK tidak boleh kosong');
       return;
     }
-
     if (selectedImageFormulir == null) {
       _showSnackbar('Surat Persetujuan tidak boleh kosong');
       return;
@@ -86,9 +100,7 @@ class _KTPScreenState extends State<KTPScreen> {
 
     await _CreateKTPService.ktp(
       _judulController.text,
-      FotoAkte,
-      selectedImageKK!.path,
-      selectedImageFormulir!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

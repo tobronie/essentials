@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:essentials/services/create/create_ad_nikah_services.dart';
 import 'package:essentials/services/download_formulir.dart';
+import 'package:essentials/services/user_session.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class NikahScreen extends StatefulWidget {
   const NikahScreen({super.key});
@@ -192,67 +194,87 @@ class _NikahScreenState extends State<NikahScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userSession = Provider.of<UserSession>(context, listen: false);
+      print("User yang login: ${userSession.id_user ?? "Belum Login"}");
+    });
     _judulController.text = "Surat Pengantar Pernikahan";
     _konfirmasiController.text = "menunggu";
     _SKController.text = "";
   }
 
   Future<void> tambahNikah() async {
+    Map<String, File> fileMap = {};
+
+    if (selectedImageKTPPria != null)
+      fileMap['ni_foto_ktp_pria'] = selectedImageKTPPria!;
+    if (selectedImageKKPria != null)
+      fileMap['ni_foto_kk_pria'] = selectedImageKKPria!;
+    if (selectedImageAktePria != null)
+      fileMap['ni_foto_akte_pria'] = selectedImageAktePria!;
+    if (selectedImageFormulirPria != null)
+      fileMap['ni_foto_formulir_pria'] = selectedImageFormulirPria!;
+    if (selectedImageNikahAyahPria != null)
+      fileMap['ni_foto_nikah_ayah_pria'] = selectedImageNikahAyahPria!;
+    if (selectedImageNikahIbuPria != null)
+      fileMap['ni_foto_nikah_ibu_pria'] = selectedImageNikahIbuPria!;
+    if (selectedImageKTPWanita != null)
+      fileMap['ni_foto_ktp_wanita'] = selectedImageKTPWanita!;
+    if (selectedImageKKWanita != null)
+      fileMap['ni_foto_kk_wanita'] = selectedImageKKWanita!;
+    if (selectedImageAkteWanita != null)
+      fileMap['ni_foto_akte_wanita'] = selectedImageAkteWanita!;
+    if (selectedImageFormulirWanita != null)
+      fileMap['ni_foto_formulir_wanita'] = selectedImageFormulirWanita!;
+    if (selectedImageNikahAyahWanita != null)
+      fileMap['ni_foto_nikah_ayah_wanita'] = selectedImageNikahAyahWanita!;
+    if (selectedImageNikahIbuWanita != null)
+      fileMap['ni_foto_nikah_ibu_wanita'] = selectedImageNikahIbuWanita!;
+
     if (selectedImageKTPPria == null) {
       _showSnackbar('Foto KTP Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageAktePria == null) {
       _showSnackbar('Foto Akte Kelahiran Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageKKPria == null) {
       _showSnackbar('Foto Kartu Keluarga Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahAyahPria == null) {
       _showSnackbar('Foto Buku Nikah Ayah Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahIbuPria == null) {
       _showSnackbar('Foto Buku Nikah Ibu Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageFormulirPria == null) {
       _showSnackbar('Foto Formulir Pria tidak boleh kosong');
       return;
     }
-
     if (selectedImageKTPWanita == null) {
       _showSnackbar('Foto KTP Wanita tidak boleh kosong');
       return;
     }
-
     if (selectedImageAkteWanita == null) {
       _showSnackbar('Foto Akte Kelahiran Wanita tidak boleh kosong');
       return;
     }
-
     if (selectedImageKKWanita == null) {
       _showSnackbar('Foto Kartu Keluarga Wanita tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahAyahWanita == null) {
       _showSnackbar('Foto Buku Nikah Ayah Wanita tidak boleh kosong');
       return;
     }
-
     if (selectedImageNikahIbuWanita == null) {
       _showSnackbar('Foto Buku Nikah Ibu Wanita tidak boleh kosong');
       return;
     }
-
     if (selectedImageFormulirWanita == null) {
       _showSnackbar('Foto Formulir Wanita tidak boleh kosong');
       return;
@@ -260,18 +282,7 @@ class _NikahScreenState extends State<NikahScreen> {
 
     await _CreateNikahService.nikah(
       _judulController.text,
-      selectedImageKTPPria!.path,
-      selectedImageKKPria!.path,
-      selectedImageAktePria!.path,
-      selectedImageFormulirPria!.path,
-      selectedImageNikahAyahPria!.path,
-      selectedImageNikahIbuPria!.path,
-      selectedImageKTPWanita!.path,
-      selectedImageKKWanita!.path,
-      selectedImageAkteWanita!.path,
-      selectedImageFormulirWanita!.path,
-      selectedImageNikahAyahWanita!.path,
-      selectedImageNikahIbuWanita!.path,
+      fileMap,
       _SKController.text,
       DateTime.now().toString(),
       _konfirmasiController.text,

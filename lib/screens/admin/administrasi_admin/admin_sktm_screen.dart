@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:essentials/services/download/download_ad_sktm.dart';
 import 'package:essentials/services/update/update_ad_sktm.dart';
@@ -764,22 +763,17 @@ class _Admin_SKTMScreenState extends State<Admin_SKTMScreen> {
     }
   }
 
-  ImageProvider _getImageProvider(String foto) {
-    if (foto.isEmpty) {
+  ImageProvider _getImageProvider(String fotoInfo) {
+    if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
+    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
 
-    if (foto.startsWith('http')) {
-      return NetworkImage(foto);
+    if (fotoInfo.startsWith('http')) {
+      return NetworkImage(fotoInfo);
     }
 
-    try {
-      Uint8List bytes = base64Decode(foto);
-      return MemoryImage(bytes);
-    } catch (e) {
-      print("Error decoding base64: $e");
-      return AssetImage('assets/images/no_image.jpg');
-    }
+    return NetworkImage("$baseUrl$fotoInfo");
   }
 
   Container _verifikasiKepalaDesa(String verifikasi) {

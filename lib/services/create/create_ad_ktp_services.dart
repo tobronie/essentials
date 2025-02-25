@@ -1,16 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:essentials/screens/navigation/activity_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateKTPService {
   Future<void> ktp(
       String kt_judul,
-      String? kt_foto_akte,
-      String kt_foto_kk,
-      String kt_foto_formulir,
+      Map<String, File> fileMap,
       String kt_surat_konfirmasi,
       String kt_tgl_upload,
       String kt_konfirmasi,
@@ -30,72 +29,33 @@ class CreateKTPService {
       return;
     }
 
-    String base64FotoAkte = '';
-    String base64FotoKK = '';
-    String base64FotoFormulir = '';
-
-    if (kt_foto_akte?.isNotEmpty ?? false) {
-      try {
-        base64FotoAkte = base64Encode(File(kt_foto_akte!).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Akte: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kt_foto_kk.isNotEmpty) {
-      try {
-        base64FotoKK = base64Encode(File(kt_foto_kk).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Kartu Keluarga: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
-    if (kt_foto_formulir.isNotEmpty) {
-      try {
-        base64FotoFormulir = base64Encode(File(kt_foto_formulir).readAsBytesSync());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal membaca file gambar Buku Surat Persetujuan Orang Tua: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {
-          'id_user': id_user,
-          'kt_judul': kt_judul,
-          'kt_foto_akte': base64FotoAkte.isNotEmpty ? base64FotoAkte : '',
-          'kt_foto_kk': base64FotoKK,
-          'kt_foto_formulir': base64FotoFormulir,
-          'kt_surat_konfirmasi': kt_surat_konfirmasi,
-          'kt_tgl_upload': kt_tgl_upload,
-          'kt_konfirmasi': kt_konfirmasi,
-        },
-      );
-      print("ID User terkirim: $id_user");
-      print("Response Body: ${response.body}");
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['id_user'] = id_user;
+      request.fields['kt_judul'] = kt_judul;
+      request.fields['kt_surat_konfirmasi'] = kt_surat_konfirmasi;
+      request.fields['kt_tgl_upload'] = kt_tgl_upload;
+      request.fields['kt_konfirmasi'] = kt_konfirmasi;
 
-      var data = jsonDecode(response.body);
+      for (var entry in fileMap.entries) {
+        if (entry.value.existsSync()) {
+          var mimeType = lookupMimeType(entry.value.path);
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              entry.key,
+              entry.value.path,
+              contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+            ),
+          );
+        }
+      }
 
-      if (response.statusCode == 200 && data['success'] == 'true') {
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Data: $responseData");
+
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil Pengajuan Surat'),
@@ -109,7 +69,7 @@ class CreateKTPService {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Gagal Pengajuan Surat'),
+            content: Text('Gagal Pengajuan Surat: $responseData'),
             backgroundColor: Colors.red,
           ),
         );
