@@ -3,13 +3,13 @@ import 'package:essentials/screens/administrasi/listadministrasi_screen.dart';
 import 'package:essentials/screens/informasi/detailinformasi_screen.dart';
 import 'package:essentials/screens/informasi/informasitetap.dart';
 import 'package:essentials/screens/informasi/listinformasi_screen.dart';
-import 'package:essentials/screens/navigation/notification_screen.dart';
+// import 'package:essentials/screens/navigation/notification_screen.dart';
 import 'package:essentials/screens/pelaporan/formulirpelaporan_screen.dart';
 import 'package:essentials/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -201,28 +201,28 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Color(0xff00AA13),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Center(
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NotifikasiScreen()),
-                  );
-                },
-                child: const Icon(
-                  PhosphorIconsRegular.bell,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+          // Container(
+          //   height: 40,
+          //   width: 40,
+          //   decoration: BoxDecoration(
+          //     color: Color(0xff00AA13),
+          //     borderRadius: BorderRadius.circular(50),
+          //   ),
+          //   child: Center(
+          //     child: InkWell(
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(builder: (context) => NotifikasiScreen()),
+          //         );
+          //       },
+          //       child: const Icon(
+          //         PhosphorIconsRegular.bell,
+          //         color: Colors.white,
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

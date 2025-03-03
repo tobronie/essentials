@@ -3,6 +3,7 @@ import 'package:essentials/screens/authentication/register_screen.dart';
 import 'package:essentials/screens/navigation/home_screen.dart';
 import 'package:essentials/screens/navigation/navigation.dart';
 import 'package:essentials/screens/onboarding_screen.dart';
+import 'package:essentials/services/notif_services.dart';
 import 'package:essentials/services/save_information.dart';
 import 'package:flutter/material.dart';
 import 'package:essentials/screens/spalsh_screen.dart';
@@ -13,6 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final userSession = UserSession();
   await userSession.loadUserData();
+  await NotificationController.initializeLocalNotifications();
 
   runApp(
     MultiProvider(
@@ -26,6 +28,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   const MyApp({super.key});
 
   @override
@@ -33,6 +36,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    NotificationController.startListeningNotificationEvents();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,12 +77,8 @@ class _CheckUserState extends State<CheckUser> {
 
   void checkLoginStatus() {
     final userSession = Provider.of<UserSession>(context, listen: false);
-
-    if (userSession.isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      Navigator.pushReplacementNamed(context, '/onboarding');
-    }
+    String nextRoute = userSession.isLoggedIn ? '/home' : '/onboarding';
+    Navigator.pushReplacementNamed(context, '/splash', arguments: nextRoute);
   }
 
   @override
@@ -81,3 +86,4 @@ class _CheckUserState extends State<CheckUser> {
     return const SizedBox.shrink();
   }
 }
+

@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final String nextRoute =
-        ModalRoute.of(context)?.settings.arguments as String? ?? '/onboarding';
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 
-    Future.delayed(const Duration(seconds: 3)).then((_) {
-      Navigator.pushReplacementNamed(context, nextRoute);
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    navigateAfterSplash();
+  }
+
+  void navigateAfterSplash() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final String nextRoute =
+          ModalRoute.of(context)?.settings.arguments as String? ?? '/onboarding';
+
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, nextRoute);
+        }
+      });
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [

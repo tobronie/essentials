@@ -372,6 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
+        if (id_user != "1" && id_user != "2")
         _buildSettingOption(
           icon: PhosphorIconsRegular.headset,
           text: 'Pusat Bantuan',

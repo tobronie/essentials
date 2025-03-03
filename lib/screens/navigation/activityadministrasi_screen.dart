@@ -233,7 +233,7 @@ class _ActivityAdministrasiScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Jenis Pengaduan',
+              'Nama Pemohon',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -280,7 +280,7 @@ class _ActivityAdministrasiScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Jenis Pengaduan',
+              'Jenis Pengajuan',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -374,7 +374,7 @@ class _ActivityAdministrasiScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Data Pengaduan Anda:',
+              'Data Pengajuan Anda:',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
