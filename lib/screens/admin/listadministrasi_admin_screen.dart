@@ -362,14 +362,12 @@ class _ListVerifikasiAdministrasiAdminScreenState
           'us_konfirmasi'
         ].any((key) {
           var value = item[key];
-          return value != null &&
-              value.toString().isNotEmpty &&
-              value.toString().contains("menunggu");
+          return value != null && value.toString().contains("menunggu");
         });
       }).toList();
     } else if (_selectedProses == "Terverifikasi") {
       combinedList = combinedList.where((item) {
-        return [
+        bool hasVerified = [
           'konfirmasi_lapor',
           'ak_konfirmasi',
           'dom_konfirmasi',
@@ -384,10 +382,27 @@ class _ListVerifikasiAdministrasiAdminScreenState
           'us_konfirmasi'
         ].any((key) {
           var value = item[key];
-          return value != null &&
-              value.toString().isNotEmpty &&
-              value.toString().contains("sudah");
+          return value != null && value.toString().contains("sudah");
         });
+
+        bool noSuratKonfirmasi = [
+          'ak_surat_konfirmasi',
+          'dom_surat_konfirmasi',
+          'kem_surat_konfirmasi',
+          'kk_surat_konfirmasi',
+          'kt_surat_konfirmasi',
+          'ni_surat_konfirmasi',
+          'pen_surat_konfirmasi',
+          'has_surat_konfirmasi',
+          'sktm_surat_konfirmasi',
+          'tan_surat_konfirmasi',
+          'us_surat_konfirmasi'
+        ].every((key) {
+          var value = item[key];
+          return value == null || value.toString().isEmpty;
+        });
+
+        return hasVerified && noSuratKonfirmasi;
       }).toList();
     } else if (_selectedProses == "Riwayat") {
       combinedList = combinedList.where((item) {
@@ -406,9 +421,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
               'us_konfirmasi'
             ].any((key) {
               var value = item[key];
-              return value != null &&
-                  value.toString().isNotEmpty &&
-                  value.toString().contains("tidak");
+              return value != null && value.toString().contains("tidak");
             }) ||
             [
               'ak_surat_konfirmasi',

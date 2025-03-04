@@ -36,7 +36,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   Future<List<dynamic>> fetchData(String endpoint, id_user) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint?id_user=$id_user';
+    String url =
+        'http://10.0.2.2:8080/essentials_api/$endpoint?id_user=$id_user';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -389,7 +390,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     if (_selectedProses == "Dalam Proses") {
       filteredList = filteredList.where((item) {
-        if (item['konfirmasi_lapor']?.toString().trim() == "sudah") {
+        if (item['konfirmasi_lapor']?.toString().trim() == "sudah" ||
+            item['konfirmasi_lapor']?.toString().trim() == "tidak") {
           return false;
         }
         if (item['konfirmasi_lapor']?.toString().trim() == "menunggu") {
@@ -430,14 +432,32 @@ class _ActivityScreenState extends State<ActivityScreen> {
           return surat == null || surat.toString().trim().isEmpty;
         });
 
-        return hasPendingStatus || allSuratEmpty;
+        bool hasRejectedStatus = [
+          'ak_konfirmasi',
+          'dom_konfirmasi',
+          'kem_konfirmasi',
+          'kk_konfirmasi',
+          'kt_konfirmasi',
+          'ni_konfirmasi',
+          'pen_konfirmasi',
+          'has_konfirmasi',
+          'sktm_konfirmasi',
+          'tan_konfirmasi',
+          'us_konfirmasi'
+        ].any((key) {
+          var value = item[key]?.toString().trim();
+          return value == "tidak";
+        });
+
+        return (hasPendingStatus || allSuratEmpty) && !hasRejectedStatus;
       }).toList();
     } else if (_selectedProses == "Riwayat") {
       filteredList = filteredList.where((item) {
         if (item['konfirmasi_lapor']?.toString().trim() == "menunggu") {
           return false;
         }
-        if (item['konfirmasi_lapor']?.toString().trim() == "sudah") {
+        if (item['konfirmasi_lapor']?.toString().trim() == "sudah" ||
+            item['konfirmasi_lapor']?.toString().trim() == "tidak") {
           return true;
         }
 
@@ -475,24 +495,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
           return surat != null && surat.toString().trim().isNotEmpty;
         });
 
-        return hasCompletedStatus &&
-            (anySuratNotEmpty ||
-                [
-                  'ak_konfirmasi',
-                  'dom_konfirmasi',
-                  'kem_konfirmasi',
-                  'kk_konfirmasi',
-                  'kt_konfirmasi',
-                  'ni_konfirmasi',
-                  'pen_konfirmasi',
-                  'has_konfirmasi',
-                  'sktm_konfirmasi',
-                  'tan_konfirmasi',
-                  'us_konfirmasi'
-                ].any((key) {
-                  var value = item[key]?.toString().trim();
-                  return value == "tidak";
-                }));
+        return hasCompletedStatus || anySuratNotEmpty;
       }).toList();
     }
 

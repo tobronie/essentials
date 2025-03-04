@@ -166,7 +166,7 @@ class _ListProblemScreenState extends State<ListProblemScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
-                            'Masalah fitur pelaporan',
+                            'Masalah fitur pengaduan',
                             style: GoogleFonts.montserrat(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

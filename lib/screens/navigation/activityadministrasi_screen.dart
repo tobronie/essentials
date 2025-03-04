@@ -212,6 +212,8 @@ class _ActivityAdministrasiScreenState
                     const SizedBox(height: 12),
                     _verifikasiKepalaDesa(Verifikasi),
                     const SizedBox(height: 24),
+                    if (Verifikasi == "sudah" && (SuratKonfirmasi.isEmpty))
+                      _keterangan(Verifikasi, SuratKonfirmasi),
                     if (SuratKonfirmasi.isNotEmpty)
                       _document(SuratKonfirmasi, NamaPengaduan, JudulPengaduan,
                           context),
@@ -425,6 +427,28 @@ class _ActivityAdministrasiScreenState
             ),
             TextSpan(
               text: "oleh Kepala Desa Kedungmulyo Bpk. Badrun",
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                height: 1.1,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+        textAlign: TextAlign.left,
+      ),
+    );
+  }
+
+  Container _keterangan(String verifikasi, String? suratKonfirmasi) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: "Mohon menunggu, admin sedang memproses persetujuan dari kepala desa",
               style: GoogleFonts.montserrat(
                 fontSize: 14,
                 height: 1.1,
