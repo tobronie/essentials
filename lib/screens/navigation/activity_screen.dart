@@ -37,7 +37,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   Future<List<dynamic>> fetchData(String endpoint, id_user) async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/$endpoint?id_user=$id_user';
+        'https://essentials.my.id/$endpoint?id_user=$id_user';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -750,7 +750,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

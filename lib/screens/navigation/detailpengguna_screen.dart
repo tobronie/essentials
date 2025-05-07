@@ -46,7 +46,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
 
   Future<Map<String, dynamic>?> getUser(String id_user) async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
+        'https://essentials.my.id/get_user.php?id_user=$id_user';
 
     try {
       var response = await http.get(Uri.parse(url));
@@ -192,7 +192,7 @@ class _DetailPenggunaScreenState extends State<DetailPenggunaScreen> {
 
   Column _data() {
     String nama = userData?["nama"] ?? "Nama Pengguna";
-    String nik = userData?["nama"] ?? "NIK Pengguna";
+    String nik = userData?["nik"] ?? "NIK Pengguna";
     String kk = userData?["kk"]?.toString() ?? "";
     String dusun = userData?["dusun"]?.toString() ?? "";
     String rt = userData?["rt"]?.toString() ?? "";

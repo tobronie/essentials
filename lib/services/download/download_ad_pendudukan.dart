@@ -9,7 +9,7 @@ class DownloadServicesPendudukan {
     try {
       print("ID Pendudukan yang dikirim: $idPendudukan");
       String url =
-          'http://10.0.2.2:8080/essentials_api/download_ad_pendudukan.php?id_pendudukan=$idPendudukan';
+          'https://essentials.my.id/download_ad_pendudukan.php?id_pendudukan=$idPendudukan';
       print("Mengunduh dari URL: $url");
 
       Directory? dir = await getExternalStorageDirectory();

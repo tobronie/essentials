@@ -28,7 +28,7 @@ class _EditInformasiScreenState extends State<EditInformasiScreen> {
 
   Future<List<dynamic>> getInformation() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_information.php?id_info=${widget.id_info}';
+        'https://essentials.my.id/get_information.php?id_info=${widget.id_info}';
     try {
       var response = await http.get(Uri.parse(url));
 

@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<Map<String, dynamic>?> getUser(String id_user) async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
+        'https://essentials.my.id/get_user.php?id_user=$id_user';
     try {
       var response = await http.get(Uri.parse(url));
       print("Response Status Code: ${response.statusCode}");
@@ -88,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<Map<String, dynamic>?> getAdmin() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=1';
+    String url = 'https://essentials.my.id/get_user.php?id_user=1';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
         profileImage = snapshot.data?["profil"]?.toString() ?? "";
         if (profileImage.isNotEmpty && !profileImage.startsWith("http")) {
-          profileImage = "http://10.0.2.2:8080/essentials_api/$profileImage";
+          profileImage = "https://essentials.my.id/$profileImage";
         }
         String userName = snapshot.data?["nama"]?.toString() ?? "Nama Pengguna";
         String userNIK = snapshot.data?["nik"]?.toString() ?? "NIK Pengguna";

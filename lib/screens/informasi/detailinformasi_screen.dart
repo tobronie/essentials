@@ -38,7 +38,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
 
   Future<List<dynamic>> getInformation() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_information.php?id_info=${widget.id}';
+        'https://essentials.my.id/get_information.php?id_info=${widget.id}';
     try {
       var response = await http.get(Uri.parse(url));
 
@@ -261,7 +261,7 @@ class _InformasiDetailScreenState extends State<InformasiDetailScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

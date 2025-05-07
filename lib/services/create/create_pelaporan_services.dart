@@ -16,7 +16,7 @@ class CreateLaporService {
       String tgl_upload_lapor,
       String konfirmasi_lapor,
       BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/create_pelaporan.php';
+    String url = 'https://essentials.my.id/create_pelaporan.php';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id_user = prefs.getString('id_user');

@@ -41,7 +41,7 @@ class _ListVerifikasiAdministrasiAdminScreenState
   }
 
   Future<List<dynamic>> fetchData(String endpoint) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/$endpoint';
+    String url = 'https://essentials.my.id/$endpoint';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

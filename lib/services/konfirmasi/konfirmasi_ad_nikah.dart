@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class KonfirmasiNikahService {
   Future<void> KonfirmasiNikah(String id_nikah, String ni_konfirmasi, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/konfirmasi_ad_nikah.php';
+    String url = 'https://essentials.my.id/konfirmasi_ad_nikah.php';
     try {
       var response = await http.post(
         Uri.parse(url),

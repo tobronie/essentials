@@ -6,7 +6,7 @@ import 'package:essentials/screens/admin/listinformasi_admin_screen.dart';
 class UpdateInfoService {
   Future<void> information(String id_info, String judul_info, String kategori_info,
       String isi_info, String tgl_upload_info, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/update_information.php';
+    String url = 'https://essentials.my.id/update_information.php';
     try {
       var response = await http.post(
         Uri.parse(url),

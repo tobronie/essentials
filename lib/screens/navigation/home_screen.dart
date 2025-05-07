@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<dynamic>> getInformation() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
+    String url = 'https://essentials.my.id/view_information.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<dynamic>> getMemo() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/view_information_desa.php';
+        'https://essentials.my.id/view_information_desa.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<Map<String, dynamic>?> getUser(String id_user) async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_user.php?id_user=$id_user';
+        'https://essentials.my.id/get_user.php?id_user=$id_user';
 
     try {
       var response = await http.get(Uri.parse(url));
@@ -627,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

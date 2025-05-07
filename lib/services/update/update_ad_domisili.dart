@@ -7,7 +7,7 @@ import 'package:http_parser/http_parser.dart';
 
 class UploadDomisiliService {
   Future<void> domisili(String id, File selectedDocument, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/update_ad_Domisili.php';
+    String url = 'https://essentials.my.id/update_ad_Domisili.php';
     try {
       var request = http.MultipartRequest('POST', Uri.parse(url));
       request.fields['id_domisili'] = id;

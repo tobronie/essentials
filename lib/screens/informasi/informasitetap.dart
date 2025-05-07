@@ -30,7 +30,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
 
   Future<List<dynamic>> getInformationDesa() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_information_desa.php?id_infodes=${widget.id}';
+        'https://essentials.my.id/get_information_desa.php?id_infodes=${widget.id}';
     try {
       var response = await http.get(Uri.parse(url));
 
@@ -206,7 +206,7 @@ class _InformasiTetapScreenState extends State<InformasiTetapScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

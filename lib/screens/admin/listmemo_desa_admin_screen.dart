@@ -36,7 +36,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
 
   Future<List<dynamic>> getMemo() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/view_information_desa.php';
+        'https://essentials.my.id/view_information_desa.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -53,7 +53,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
   Future<void> delInformationDesa(String id) async {
     try {
       String url =
-          'http://10.0.2.2:8080/essentials_api/delete_information_desa.php';
+          'https://essentials.my.id/delete_information_desa.php';
       var res = await http.post(
         Uri.parse(url),
         body: {"id": id},
@@ -385,7 +385,7 @@ class _MemoDesaAdminScreenState extends State<MemoDesaAdminScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

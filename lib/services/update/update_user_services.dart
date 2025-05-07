@@ -22,7 +22,7 @@ class UpdateUserService {
       return;
     }
 
-    String url = 'http://10.0.2.2:8080/essentials_api/update_user.php';
+    String url = 'https://essentials.my.id/update_user.php';
     try {
       var response = await http.post(
         Uri.parse(url),

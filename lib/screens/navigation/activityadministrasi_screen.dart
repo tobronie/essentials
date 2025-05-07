@@ -37,7 +37,7 @@ class _ActivityAdministrasiScreenState
   Future<Map<String, dynamic>?> getData() async {
     String endpoint = getEndpoint(widget.idType);
     String url =
-        'http://10.0.2.2:8080/essentials_api/$endpoint?${widget.idType}=${widget.id}';
+        'https://essentials.my.id/$endpoint?${widget.idType}=${widget.id}';
 
     try {
       var response = await http.get(Uri.parse(url));
@@ -601,7 +601,7 @@ class _ActivityAdministrasiScreenState
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "klik untuk mendownload file",
+                        "klik untuk mengunduh",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

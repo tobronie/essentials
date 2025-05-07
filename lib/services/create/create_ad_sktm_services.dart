@@ -17,7 +17,7 @@ class CreateSKTMService {
       String sktm_tgl_upload,
       String sktm_konfirmasi,
       BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/create_ad_sktm.php';
+    String url = 'https://essentials.my.id/create_ad_sktm.php';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id_user = prefs.getString('id_user');

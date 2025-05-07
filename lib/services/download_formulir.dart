@@ -14,7 +14,7 @@ class DownloadServices {
 
       String filePath = "${directory.path}/formulir-ktp.pdf";
       String documentUrl =
-          'http://10.0.2.2:8080/essentials_api/formulir_ktp.php';
+          'https://essentials.my.id/formulir_ktp.php';
 
       Dio dio = Dio();
 
@@ -56,7 +56,7 @@ class DownloadServices {
 
       String filePath = "${directory.path}/formulir-nikah.pdf";
       String documentUrl =
-          'http://10.0.2.2:8080/essentials_api/formulir_nikah.php';
+          'https://essentials.my.id/formulir_nikah.php';
 
       Dio dio = Dio();
 

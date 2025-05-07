@@ -53,7 +53,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
 
   Future<Map<String, dynamic>?> getDomisili() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_ad_domisili.php?id_domisili=${widget.id}';
+        'https://essentials.my.id/get_ad_domisili.php?id_domisili=${widget.id}';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -618,7 +618,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);
@@ -907,7 +907,7 @@ class _Admin_DomisiliScreenState extends State<Admin_DomisiliScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Anda telah mengunggah file",
+                        "file sudah diunggah",
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
                           height: 1.1,

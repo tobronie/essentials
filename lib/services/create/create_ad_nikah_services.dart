@@ -14,7 +14,7 @@ class CreateNikahService {
       String ni_tgl_upload,
       String ni_konfirmasi,
       BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/create_ad_nikah.php';
+    String url = 'https://essentials.my.id/create_ad_nikah.php';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id_user = prefs.getString('id_user');

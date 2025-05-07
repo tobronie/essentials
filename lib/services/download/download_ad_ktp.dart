@@ -9,7 +9,7 @@ class DownloadServicesKTP {
     try {
       print("ID KTP yang dikirim: $idKTP");
       String url =
-          'http://10.0.2.2:8080/essentials_api/download_ad_ktp.php?id_ktp=$idKTP';
+          'https://essentials.my.id/download_ad_ktp.php?id_ktp=$idKTP';
       print("Mengunduh dari URL: $url");
 
       Directory? dir = await getExternalStorageDirectory();

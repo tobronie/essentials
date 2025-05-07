@@ -47,7 +47,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
 
   Future<Map<String, dynamic>?> getNikah() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_ad_nikah.php?id_nikah=${widget.id}';
+        'https://essentials.my.id/get_ad_nikah.php?id_nikah=${widget.id}';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -1570,7 +1570,7 @@ class _Pejabat_NikahScreenState extends State<Pejabat_NikahScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

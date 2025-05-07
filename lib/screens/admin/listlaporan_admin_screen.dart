@@ -31,7 +31,7 @@ class _ListVerifikasiLaporanAdminScreenState
   }
 
   Future<List<dynamic>> getPelaporan() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/khusus_view_pelaporan.php';
+    String url = 'https://essentials.my.id/khusus_view_pelaporan.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -355,7 +355,7 @@ class _ListVerifikasiLaporanAdminScreenState
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

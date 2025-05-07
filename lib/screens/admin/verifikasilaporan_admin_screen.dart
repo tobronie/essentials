@@ -32,7 +32,7 @@ class _DataVerifikasiLaporanScreenState
 
   Future<Map<String, dynamic>?> getPelaporan() async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/get_pelaporan.php?id_lapor=${widget.id}';
+        'https://essentials.my.id/get_pelaporan.php?id_lapor=${widget.id}';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -341,7 +341,7 @@ class _DataVerifikasiLaporanScreenState
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

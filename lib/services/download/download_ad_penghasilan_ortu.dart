@@ -9,7 +9,7 @@ class DownloadServicesPenghasilanOrtu {
     try {
       print("ID PenghasilanOrtu yang dikirim: $idPenghasilanOrtu");
       String url =
-          'http://10.0.2.2:8080/essentials_api/download_ad_penghasilan_ortu.php?id_penghasilan=$idPenghasilanOrtu';
+          'https://essentials.my.id/download_ad_penghasilan_ortu.php?id_penghasilan=$idPenghasilanOrtu';
       print("Mengunduh dari URL: $url");
 
       Directory? dir = await getExternalStorageDirectory();

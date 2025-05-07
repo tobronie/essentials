@@ -36,7 +36,7 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
   }
 
   Future<List<dynamic>> getInformation() async {
-    String url = 'http://10.0.2.2:8080/essentials_api/view_information.php';
+    String url = 'https://essentials.my.id/view_information.php';
     try {
       var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -373,7 +373,7 @@ class _SaveInformasiScreenState extends State<SaveInformasiScreen> {
     if (fotoInfo.isEmpty) {
       return AssetImage('assets/images/no_image.jpg');
     }
-    String baseUrl = "http://10.0.2.2:8080/essentials_api/uploads/";
+    String baseUrl = "https://essentials.my.id/uploads/";
 
     if (fotoInfo.startsWith('http')) {
       return NetworkImage(fotoInfo);

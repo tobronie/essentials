@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class LoginService {
   Future<String?> login(
       String email, String password, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/login.php';
+    String url = 'https://essentials.my.id/login.php';
 
     try {
       var response = await http.post(

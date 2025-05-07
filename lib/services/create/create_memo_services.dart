@@ -12,7 +12,7 @@ class CreateInfodesService {
       File? foto_infodes,
       String tgl_upload_infodes,
       BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/create_information_desa.php';
+    String url = 'https://essentials.my.id/create_information_desa.php';
 
     try {
       var request = http.MultipartRequest('POST', Uri.parse(url));

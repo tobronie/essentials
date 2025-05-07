@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class KonfirmasiKematianService {
   Future<void> KonfirmasiKematian(String id_kematian, String kem_konfirmasi, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/konfirmasi_ad_kematian.php';
+    String url = 'https://essentials.my.id/konfirmasi_ad_kematian.php';
     try {
       var response = await http.post(
         Uri.parse(url),

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class RegisterService {
   Future<String?> register(String nama, String nik, String no_hp, String email,
       String password, BuildContext context) async {
-    String url = 'http://10.0.2.2:8080/essentials_api/register.php';
+    String url = 'https://essentials.my.id/register.php';
 
     try {
       var response = await http.post(

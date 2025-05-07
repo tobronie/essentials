@@ -11,7 +11,7 @@ class UpdateMemoService {
       String tgl_upload_infodes,
       BuildContext context) async {
     String url =
-        'http://10.0.2.2:8080/essentials_api/update_information_desa.php';
+        'https://essentials.my.id/update_information_desa.php';
     try {
       var response = await http.post(
         Uri.parse(url),

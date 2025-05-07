@@ -9,7 +9,7 @@ class DownloadServicesTanah {
     try {
       print("ID Tanah yang dikirim: $idTanah");
       String url =
-          'http://10.0.2.2:8080/essentials_api/download_ad_tanah.php?id_tanah=$idTanah';
+          'https://essentials.my.id/download_ad_tanah.php?id_tanah=$idTanah';
       print("Mengunduh dari URL: $url");
 
       Directory? dir = await getExternalStorageDirectory();
